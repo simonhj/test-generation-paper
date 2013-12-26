@@ -1,0 +1,269 @@
+Model MetLifeModel
+
+ENTITIES
+
+enum HealthStatus {
+	Excellent
+	Very good
+	Good
+	Fair
+}
+
+enum TermType {
+	Year_10
+	Year_15
+	Year_20
+	Year_30
+}
+
+enum Gender {
+	Male
+	Female
+}
+
+enum State {
+	AZ
+	CA
+	CO
+	CT
+	FL
+	MD
+	NV
+	NJ
+	NM
+	NY
+	NC
+	OK
+	SC
+	VA
+	DE
+	GA
+	MA
+	WA
+}
+
+object Customer {
+	string:name
+	int:age
+	HealthStatus:healthStatus
+	int:smokeHabit
+	Gender:gender
+	State:state
+}
+
+object InstantTermLifeInsurance {
+	Customer:customer
+	int:coverageAmount
+	int:premiumAmount
+	TermType:termType
+	int:termStartYear
+	int:termEndingYear
+}
+
+object WholeLifeInsurance {
+	Customer:customer
+	int:coverageAmount
+	int:premiumAmount
+	int:termStartYear
+	int:termEndingYear
+}
+
+PAGES
+
+page Y {
+	a
+}
+
+OPERATIONS
+
+operation createCustomer {
+	input: int:age HealthStatus:healthStatus int:smokeHabit Gender:gender State:state
+	creates: Customer:cust
+	modifies:
+	
+	group main {
+		rule init {
+			pre:true;
+			post:cust.age == age AND cust.healthStatus == healthStatus 
+				AND cust.smokeHabit == smokeHabit AND cust.gender == gender
+				AND cust.state == state;
+		}
+	}
+}
+
+operation createInstantTermLifeInsurance {
+	input:Customer:cust TermType:termType int:creationYear
+	creates:InstantTermLifeInsurance:instantLife 
+	modifies:
+	
+	group main {
+		rule init1 {
+			pre:cust.age >= 18 AND cust.age <= 75 AND cust.state != State::WA;
+			post:instantLife.customer == cust AND instantLife.termType == termType 
+				AND instantLife.termStartYear == creationYear
+				AND instantLife.termEndingYear == 0;
+		}
+		
+		rule init2 {
+			pre:cust.age >= 18 AND cust.age <= 75 AND cust.state == State::WA AND termType != TermType::Year_30;
+			post:instantLife.customer == cust AND instantLife.termType == termType 
+				AND instantLife.termStartYear == creationYear
+				AND instantLife.termEndingYear == 0; 
+		}
+	}
+}
+
+operation addPremiumForAge {
+	input: InstantTermLifeInsurance:instantLife
+	creates:
+	modifies: InstantTermLifeInsurance:instantLife
+	
+	group addPremiumForAge {
+		rule ageLessThan_30 {
+			pre: instantLife.customer.age < 30;
+			post: instantLife.premiumAmount == instantLife.premiumAmount@;	
+		}
+		
+		rule ageBet_30_and_40 {
+			pre: instantLife.customer.age >= 30 AND instantLife.customer.age < 40;
+			post: instantLife.premiumAmount == instantLife.premiumAmount@ + 1;
+		}
+		
+		rule ageBet_40_and_50 {
+			pre: instantLife.customer.age >= 40 AND instantLife.customer.age < 50;
+			post: instantLife.premiumAmount == instantLife.premiumAmount@ + 2;
+		}
+		
+		rule ageBet_50_and_60 {
+			pre: instantLife.customer.age >= 50 AND instantLife.customer.age < 60;
+			post: instantLife.premiumAmount == instantLife.premiumAmount@ + 4;
+		}
+		
+		rule ageBet_60_and_70 {
+			pre: instantLife.customer.age >= 60 AND instantLife.customer.age < 70;
+			post: instantLife.premiumAmount == instantLife.premiumAmount@ + 8;
+		}
+		
+		rule ageBet_70_and_75 {
+			pre: instantLife.customer.age >= 70 AND instantLife.customer.age <= 75;
+			post: instantLife.premiumAmount == instantLife.premiumAmount@ + 10;
+		}
+	}
+}
+
+operation addPremiumForTerm {
+	input: InstantTermLifeInsurance:instantLife
+	creates:
+	modifies: InstantTermLifeInsurance:instantLife
+	next: addPremiumForAge
+	
+	group termAddition {
+		rule tenYear {
+			pre: instantLife.termType == TermType::Year_10;
+			post: instantLife.premiumAmount == instantLife.premiumAmount@ 
+					AND instantLife.termEndingYear == instantLife.termStartYear + 10;
+		}
+		
+		rule fifteenYear {
+			pre: instantLife.termType == TermType::Year_15;
+			post: instantLife.premiumAmount == instantLife.premiumAmount@ + 5 
+					AND instantLife.termEndingYear == instantLife.termStartYear + 15;
+		}
+		
+		rule twentyYear {
+			pre: instantLife.termType == TermType::Year_20;
+			post: instantLife.premiumAmount == instantLife.premiumAmount@ + 10 
+					AND instantLife.termEndingYear == instantLife.termStartYear + 20;
+		}
+		
+		rule thirtyYear {
+			pre: instantLife.termType == TermType::Year_30;
+			post: instantLife.premiumAmount == instantLife.premiumAmount@ + 15 
+					AND instantLife.termEndingYear == instantLife.termStartYear + 30;
+		}	
+	}
+}
+
+
+operation addPremiumForHealthStatus {
+	input: InstantTermLifeInsurance:instantLife
+	creates:
+	modifies: InstantTermLifeInsurance:instantLife
+	next: addPremiumForTerm
+	
+	group healthStatus {
+		rule fairHealthStatus {
+			pre: instantLife.customer.healthStatus == HealthStatus::Fair;
+			post: instantLife.premiumAmount == instantLife.premiumAmount@ + 5;
+		}
+		
+		rule excellentHealthStatus {
+			pre: instantLife.customer.healthStatus == HealthStatus::Excellent;
+			post: instantLife.premiumAmount == instantLife.premiumAmount@ + 5;
+		}	
+	}
+}
+
+operation addPremiumForSmokingHabit {
+	input: InstantTermLifeInsurance:instantLife
+	creates:
+	modifies: InstantTermLifeInsurance:instantLife
+	next: addPremiumForHealthStatus
+	
+	group smoking {
+		rule noSmokingHabit {
+			pre: instantLife.customer.smokeHabit == 0;
+			post: instantLife.premiumAmount == instantLife.premiumAmount@;
+		}
+		
+		rule hasSmokingHabit {
+			pre: instantLife.customer.smokeHabit == 1;
+			post: instantLife.premiumAmount == instantLife.premiumAmount@ + 7;
+		}
+	}
+}
+
+operation initializePremium {
+	input: InstantTermLifeInsurance:instantLife
+	creates:
+	modifies: InstantTermLifeInsurance:instantLife
+	next: addPremiumForSmokingHabit
+	
+	group premium {
+		rule basePremiumMale {
+			pre:instantLife.customer.gender == Gender::Male;
+			post:instantLife.premiumAmount == 10;
+		}
+		
+		rule basePremiumFemale {
+			pre:instantLife.customer.gender == Gender::Female;
+			post:instantLife.premiumAmount == 9;
+		}
+	}
+}
+
+operation convertToWholeLifeInsurance {
+	input:InstantTermLifeInsurance:instantLife int:conversionYear 
+	creates:WholeLifeInsurance:wholeLife
+	modifies:
+	
+	group main {
+		rule AgeLessThan65 {
+			pre:conversionYear == 2012 AND instantLife.termEndingYear >= conversionYear
+				AND instantLife.customer.age < 65;  
+			post:wholeLife.customer == instantLife.customer AND wholeLife.coverageAmount == instantLife.coverageAmount
+				AND wholeLife.premiumAmount == instantLife.premiumAmount;				
+		}
+		
+		rule Age65OrOver {
+			pre:conversionYear == 2012 AND instantLife.termEndingYear >= conversionYear 
+				AND instantLife.customer.age >= 65;				
+			post:wholeLife.customer == instantLife.customer AND wholeLife.coverageAmount == instantLife.coverageAmount
+				AND wholeLife.premiumAmount == instantLife.premiumAmount 
+				AND wholeLife.termEndingYear == 70 - instantLife.customer.age;					
+		}		
+	}
+}
+
+TRIGGERS
+

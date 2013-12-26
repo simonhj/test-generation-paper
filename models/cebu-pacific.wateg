@@ -1,0 +1,148 @@
+Model CebuPacific
+
+ENTITIES
+object Ticket {
+       int:fare
+       int:passengerID
+       List[Sector]:sectors
+}
+
+object Sector {
+       Flight:flight
+       aint:etd //Estimated time of departure
+       bool:flown
+       Class:bookingClass
+       bool:promo
+       Status:status
+}
+
+object PassengerFund {
+       int:balance
+       int:passengerID
+}
+
+object Sector {
+       Flight:flight
+       int:etd //Estimated time of departure
+       int:std //schedule time of departure
+       bool:flown
+}
+
+enum Status {
+     Scheduled
+     RebookableFree
+     RebookableRestricted
+     Flown
+}
+
+enum Class {
+     A    
+     B    
+     C    
+     D    
+     E    
+     F    
+     G    
+     H    
+     I    
+     J    
+     K    
+     L    
+     M    
+     N    
+     O    
+     P    
+     Q    
+     S    
+     T    
+     V    
+     W    
+     X    
+     Y    
+     Z    
+} 
+
+enum Flight {
+     892
+     945
+     536
+     654
+}
+
+
+enum CancellationReason {
+     ForceMajeur
+     PassengerIllness
+     Other
+}
+
+PAGES
+
+page Y {
+	a
+}
+
+OPERATIONS
+
+operation cancellation {	
+	  input: Ticket:ticket CancellationReason:reason int:currentTime
+	  creates:
+	  modifies: Ticket:ticket
+	  group g {
+	  	rule forceMajeur { //9.3.3
+		     pre: reason == CancellationReason::Forcemajeur AND currentTime > ticket.sectors[0].etd + 3
+		     post: ticket.sectors.status == Status::RebookableFree 
+		}
+		rule other { //9.3.4
+		      pre: reason == CancellationReason::Other AND currentTime > ticket.sectors[0].etd + 3
+		      post: ticket.sectors.status == Status::RebookableRestricted  
+		}		
+	  }		    
+}  
+
+operation partialCancellation {
+
+}
+
+operation rebook {
+
+}
+
+operation rebookPartial {
+
+}
+
+operation purchaseTicket {
+
+}
+
+operation createFlight {
+
+}
+
+operation cancelFlight {
+
+}
+
+operation delayedFlight {
+
+}
+
+operation flyPart {
+
+}
+
+operation createFund {
+input: int:passengerID int:initialBalance
+creates: PassengerFund:fund
+modifies:
+
+group create {
+      rule create {
+      	   pre:
+	   post: fund.passengerID == passengerID AND fund.balance == initialBalance
+      }     
+}
+
+TRIGGERS
+

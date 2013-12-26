@@ -1,0 +1,299 @@
+Model JBilling
+
+ENTITIES
+
+enum Username {
+	admin
+	guest
+}
+
+enum password {
+	qwe
+	wrong
+}
+
+object UserCredentials {
+	Username:name
+}
+
+enum Status {
+  Active
+  InActive
+}
+object Item {
+  int:value
+}
+enum Country {  
+  INDIA
+  DENMARK
+  CANADA
+}
+enum Type {
+  PREPAID
+  POSTPAID
+}
+enum BalanceType {
+  None
+  Credit
+  PrePaid
+}
+enum Currency {
+  UNKNOWN
+  USD
+  INR
+  DKK
+}
+enum Period {
+  Quarterly
+  OneTime
+  Monthly
+}
+object Customer {
+  Currency:currency
+  Country:country  
+  BalanceType:balanceType
+  int:rechargeAmount
+  int:prepaidLimit
+  int:creditLimit
+}
+object Order {
+  Status:status
+  int:total
+  Type:type
+  int:creationDate
+  Customer:cust
+  Period:period
+  int:nextInvoice
+  int:activeSince
+  int:activeUntil
+  int:promotionCode
+  int:discount
+}
+
+object Invoice {
+  Order:ord
+  int:total
+}
+
+PAGES
+
+page DefaultPage {
+}
+
+OPERATIONS
+
+operation login {
+	input: Username:nn password:pw
+	creates: UserCredentials:uc
+	modifies:
+	group l {
+		rule admin {
+			pre: nn == Username::admin AND pw == password::qwe;
+			post: uc.name == Username::admin;
+		}
+	}
+}
+
+operation createorder {
+  input: int:creationDate int:activeSince Customer:cust Period:p Type:typ 
+  creates: Order:ord 
+  modifies: 
+  group Period {
+    rule rule2 {
+      pre: (typ) == (Type::PREPAID) AND (p) == (Period::OneTime);
+      post: (ord.period) == (Period::OneTime) AND (ord.nextInvoice) == (creationDate) AND ord.type == Type::PREPAID;
+    }
+    rule rule4 {
+      pre: (typ) == (Type::POSTPAID) AND (p) == (Period::Quarterly);
+      post: ord.period == p AND (ord.nextInvoice) == ((creationDate) + (3)) AND ord.type == Type::POSTPAID;
+    }
+    rule rule3 {
+      pre: (typ) == (Type::POSTPAID) AND (p) == (Period::Monthly);
+      post: (ord.period) == (p) AND (ord.nextInvoice) == ((creationDate) + (1));
+    }
+  }
+  group singleton0 {
+    rule rule1 {
+      pre: true;
+      post: (ord.cust) == (cust) AND (ord.creationDate) == (creationDate) AND (ord.status) == (Status::Active);
+    }
+  }
+  group activeSinceRelated {
+    rule rule6 {
+      pre: (activeSince) != (0);
+      post: (ord.activeSince) == (activeSince);
+    }
+    rule rule5 {
+      pre: (activeSince) == (0);
+      post: (ord.activeSince) == (creationDate);
+    }
+  }
+}
+
+operation additem {
+  input: Order:ordai Item:itmai
+  creates: 
+  modifies: Order:ordai 
+  group singleton0 {
+    rule canada {
+      pre: (ordai.cust.country) == (Country::CANADA) AND (itmai.value) > (0);
+      post: (ordai.total) == ((ordai.total@) + ((2) * (itmai.value)));
+    }    
+  }
+}
+
+operation createcustomer {
+  input: Country:country Currency:curr BalanceType:balanceType int:prepaidLimit int:rechargeAmount int:creditLimit UserCredentials:ccuc
+  creates: Customer:c 
+  modifies: 
+  group singleton0 {
+    rule rule1 {
+      pre: ccuc.name == Username::admin;
+      post: (c.country) == (country) AND (c.currency) == (curr) 
+      		AND (c.prepaidLimit) == (prepaidLimit) AND (c.rechargeAmount) == (rechargeAmount)
+      		AND (c.balanceType) == (balanceType) AND (c.creditLimit) == (creditLimit);
+    }
+  }
+  
+  group singleton1 {
+    rule rule2 {
+      pre: curr != Currency::UNKNOWN;
+      post: (c.currency) == (curr);
+    }
+  }
+}
+operation createitem {
+  input: int:value
+  creates: Item:itmm 
+  modifies: 
+  group singleton0 {
+    rule makeitem {
+      pre: true;
+      post: (itmm.value) == (value);
+    }
+  }
+}
+
+operation applyprorate {
+  input: Invoice:inva 
+  creates: 
+  modifies: Invoice:inva 
+  group singleton0 {
+    rule rule1 {
+      pre: (inva.ord.period) == (Period::OneTime);
+      post: true;
+    }
+  }
+  group singleton1 {
+    rule rule2 {
+      pre: (inva.total) > (0) AND (inva.ord.activeSince) < (inva.ord.nextInvoice) AND (inva.ord.period) == (Period::Monthly) AND ((inva.ord.activeSince) + (30)) > (inva.ord.nextInvoice);
+      post: (inva.total) == ((inva.total@) * (((inva.ord.nextInvoice) - (inva.ord.activeSince)) / (30)));
+    }
+  }
+  group singleton2 {
+    rule rule3 {
+      pre: (inva.total) > (0) AND (inva.ord.period) == (Period::Monthly) AND (inva.ord.activeUntil) != (0) AND (inva.ord.activeUntil) < (inva.ord.nextInvoice) AND ((inva.ord.activeUntil) + (30)) > (inva.ord.nextInvoice);
+      post: (inva.total) == (((inva.total@) * ((30) - ((inva.ord.nextInvoice) - (inva.ord.activeUntil)))) / (30));
+    }
+  }
+  group singleton3 {
+    rule rule4 {
+      pre: (inva.total) > (0) AND (inva.ord.period) == (Period::Quarterly) AND (inva.ord.activeSince) < (inva.ord.nextInvoice) AND ((inva.ord.activeSince) + (90)) > (inva.ord.nextInvoice);
+      post: (inva.total) == (((inva.total@) * ((inva.ord.nextInvoice) - (inva.ord.activeSince))) / (90));
+    }
+  }
+  group singleton4 {
+    rule rule5 {
+      pre: (inva.total) > (0) AND (inva.ord.period) == (Period::Quarterly) AND (inva.ord.activeUntil) != (0) AND (inva.ord.activeUntil) < (inva.ord.nextInvoice) AND ((inva.ord.activeUntil) + (90)) > (inva.ord.nextInvoice);
+      post: (inva.total) == (((inva.total@) * ((90) - ((inva.ord.nextInvoice) - (inva.ord.activeUntil)))) / (90));
+    }
+  }
+}
+
+operation invoicetotal {
+  input: Invoice:invt Order:ordit 
+  creates: 
+  modifies: Invoice:invt 
+  next: applyprorate
+  group invoicegroup {
+    rule balanceNone {
+      pre: (invt.ord.cust.balanceType) == (BalanceType::None);
+      post: (invt.total) == (ordit.total);
+    }
+    rule balancecredit {
+      pre: (invt.ord.cust.balanceType) == (BalanceType::Credit) AND (invt.ord.total) <= (invt.ord.cust.creditLimit);
+      post: (invt.total) == (0) AND (invt.ord.cust.creditLimit) == ((invt.ord.cust.creditLimit@) - (invt.ord.total)) ;
+    }
+    rule rule3 {
+      pre: (BalanceType::Credit) == (invt.ord.cust.balanceType) AND (invt.ord.total) > (invt.ord.cust.creditLimit);
+      post: (invt.total) == ((invt.ord.total@) - (invt.ord.cust.creditLimit)) AND (invt.ord.cust.creditLimit) == (0);
+    }
+    rule rule4 {
+      pre: (invt.ord.cust.balanceType) == (BalanceType::PrePaid) AND (invt.ord.total) <= (invt.ord.cust.prepaidLimit);
+      post: (invt.total) == (0) AND (invt.ord.cust.prepaidLimit) == ((invt.ord.cust.prepaidLimit@) - (invt.ord.total));
+    }
+    rule rule5 {
+      pre: (invt.ord.cust.balanceType) == (BalanceType::PrePaid) AND (invt.ord.total) > (invt.ord.cust.prepaidLimit);
+      post: (invt.total) == ((invt.ord.total@) - (invt.ord.cust.prepaidLimit)) AND (invt.ord.cust.prepaidLimit) == (0);
+    }
+  }
+}
+
+
+operation createinvoice {
+  input: Order:ordci int:CurrentDate
+  creates: Invoice:inv 
+  modifies: 
+  next: invoicetotal
+  group singleton0 {
+    rule constructor1 {
+      pre: (ordci.status) == (Status::Active) AND (ordci.type) == (Type::PREPAID);
+      post: (inv.ord) == (ordci) AND (inv.total) == (ordci.total);
+    }
+    
+    rule constructor2 {
+      pre: (ordci.status) == (Status::Active) AND (ordci.type) == (Type::POSTPAID) AND (ordci.nextInvoice) >= (CurrentDate);
+      post:(inv.ord) == (ordci) AND (inv.total) == (ordci.total);
+    }
+  }
+}
+
+operation applypromotioncode {
+  input: Invoice:invc
+  creates: 
+  modifies: Invoice:inv 
+  group singleton0 {
+    rule rule1 {
+      pre: (invc.ord.promotionCode) != (0);
+      post: (invc.total) == ((invc.total@) - ((invc.ord.discount) * (invc.total@)));
+    }
+  }
+}
+
+operation changeactiveUntill {
+  input: Order:ordau int:activeUntil
+  creates: 
+  modifies: Order:ordau 
+  group singleton0 {
+    rule rule1 {
+      pre: (ordau.type) == (Type::PREPAID) AND (ordau.activeUntil) > (activeUntil);
+      post: (ordau.activeUntil) == (activeUntil);
+    }
+  }
+}
+
+operation autorecharge {
+  input: Customer:custar
+  creates: 
+  modifies: Customer:custar 
+  group singleton0 {
+    rule rule1 {
+      pre: (custar.balanceType) == (BalanceType::PrePaid) AND (custar.rechargeAmount) != (0) AND (custar.prepaidLimit) < (5);
+      post: (custar.prepaidLimit) == ((custar.prepaidLimit@) + (custar.rechargeAmount));
+    }
+  }
+}
+
+TRIGGERS
+applyprorate -> autorecharge
+
