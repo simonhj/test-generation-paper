@@ -24,8 +24,8 @@ object PassengerFund {
 
 enum Status {
      Scheduled
-     RebookableFree
-     RebookableRestricted
+     CancelledByAirline
+     CancelledOtherReason
      Flown
 }
 
@@ -65,7 +65,7 @@ enum Flight {
 
 
 enum CancellationReason {
-     ForceMajeur
+     Safety
      PassengerIllness
      Other
 }
@@ -82,14 +82,14 @@ operation cancellation {
 	  input: Ticket:ticket CancellationReason:reason int:currentTime
 	  creates:
 	  modifies: Ticket:ticket
-	  group g {
+	  group reasons {
 	  	rule forceMajeur { //9.3.3
-		     pre: reason == CancellationReason::Forcemajeur AND currentTime > ticket.sectors[0].etd + 3
-		     post: ticket.sectors.status == Status::RebookableFree 
+		     pre: reason == CancellationReason::Safety
+		     post: ticket.sectors.status == Status::CancelledByAirline 
 		}
 		rule other { //9.3.4
-		      pre: reason == CancellationReason::Other AND currentTime > ticket.sectors[0].etd + 3
-		      post: ticket.sectors.status == Status::RebookableRestricted  
+		      pre: reason == CancellationReason::Other 
+		      post: ticket.sectors.status == Status::CancelledOtherReason
 		}		
 	  }		    
 }  
@@ -99,7 +99,19 @@ operation partialCancellation {
 }
 
 operation rebook {
-
+	  intput: Ticket:ticket int:currentTime PassengerFund:fund int:time
+	  creates:
+	  modifies: Ticket:ticket PassengerFund:fund
+	  group cancelEntire {
+	  	rule cancelSafety {
+		     pre:  ticket.sectors.status == Status::CancelledByAirline
+		     post: 
+		}	
+		rule cancelOther {
+		     pre:  ticket.sectors.status == Status::CancelledOtherReason 
+		     post:
+		}	
+	  }		
 }
 
 operation rebookPartial {
