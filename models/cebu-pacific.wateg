@@ -4,17 +4,17 @@ ENTITIES
 object Ticket {
        int:fare
        int:passengerID
-       List[Sector]:sectors
+       Set[Sector]:sectors
 }
 
 object Sector {
        Flight:flight
        aint:etd //Estimated time of departure
        int:std //schedule time of departure
-       bool:flown
        Class:bookingClass
        bool:promo
        Status:status
+       int:cancelTime
 }
 
 object PassengerFund {
@@ -85,11 +85,11 @@ operation cancellation {
 	  group reasons {
 	  	rule forceMajeur { //9.3.3
 		     pre: reason == CancellationReason::Safety
-		     post: ticket.sectors.status == Status::CancelledByAirline 
+		     post: forall(ticket.sectors)s : s.status == Status::CancelledByAirline 
 		}
 		rule other { //9.3.4
 		      pre: reason == CancellationReason::Other 
-		      post: ticket.sectors.status == Status::CancelledOtherReason
+		      post: forall(ticket.sectors)s : s.status == Status::CancelledOtherReason
 		}		
 	  }		    
 }  
@@ -114,12 +114,46 @@ operation rebook {
 	  }		
 }
 
+operation makeSector {
+	  intput: Flight:flight  int:etd Class:class bool:promo
+	  creates: Sector:sector
+	  modifies:
+	  group b {
+	  	rule build {
+		     pre: 
+		     post: Sector.flight == flight AND sector.etd = etd AND sector.std == etd AND sector.bookingClass == Class AND sector.promo == promo 
+		     	     AND sector.status == Status::Scheduled
+		}
+	  }	  
+
+}
+
+operation addSector {
+	  input: Sector:sector Ticket:ticket
+	  creates: 
+	  modifies: ticket
+	  group {
+	  	rule {
+		     pre:
+		     post: ticket.sectors == add(Ticket.sectors@,sector) 
+		}		
+	  }	  
+}
+
 operation rebookPartial {
 
 }
 
 operation purchaseTicket {
-
+	  intput: Set[Sector]:sectors PassengerFund:fund int:price
+	  creates: Ticket:ticket
+	  modifies: fund
+	  group {
+	  	rule r {
+	  	     pre: fund.balance >= price
+		     post: ticket.fare == price AND ticket.passengerID == fund.passengerID AND ticket.sectors == sectors 
+		}
+	  }	  
 }
 
 operation createFlight {
