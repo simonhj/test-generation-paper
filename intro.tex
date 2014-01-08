@@ -1,0 +1,27 @@
+\section{Introduction}
+
+A business rule articulates some aspect of the expected functional behavior (or a \textit{requirement})
+of an enterprise application. Here is a simple business rule that determines how an
+invoice total is determined in a billing application:
+
+\begin{quote}
+	The \textit{Balance Type} of a customer affects how invoice total is computed; it can be 
+	one of the following:
+
+	\textit{None}: The customer's account will not hold a balance; instead all charges accrued 
+	in an order will be included in the next invoice;
+	
+	\textit{Credit}: The customer's account may accrue charges up to the set credit limit. 
+	Charges will automatically be paid from the users credit pool until the set limit is reached. 
+	Users are responsible for paying their credit debt as well as any overages.
+\end{quote}	
+
+We will examine this rule much more closely later; for now, suffice it to say that the requirements 
+of an enterprise system are typically captured by a large number (often in hundreds) of business rules
+such as this one.
+
+It is reasonable to expect that functional testing of an enterprise system would \textit{cover} its 
+business rules, which is to say, testing would exercise each distinct scenario described in each 
+rule.\footnote{This is similar to the notion of path coverage in programs, except this is described
+at the level of a business rule.}
+
