@@ -4,9 +4,8 @@ ENTITIES
 object Ticket {
        int:fare
        int:passengerID
-       Set[Sector]:sectors
+       set<Sector>:sectors      
 }
-
 object Sector {
        Flight:flight
        aint:etd //Estimated time of departure
@@ -135,7 +134,7 @@ operation addSector {
 	  group {
 	  	rule {
 		     pre:
-		     post: ticket.sectors == add(Ticket.sectors@,sector) 
+		     post: ticket.sectors == ticket.sectors@ ~ sector 
 		}		
 	  }	  
 }
@@ -145,7 +144,7 @@ operation rebookPartial {
 }
 
 operation purchaseTicket {
-	  intput: Set[Sector]:sectors PassengerFund:fund int:price
+	  intput: set<Sector>:sectors PassengerFund:fund int:price
 	  creates: Ticket:ticket
 	  modifies: fund
 	  group {
@@ -156,20 +155,20 @@ operation purchaseTicket {
 	  }	  
 }
 
-operation createFlight {
-
-}
-
-operation cancelFlight {
-
-}
-
-operation delayedFlight {
+operation delayFlight {
 
 }
 
 operation flyPart {
-
+	  input: Ticket:ticket Sector:sector
+	  creates:
+	  modfies: ticket sector
+	  group {
+	  	rule {
+		     pre: ticket.sectors ~ sector
+		     post: sector.Status = Status::Flown
+		}		
+	  }	  
 }
 
 operation createFund {
