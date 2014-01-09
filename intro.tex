@@ -26,8 +26,16 @@ its business rules.  For example, in the above rule, one of the specific scenari
 that a customer's balance type is credit, and that the order amount does not exceed the credit limit.
 A test that exercise this scenario would set up a customer with the balance type as credit as a certain
 credit limit, create an order with the appropriate constraint on the order total, and then finally
-create an invoice for that customer.  Thus, it requires a carefully thought out test scenario (i.e. a
-sequence of test steps) as well as associated test data to exercise a business rule, or a scenario thereof.
+create an invoice for that customer, and verify the invoiced amount.  (See Figure~\ref{fig:jbilling-flow}) Thus, it requires a carefully 
+thought out test scenario (i.e. a sequence of test steps) as well as associated test data to exercise 
+a business rule, or a scenario thereof.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=7.5in]{figs/jbilling-flow}
+\caption{Test sequence for a JBilling business rule}
+\label{fig:jbilling-flow}
+\end{figure*}
 
 In practice, due to time pressures, testers are more often ad hoc than methodical in creating test 
 scenarios and test data.  One part of the problem is that in realistic system might have hundreds of 
