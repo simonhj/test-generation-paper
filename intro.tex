@@ -16,25 +16,28 @@ determined in a billing application:
 	Users are responsible for paying their credit debt as well as any overages.
 \end{quote}	
 
-We will examine this rule much more closely later; for now, suffice it to say that the requirements 
+We will examine this rule closely later; for now, suffice it to say that the requirements 
 of an enterprise system are typically captured by a large number (often in hundreds) of business rules
-such as this one.
+such as the one above.
 
-It is reasonable to expect that functional testing of an enterprise system to \textit{cover} its 
-business rules, which is to say, testing would exercise each distinct scenario described in each of
-its business rule.  Unfortunately, exercising a business rule, or a scenario thereof requires a carefully
-crafted test scenario (i.e. sequence of test steps to be performed) and test data.  Human beings
-make mistakes in crafting such scenarios and data, leading to inadequate testing and bugs being
-reported from field deployment.  One part of the problem is that in realistic system 
-might have hundreds of business rules written out in plain text, and it is difficult to grasp
-a global view of how the rules together describe the application behavior.  A related part of the 
-problem is that it needs complex reasoning to piece together test sequences that would cover each 
-scenario.  We elaborate on this problem a bit later.
+It is reasonable to expect functional testing of an enterprise system to \textit{cover} its 
+business rules, which is to say, testing would exercise every distinct scenario described in each of
+its business rules.  For example, in the above rule, one of the specific scenario to be exercised is
+that a customer's balance type is credit, and that the order amount does not exceed the credit limit.
+A test that exercise this scenario would set up a customer with the balance type as credit as a certain
+credit limit, create an order with the appropriate constraint on the order total, and then finally
+create an invoice for that customer.  Thus, it requires a carefully thought out test scenario (i.e. a
+sequence of test steps) as well as associated test data to exercise a business rule, or a scenario thereof.
 
-In practice, given time pressures, testers create ad hoc test data and test scenarios and hope that
-quality assurance is adequate.  To be fair, there are guidelines to help design tests and testers
-do know about concepts such as boundary value coverage, MC-DC, and decision-tree coverage.  However, as 
-we shall see, coverage of business rules is more complex than that of conditional expressions.
+In practice, due to time pressures, testers are more often ad hoc than methodical in creating test 
+scenarios and test data.  One part of the problem is that in realistic system might have hundreds of 
+business rules written out in plain text, and it is difficult to grasp a global view of how the rules 
+together describe the application behavior.  A related part of the problem is that it needs complex 
+reasoning to piece together test sequences that would cover each scenario. Consequently, testers may 
+create tests that exercise the same business rule, or a scenario thereof, repeatedly without additional 
+benefit in quality assurance, and more problematically, may neglect to create tests for some other business 
+rules.  The net result of this state of affairs is that despite a lot of resources spent in testing, bugs 
+still escape into the field.
 
 Our vision is to advance the state of the practice in testing of enterprise software by making it more
 tool based, by adapting technology developed for automated and systematic test generation for programs.  
@@ -42,7 +45,8 @@ In this vision, business rules would be written in a structured notation that al
 (Special editors could be created to enable non-programmers to capture business rules in a structured notation; 
 this is an independent challenge in \textit{end user} programming).  A tool would validate business rules 
 and point out any ambiguities or omissions that it can detect.  After the business rules pass validation, 
-another tool would generate test sequences and test data to exercise the application comprehensively.
+another tool would generate test sequences and test data to exercise the application thoroughly as well as
+without redundancies.
 
 %Randomly generated test data cannot be expected to suffice for enterprise
 %applications with complex rules. Also, systematic test-generation approaches
