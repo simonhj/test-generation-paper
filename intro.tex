@@ -1,8 +1,8 @@
 \section{Introduction}
 
 A business rule articulates some aspect of the expected functional behavior (or a \textit{requirement})
-of an enterprise application. Here is a simple business rule that determines how an
-invoice total is determined in a billing application:
+of an enterprise application. Here is a simple business rule that determines how an invoice total is 
+determined in a billing application:
 
 \begin{quote}
 	The \textit{Balance Type} of a customer affects how invoice total is computed; it can be 
@@ -20,8 +20,44 @@ We will examine this rule much more closely later; for now, suffice it to say th
 of an enterprise system are typically captured by a large number (often in hundreds) of business rules
 such as this one.
 
-It is reasonable to expect that functional testing of an enterprise system would \textit{cover} its 
-business rules, which is to say, testing would exercise each distinct scenario described in each 
-rule.\footnote{This is similar to the notion of path coverage in programs, except this is described
-at the level of a business rule.}
+It is reasonable to expect that functional testing of an enterprise system to \textit{cover} its 
+business rules, which is to say, testing would exercise each distinct scenario described in each of
+its business rule.  Unfortunately, exercising a business rule, or a scenario thereof requires a carefully
+crafted test scenario (i.e. sequence of test steps to be performed) and test data.  Human beings
+make mistakes in crafting such scenarios and data, leading to inadequate testing and bugs being
+reported from field deployment.  One part of the problem is that in realistic system 
+might have hundreds of business rules written out in plain text, and it is difficult to grasp
+a global view of how the rules together describe the application behavior.  A related part of the 
+problem is that it needs complex reasoning to piece together test sequences that would cover each 
+scenario.  We elaborate on this problem a bit later.
 
+In practice, given time pressures, testers create ad hoc test data and test scenarios and hope that
+quality assurance is adequate.  To be fair, there are guidelines to help design tests and testers
+do know about concepts such as boundary value coverage, MC-DC, and decision-tree coverage.  However, as 
+we shall see, coverage of business rules is more complex than that of conditional expressions.
+
+Our vision is to advance the state of the practice in testing of enterprise software by making it more
+tool based, by adapting technology developed for automated and systematic test generation for programs.  
+In this vision, business rules would be written in a structured notation that allows mechanized analysis. 
+(Special editors could be created to enable non-programmers to capture business rules in a structured notation; 
+this is an independent challenge in \textit{end user} programming).  A tool would validate business rules 
+and point out any ambiguities or omissions that it can detect.  After the business rules pass validation, 
+another tool would generate test sequences and test data to exercise the application comprehensively.
+
+%Randomly generated test data cannot be expected to suffice for enterprise
+%applications with complex rules. Also, systematic test-generation approaches
+%based on program analysis (\eg \cite{Emmi:2007,Li:2010,Marcozzi:2012,Pan:2011})
+%cannot be expected to tackle enterprise applications, which use a mix of
+%multiple language and database technologies in their implementation. Moreover,
+%these techniques are directed toward attaining simple forms of code coverage,
+%such as statement or branch coverage, rather than coverage of complex business
+%rules.
+
+At first blush, this problem seems to be similar to the problem of testing
+programs written as control-flow graphs, with the goal of exercising each acyclic path in the 
+program.  The problem is different from path coverage in programs for the following reasons:
+
+The business rules themselves are only an abstraction of the implementation of the enterprise system,
+so a lot of detail is missing.
+
+Database tables
