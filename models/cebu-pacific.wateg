@@ -183,7 +183,15 @@ operation purchaseTicket {
 }
 
 operation delayFlight {
-
+	  input: Sector:sector int:delay
+	  creates:
+	  modifies: sector
+	  group {
+	  	rule {
+		     pre: setor.status == Status::Scheduled
+		     post: sector.etd == sector.etd@ + delay
+		}
+	  }
 }
 
 operation flyPart {
