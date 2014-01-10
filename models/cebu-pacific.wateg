@@ -31,6 +31,8 @@ enum Status {
      Scheduled
      CancelledByAirline
      CancelledOtherReason
+     CancelledByPassenger
+     CancelledInvolountary
      Flown
 }
 
@@ -92,6 +94,10 @@ operation partialCancellation {
 		     pre: reason == CancellationReason::Safety AND sector ~ ticket.sectors
 		     post: sector.status == Status::CancelledByAirline AND sector.cancelTime == time
 		}
+		rule illness {
+		     pre:  reason == CancellationReason::PassengerIllness AND sector ~ ticket.sectors 
+		     post: sector.status == Status::CancelledInvolountary AND sector.cancelTime == time
+		}		
 		rule other { //9.3.4
 		      pre: reason == CancellationReason::Other AND sector ~ ticket.sectors
 		      post: sector.status == Status::CancelledOtherReason AND sector.cancelTime == time
@@ -148,10 +154,20 @@ operation rebookPartial {
 	  group clause81a { //Passenger changes reservation with
 	  	rule {
 		     pre: ticket.fareType == FareType::Rebookable AND currentTime > sector.etd + 4 AND 
-		          fund.balance > rebookingFee AND  fund.balance > (newSector.cost - sectorToCancel.cost) AND sectorToCancel ~ ticket.sectors
+		          fund.balance > rebookingFee AND  fund.balance > (newSector.cost - sectorToCancel.cost) AND sectorToCancel ~ ticket.sectors AND newSector.etd < currentTime+720 //30 days
 	             post: !(sectorToCancel ~ ticket.sectors) AND newSector ~ ticket.sectors AND  fund.balance == fund.balance@ - (newSector.cost - sectorToCancel.cost) 
 		}		
-	  }	  
+	  }
+	  group clause81b {
+	  	rule involountary{
+		     pre: sectorToCancel.status == Status::CancelledInvolountary AND sectorToCancel ~ ticket.sectors  AND newSector.etd < currentTime+720 
+		     post:  !(sectorToCancel ~ ticket.sectors) AND newSector ~ ticket.sectors
+		}	
+		rule delay {
+		     pre: sectorToCancel.etd > sectorToCancel.std + 3 AND sectorToCancel ~ ticket.sectors  AND newSector.etd < currentTime+720 
+		     post: !(sectorToCancel ~ ticket.sectors) AND newSector ~ ticket.sectors
+		}	
+	  }	  	  
 }
 
 operation purchaseTicket {
@@ -167,7 +183,15 @@ operation purchaseTicket {
 }
 
 operation delayFlight {
-
+	  input: Sector:sector int:delay
+	  creates:
+	  modifies: sector
+	  group {
+	  	rule {
+		     pre: setor.status == Status::Scheduled
+		     post: sector.etd == sector.etd@ + delay
+		}
+	  }
 }
 
 operation flyPart {
