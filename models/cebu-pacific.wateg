@@ -105,22 +105,6 @@ operation partialCancellation {
 	  }		    
 }
 
-operation rebook {
-	  input: Ticket:ticket int:currentTime PassengerFund:fund int:time
-	  creates:
-	  modifies: Ticket:ticket PassengerFund:fund
-	  group cancelEntire {
-	  	rule cancelSafety {
-		     pre:  ticket.sectors.status == Status::CancelledByAirline;
-		     post: true; 
-		}	
-		rule cancelOther {
-		     pre:  ticket.sectors.status == Status::CancelledOtherReason; 
-		     post: true;
-		}	
-	  }		
-}
-
 operation makeSector {
 	  input: Flight:flight  int:etd Class:class bool:promo
 	  creates: Sector:sector
