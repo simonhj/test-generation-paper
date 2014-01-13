@@ -1,0 +1,73 @@
+Model TestingSetModel
+
+ENTITIES
+
+object Employee {
+	string:name
+}
+
+object Company {
+	string:name
+	set<int>:branchCodes
+	set<Employee>:employees
+}
+
+PAGES
+
+page Y {
+	a
+}
+
+OPERATIONS
+
+operation createEmployee {
+	input: string:name
+	creates: Employee:emp
+	modifies: 
+	group main {
+		rule main {
+			pre: true;
+			post: emp.name == name;
+		}
+	}
+}
+
+operation createCompany {
+	input: string:name
+	creates: Company:comp
+	modifies:
+	group main {
+		rule main {
+			pre: true;
+			post: comp.name == name;
+		}
+	}
+}
+
+operation addEmployee {
+	input: Employee:emp
+	creates: 
+	modifies: Company:comp
+	
+	group addAnEmp {
+		rule addEmp {
+			pre: true;
+			post: emp ~ comp.employees;			
+		}
+	}
+}
+
+operation checkEmployee {
+	input: Employee:emp Company:comp
+	creates:
+	modifies:
+	
+	group check {
+		rule check {
+			pre: emp ~ comp.employees;
+			post: true;
+		}
+	}
+}
+
+TRIGGERS
