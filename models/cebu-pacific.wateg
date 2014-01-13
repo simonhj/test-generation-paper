@@ -170,6 +170,11 @@ operation rebookPartial {
 	  }	  	  
 }
 
+operation refund {
+	  input: Ticket:ticket
+	  //TODO: Can we model sets and in particular quantifiers over sets?
+}
+
 operation purchaseTicket {
 	  input: FareType:fareType
 	  creates: Ticket:ticket
