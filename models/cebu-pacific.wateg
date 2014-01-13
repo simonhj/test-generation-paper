@@ -34,6 +34,7 @@ enum Status {
      CancelledOtherReason
      CancelledByPassenger
      CancelledInvolountary
+     Refunded
      Flown
 }
 
@@ -155,8 +156,20 @@ operation rebookPartial {
 }
 
 operation refund {
-	  input: Ticket:ticket
-	  //TODO: Can we model sets and in particular quantifiers over sets?
+	  input: Ticket:ticket PassengerFund:fund Sector:sector int:currentTime
+	  creates:
+	  modifies: fund
+	  group clause82 {
+	    	rule partADelay {
+	  	     pre:  (sector == ticket.sector1 OR sector== ticket.sector2) AND sector.std > sector.etd +1;
+		     post: sector.status == Status::Refunded AND fund.balance == fund.balance@ + sector.cost
+	   	}		
+		rule Cancellation {
+		     pre:   (sector == ticket.sector1 OR sector== ticket.sector2) AND (sector.status == Status::CancelledByAirline OR sector.status == Status::CancelledOtherReason OR sector.status == Status::CancelledInvolountary)
+		     post: : sector.status == Status::Refunded AND fund.balance == fund.balance@ + sector.cost
+		}		
+	  }	  
+	  
 }
 
 operation purchaseTicket {
