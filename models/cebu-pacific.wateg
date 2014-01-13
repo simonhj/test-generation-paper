@@ -198,7 +198,7 @@ operation createFund {
 	  group create {
       	  	rule create {
       	   	  pre: true;
-	  	      post: fund.passengerID == passengerID AND fund.balance == initialBalance;
+	  	   post: fund.passengerID == passengerID AND fund.balance == initialBalance;
           }     
       }
 }
