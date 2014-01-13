@@ -4,7 +4,8 @@ ENTITIES
 object Ticket {
        FareType:fareType
        int:passengerID
-       set<Sector>:sectors      
+       sector:sector1
+       sector:sector2   
 }
 object Sector {
        Flight:flight
@@ -91,15 +92,15 @@ operation partialCancellation {
 	  modifies: Ticket:ticket Sector:sector
 	  group reasons {
 	  	rule forceMajeur { //9.3.3
-		     pre: reason == CancellationReason::Safety AND sector ~ ticket.sectors;
+		     pre: reason == CancellationReason::Safety AND (sector == ticket.sector1 OR sector == ticket.sector2)  ;
 		     post: sector.status == Status::CancelledByAirline AND sector.cancelTime == time;
 		}
 		rule illness {
-		     pre:  reason == CancellationReason::PassengerIllness AND sector ~ ticket.sectors; 
+		     pre:  reason == CancellationReason::PassengerIllness AND  (sector == ticket.sector1 OR sector == ticket.sector2)  
 		     post: sector.status == Status::CancelledInvolountary AND sector.cancelTime == time;
 		}		
 		rule other { //9.3.4
-		      pre: reason == CancellationReason::Other AND sector ~ ticket.sectors;
+		      pre: reason == CancellationReason::Other AND (sector == ticket.sector1 OR sector == ticket.sector2) 
 		      post: sector.status == Status::CancelledOtherReason AND sector.cancelTime == time;
 		}		
 	  }		    
@@ -126,7 +127,7 @@ operation addSector {
 	  group main {
 	  	rule addsector {
 		     pre: fund.balance > sector.cost;
-		     post: sector ~ ticket.sectors AND fund.balance == fund.balance@ - sector.cost;
+		     post: (ticket.sector1 == sector OR ticket.sector2 == sector)  AND fund.balance == fund.balance@ - sector.cost;
 		}		
 	  }	  
 }
@@ -137,19 +138,18 @@ operation rebookPartial {
 	  modifies: Sector:sector Ticket:ticket
 	  group clause81a { //Passenger changes reservation with
 	  	rule rule1 {
-		     pre: ticket.fareType == FareType::Rebookable AND currentTime > sector.etd + 4 AND 
-		          fund.balance > rebookingFee AND  fund.balance > (newSector.cost - sectorToCancel.cost) AND sectorToCancel ~ ticket.sectors AND newSector.etd < currentTime+720; //30 days
-	         post: sectorToCancel !~ ticket.sectors AND newSector ~ ticket.sectors AND  fund.balance == fund.balance@ - (newSector.cost - sectorToCancel.cost); 
+		     pre: ticket.fareType == FareType::Rebookable AND currentTime > sector.etd + 4 AND fund.balance > rebookingFee AND fund.balance > (newSector.cost - sectorToCancel.cost) AND (sectorToCancel  == ticket.sector1 OR sectorToCancel == ticket.sector2) AND newSector.etd < currentTime+720; //30 days
+	             post: (sectorToCancel != ticket.sector1 AND sectorToCancel  != ticket.sector2) AND (newSector == ticket.sector1 or newSector == ticket.sector2) AND  fund.balance == fund.balance@ - (newSector.cost - sectorToCancel.cost); 
 		}		
 	  }
 	  group clause81b {
 	  	rule involountary{
-		     pre: sectorToCancel.status == Status::CancelledInvolountary AND sectorToCancel ~ ticket.sectors  AND newSector.etd < currentTime+720; 
-		     post: sectorToCancel !~ ticket.sectors AND newSector ~ ticket.sectors;
+		     pre: sectorToCancel.status == Status::CancelledInvolountary AND (sectorToCancel == ticket.sector1 OR sectorToCancel == ticket.sector2) AND newSector.etd < currentTime+720; 
+		     post: (sectorToCancel != ticket.sector1 AND sectorToCancel != ticket.sector2)  AND (newSector == ticket.sector1 OR newSector == ticket.sector2)
 		}	
 		rule delay {
-		     pre: sectorToCancel.etd > sectorToCancel.std + 3 AND sectorToCancel ~ ticket.sectors  AND newSector.etd < currentTime+720 ;
-		     post: sectorToCancel !~ ticket.sectors AND newSector ~ ticket.sectors;
+		     pre: sectorToCancel.etd > sectorToCancel.std + 3 AND (sectorToCancel == ticket.sector1 AND sectorToCancel == ticket.sector2)  AND newSector.etd < currentTime+720 ;
+		     post: (sectorToCancel != ticket.sector1 AND sectorToCancel != ticket.sector2) sec AND (newSector == ticket.sectors1 OR newSector == ticket.sector2)
 		}	
 	  }	  	  
 }
@@ -189,7 +189,7 @@ operation flyPart {
 	  modifies: Ticket:ticket Sector:sector
 	  group main {
 	  	rule main {
-		     pre: ticket.sectors ~ sector;
+		     pre: sector == ticket.sector1 OR sector == ticket.sector2
 		     post: sector.status == Status::Flown;
 		}		
 	  }	  
