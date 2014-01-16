@@ -1,0 +1,75 @@
+
+\newcommand{\term}{\textit}
+\newcommand{\lit}{\texttt}
+
+\section{Business Rule Modeling and Checking}
+\label{sec:model}
+
+In this section, we discuss the notation for modeling business rules and the
+static checking for completeness and consistency performed on formally captured
+rules.
+
+\begin{figure}[t]
+\centering
+{\small
+\tabcolsep=3pt
+\begin{tabular}{lll}
+\term{RuleSpec} & ::= & \term{Entities} \term{Operations} \\
+\\
+\term{Entities} & ::= & \term{Entity} \term{Entities} | $\epsilon$ \\
+\term{Entity} & ::= & \term{Enum} | \term{Object} \\
+\term{Enum} & ::= & \lit{enum} \term{ID} \{ \term{EnumVals} \} \\
+\term{EnumVals} & ::= & \term{ID} \term{EnumVals} | $\epsilon$ \\
+\term{Object} & ::= & \lit{object} \term{ID} \{ \term{VarDecl} \} \\
+\\
+\term{Operations} & ::= & \term{Operation} \term{Operations} | $\epsilon$ \\
+\term{Operation} & ::= & \lit{operation} \term{ID} \{ \term{Input}
+\term{Creates} \term{Modifies} \term{Rules} \term{Triggers}\} \\
+\term{Input} & ::= & \lit{input} : \term{VarDecl} \\
+\term{Creates} & ::= & \lit{creates} : \term{VarDecl} \\
+\term{Modifies} & ::= & \lit{modifies} : \term{VarDecl} \\
+\term{Rules} & ::= & \term{Rule} \term{Rules} | $\epsilon$ \\
+\term{Rule} & ::= & \lit{group} \term{ID} \{ \term{RuleParts} \} \\
+\term{RuleParts} & ::= & \term{RulePart} \term{RuleParts} | $\epsilon$ \\
+\term{RulePart} & ::= & \lit{rule} \term{ID} \{ \lit{pre} : \term{Expr} ;
+\lit{post} : \term{Expr} \} \\
+\term{Triggers} & ::= & \lit{next} : \term{ID} | $\epsilon$ \\
+\\
+\term{VarDecl} & ::= & \term{TypeName} : \term{ID} \term{VarDecl} | $\epsilon$
+\\
+\term{TypeName} & ::= & \lit{int} | \lit{bool} | \lit{float} | \lit{string} |
+\lit{set<\term{\textrm{TypeName}}>} | \term{ID} \\
+\term{Expr} & ::= & \\
+\end{tabular}
+}
+\caption{Partial rule-modeling syntax.}
+\label{fig:model-syntax}
+\end{figure}
+
+\subsection{Rule-Modeling Language}
+
+Overall, our approach models rules in the context of operations in the system
+under test.  An operation has a set of input entities, a set of created
+entities, a set of modified entities, and a set of rules, where each rule
+consists of a set of precondition-postcondition pairs. For example,
+Figure~\ref{fig:invoice} shows the operation for computing invoice totals in the
+\subject{JBilling} application, which takes as input an invoice and modifies
+certain attributes. The rules associated with this operation, which govern how
+the invoice total and the customer's credit limit are updated, are modeled with
+the operation in the form of precondition-postcondition pairs.
+
+Figure~\ref{fig:model-syntax} presents the formal syntax of the rule-modeling
+language (for clarity, we omit some of the details and present only the
+important parts of the language). A \textit{rule specification} consists of
+entities and operations. An \textit{entity} can be an object in the system (\eg
+invoice, order, customer) or an enumerated type (\eg a customer's balance type
+can be none, credit, or prepaid).
+
+The key part of the syntax, which models rules, is based on operations. An
+\textit{operation} has a set of rules associated with it, and each rule is
+composed of a set of rule parts. A \textit{rule part} consists of set of
+precondition-postcondition pairs, $p \Longrightarrow q$, where $p$ and $q$ are
+boolean formulas, and if $p$ holds in the state before the operation, $q$ is
+true after the execution of the operation.
+
+\subsection{Rule Checking}
