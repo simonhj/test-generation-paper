@@ -268,13 +268,17 @@ operation purchaseTicket {
 }
 
 operation delayFlight {
-	  input: Sector:sector int:delay
+	  input: Ticket:ticket int:delay
 	  creates:
-	  modifies: Sector:sector
+	  modifies: Ticket:ticket
 	  group main {
-	  	rule main {
-		     pre: sector.status == Status::Scheduled;
-		     post: sector.std == sector.std@ + delay;
+	  	rule main1 {
+		     pre: ticket.sector1.status == Status::Scheduled;
+		     post: ticket.sector1.std == ticket.sector1.std@ + delay;
+		}
+	  	rule main2 {
+		     pre: ticket.sector2.status == Status::Scheduled;
+		     post: ticket.sector2.std == ticket.sector2.std@ + delay;
 		}
 	  }
 }
