@@ -174,7 +174,7 @@ operation rebookPartial {
 	  input: Ticket:ticket int:currentTime PassengerFund:fund int:rebookingFee Sector:newSector
 	  creates:
 	  modifies: Ticket:ticket PassengerFund:fund
-	  group clause81a { //Passenger changes reservation with
+	  group clause81a { //Passenger changes reservation with 
 	  	rule rebookingSector1 {
 		  pre: ticket.fareType == FareType::Rebookable AND currentTime + 4 < ticket.sector1.etd AND fund.balance > rebookingFee AND fund.balance > (newSector.cost - ticket.sector1.cost) AND newSector.etd < currentTime+720; //30 days
 	      post: newSector == ticket.sector1 AND  fund.balance == fund.balance@ - (newSector.cost - ticket.sector1.cost@); 
@@ -255,7 +255,7 @@ operation refund {
 	  }	  
 }
 
-operation purchaseTicket {
+operation createTicket {
 	  input: FareType:fareType PassengerFund:fund
 	  creates: Ticket:ticket
 	  modifies: PassengerFund:fund
