@@ -4,14 +4,15 @@ ENTITIES
 object Ticket {
        FareType:fareType
        int:passengerID
-       sector:sector1
-       sector:sector2   
+       Sector:sector1
+       Sector:sector2   
 }
+
 object Sector {
        Flight:flight
        int:etd //Estimated time of departure
-       int:std //schedule time of departure
-       Class:bookingClass
+       int:std //schedule time of departure (can vary due to delays)
+       BookingClass:bookingClass
        bool:promo
        Status:status
        int:cancelTime
@@ -34,11 +35,12 @@ enum Status {
      CancelledOtherReason
      CancelledByPassenger
      CancelledInvolountary
+     CancelledByDelay
      Refunded
      Flown
 }
 
-enum Class {
+enum BookingClass {
      A    
      B    
      C    
@@ -90,25 +92,47 @@ OPERATIONS
 operation partialCancellation {
 	  input: Ticket:ticket CancellationReason:reason int:currentTime Sector:sector int:time
 	  creates:
-	  modifies: Ticket:ticket Sector:sector
+	  modifies: Ticket:ticket
+	  next:refund	//Partial cancellation should always be followed by refund
 	  group reasons {
-	  	rule forceMajeur { //9.3.3
-		     pre: reason == CancellationReason::Safety AND (sector == ticket.sector1 OR sector == ticket.sector2)  ;
-		     post: sector.status == Status::CancelledByAirline AND sector.cancelTime == time;
+	  	rule forceMajeur1 { //9.3.3
+		     pre: reason == CancellationReason::Safety AND sector == ticket.sector1;
+		     post: ticket.sector1.status == Status::CancelledByAirline AND ticket.sector1.status.cancelTime == time;
 		}
-		rule illness {
-		     pre:  reason == CancellationReason::PassengerIllness AND  (sector == ticket.sector1 OR sector == ticket.sector2)  
-		     post: sector.status == Status::CancelledInvolountary AND sector.cancelTime == time;
+		rule forceMajeur2 { //9.3.3
+		     pre: reason == CancellationReason::Safety AND sector == ticket.sector2;
+		     post: ticket.sector2.status == Status::CancelledByAirline AND ticket.sector2.cancelTime == time;
 		}		
-		rule other { //9.3.4
-		      pre: reason == CancellationReason::Other AND (sector == ticket.sector1 OR sector == ticket.sector2) 
-		      post: sector.status == Status::CancelledOtherReason AND sector.cancelTime == time;
-		}		
+		rule illness1 {
+		     pre:  reason == CancellationReason::PassengerIllness AND  sector == ticket.sector1;
+		     post: ticket.sector1.status == Status::CancelledInvolountary AND ticket.sector1.cancelTime == time;
+		}
+		rule illness2 {
+		     pre: reason == CancellationReason::PassengerIllness AND sector == ticket.sector2;
+		     post: ticket.sector2.status == Status::CancelledInvolountary AND ticket.sector2.cancelTime == time;
+		}
+		rule delay1 {
+			 pre: ticket.sector1.std > ticket.sector1.etd + 1;
+			 post: ticket.sector1.status == Status::CancelledByDelay AND ticket.sector1.cancelTime == time;
+		}
+		rule delay2 {
+			pre: ticket.sector2.std > ticket.sector2.etd + 1;
+			post: ticket.sector2.status == Status::CancelledByDelay AND ticket.sector2.cancelTime == time;
+		}	
+		rule other1 { //9.3.4
+		      pre: reason == CancellationReason::Other AND sector == ticket.sector1;
+		      post: ticket.sector1.status == Status::CancelledOtherReason AND ticket.sector1.cancelTime == time;
+		}
+		rule other2 { //9.3.4
+		      pre: reason == CancellationReason::Other AND sector == ticket.sector2;
+		      post: ticket.sector2.status == Status::CancelledOtherReason AND ticket.sector2.cancelTime == time;
+		}
+				
 	  }		    
 }
 
 operation makeSector {
-	  input: Flight:flight  int:etd Class:class bool:promo
+	  input: Flight:flight  int:etd BookingClass:class bool:promo
 	  creates: Sector:sector
 	  modifies:
 	  group b {
@@ -121,65 +145,124 @@ operation makeSector {
 
 }
 
-operation addSector {
+operation addSector1 {
 	  input: Sector:sector Ticket:ticket PassengerFund:fund
 	  creates: 
-	  modifies: Ticket:ticket
+	  modifies: Ticket:ticket PassengerFund:fund
 	  group main {
-	  	rule addsector {
+	  	rule addsector1 {
 		     pre: fund.balance > sector.cost;
-		     post: (ticket.sector1 == sector OR ticket.sector2 == sector)  AND fund.balance == fund.balance@ - sector.cost;
+		     post: ticket.sector1 == sector AND fund.balance == fund.balance@ - sector.cost;
 		}		
 	  }	  
 }
 
+operation addSector2 {
+	  input: Sector:sector Ticket:ticket PassengerFund:fund
+	  creates: 
+	  modifies: Ticket:ticket PassengerFund:fund
+	  group main {
+	  	rule addsector2 {
+		     pre: fund.balance > sector.cost;
+		     post: ticket.sector2 == sector AND fund.balance == fund.balance@ - sector.cost;
+		}		
+	  }	  
+}
+
+
 operation rebookPartial {
-	  input: Ticket:ticket Sector:sectorToCancel int:currentTime PassengerFund:fund int:rebookingFee Sector:newSector
+	  input: Ticket:ticket int:currentTime PassengerFund:fund int:rebookingFee Sector:newSector
 	  creates:
-	  modifies: Sector:sector Ticket:ticket
+	  modifies: Ticket:ticket PassengerFund:fund
 	  group clause81a { //Passenger changes reservation with
-	  	rule rule1 {
-		     pre: ticket.fareType == FareType::Rebookable AND currentTime > sector.etd + 4 AND fund.balance > rebookingFee AND fund.balance > (newSector.cost - sectorToCancel.cost) AND (sectorToCancel  == ticket.sector1 OR sectorToCancel == ticket.sector2) AND newSector.etd < currentTime+720; //30 days
-	             post: (sectorToCancel != ticket.sector1 AND sectorToCancel  != ticket.sector2) AND (newSector == ticket.sector1 or newSector == ticket.sector2) AND  fund.balance == fund.balance@ - (newSector.cost - sectorToCancel.cost); 
+	  	rule rebookingSector1 {
+		  pre: ticket.fareType == FareType::Rebookable AND currentTime + 4 < ticket.sector1.etd AND fund.balance > rebookingFee AND fund.balance > (newSector.cost - ticket.sector1.cost) AND newSector.etd < currentTime+720; //30 days
+	      post: newSector == ticket.sector1 AND  fund.balance == fund.balance@ - (newSector.cost - ticket.sector1.cost@); 
+		}
+		rule rebookingSector2 {
+		  pre: ticket.fareType == FareType::Rebookable AND currentTime + 4 > ticket.sector2.etd AND fund.balance > rebookingFee AND fund.balance > (newSector.cost - ticket.sector2.cost) AND newSector.etd < currentTime+720; //30 days
+	      post: newSector == ticket.sector2 AND  fund.balance == fund.balance@ - (newSector.cost - ticket.sector2.cost@); 
 		}		
 	  }
+	  
 	  group clause81b {
-	  	rule involountary{
-		     pre: sectorToCancel.status == Status::CancelledInvolountary AND (sectorToCancel == ticket.sector1 OR sectorToCancel == ticket.sector2) AND newSector.etd < currentTime+720; 
-		     post: (sectorToCancel != ticket.sector1 AND sectorToCancel != ticket.sector2)  AND (newSector == ticket.sector1 OR newSector == ticket.sector2)
-		}	
-		rule delay {
-		     pre: sectorToCancel.etd > sectorToCancel.std + 3 AND (sectorToCancel == ticket.sector1 AND sectorToCancel == ticket.sector2)  AND newSector.etd < currentTime+720 ;
-		     post: (sectorToCancel != ticket.sector1 AND sectorToCancel != ticket.sector2) sec AND (newSector == ticket.sectors1 OR newSector == ticket.sector2)
+	  	rule involountary1 {
+		     pre: ticket.sector1.status == Status::CancelledInvolountary AND newSector.etd < currentTime + 720; 
+		     post: newSector == ticket.sector1;
+		}
+		
+		rule involountary2 {
+		     pre: ticket.sector2.status == Status::CancelledInvolountary AND newSector.etd < currentTime + 720; 
+		     post: newSector == ticket.sector2;
+		}
+			
+		rule delay1 {
+		     pre: ticket.sector1.std > ticket.sector1.etd + 3 AND newSector.etd < currentTime + 720 ;
+		     post: newSector == ticket.sector1;
+		}
+		
+		rule delay2 {
+		     pre: ticket.sector2.std > ticket.sector2.etd + 3 AND newSector.etd < currentTime + 720 ;
+		     post: newSector == ticket.sector2;
 		}	
 	  }	  	  
 }
 
 operation refund {
-	  input: Ticket:ticket PassengerFund:fund Sector:sector int:currentTime int:refundFee
+	  input: Ticket:ticket PassengerFund:fund int:currentTime int:refundFee
 	  creates:
-	  modifies: fund
+	  modifies: PassengerFund:fund Ticket:ticket
 	  group clause82 {
-	    	rule partADelay {
-	  	     pre:  (sector == ticket.sector1 OR sector== ticket.sector2) AND sector.std > sector.etd +1;
-		     post: sector.status == Status::Refunded AND fund.balance == fund.balance@ + sector.cost - refundFee
-	   	}		
-		rule Cancellation {
-		     pre:   (sector == ticket.sector1 OR sector== ticket.sector2) AND (sector.status == Status::CancelledByAirline OR sector.status == Status::CancelledOtherReason OR sector.status == Status::CancelledInvolountary)
-		     post: : sector.status == Status::Refunded AND fund.balance == fund.balance@ + sector.cost
-		}		
+	    	rule partADelay1 {
+	  	     pre:  ticket.sector1.status == Status::CancelledByDelay;
+		     post: ticket.sector1.status == Status::Refunded AND fund.balance == fund.balance@ + ticket.sector1.cost - refundFee;
+	   		}
+	   		
+	   		rule partADelay2 {
+	  	     pre:  ticket.sector2.status == Status::CancelledByDelay;
+		     post: ticket.sector2.status == Status::Refunded AND fund.balance == fund.balance@ + ticket.sector2.cost - refundFee;
+	   		}
+	   				
+			rule CancellationByAirline1 {
+		     pre:   ticket.sector1.status == Status::CancelledByAirline;
+		     post:  ticket.sector1.status == Status::Refunded AND fund.balance == fund.balance@ + ticket.sector1.cost;
+		 	}		
+		 	
+		 	rule CancellationByAirline2 {
+		     pre:   ticket.sector2.status == Status::CancelledByAirline;
+		     post:  ticket.sector2.status == Status::Refunded AND fund.balance == fund.balance@ + ticket.sector2.cost;
+		 	}
+		 	
+			rule CancellationByOtherReason1 {
+		     pre:   ticket.sector1.status == Status::CancelledOtherReason;
+		     post:  ticket.sector1.status == Status::Refunded AND fund.balance == fund.balance@ + ticket.sector1.cost;
+		 	}		
+		 	
+		 	rule CancellationByOtherReason2 {
+		     pre:   ticket.sector2.status == Status::CancelledOtherReason;
+		     post:  ticket.sector2.status == Status::Refunded AND fund.balance == fund.balance@ + ticket.sector2.cost;
+		 	}
+
+			rule CancellationByInvoluntary1 {
+		     pre:   ticket.sector1.status == Status::CancelledInvolountary;
+		     post:  ticket.sector1.status == Status::Refunded AND fund.balance == fund.balance@ + ticket.sector1.cost;
+		 	}		
+		 	
+		 	rule CancellationByInvoluntary2 {
+		     pre:   ticket.sector2.status == Status::CancelledInvolountary;
+		     post:  ticket.sector2.status == Status::Refunded AND fund.balance == fund.balance@ + ticket.sector2.cost;
+		 	}
 	  }	  
-	  
 }
 
 operation purchaseTicket {
-	  input: FareType:fareType
+	  input: FareType:fareType PassengerFund:fund
 	  creates: Ticket:ticket
 	  modifies: PassengerFund:fund
 	  group main {
 	  	rule r {
-	  	     pre: true; 
-		     post:  ticket.fareType == fareType;
+		  	 pre: true; 
+		     post: ticket.fareType == fareType AND ticket.passengerID == fund.passengerID;
 		}
 	  }	  
 }
@@ -191,21 +274,26 @@ operation delayFlight {
 	  group main {
 	  	rule main {
 		     pre: sector.status == Status::Scheduled;
-		     post: sector.etd == sector.etd@ + delay;
+		     post: sector.std == sector.std@ + delay;
 		}
 	  }
 }
 
 operation flyPart {
-	  input: Ticket:ticket Sector:sector
+	  input: Ticket:ticket
 	  creates:
-	  modifies: Ticket:ticket Sector:sector
+	  modifies: Ticket:ticket
 	  group main {
-	  	rule main {
-		     pre: sector == ticket.sector1 OR sector == ticket.sector2
-		     post: sector.status == Status::Flown;
+	  	rule main1 {
+		     pre: true;
+		     post: ticket.sector1.status == Status::Flown;
+		}
+		
+		rule main2 {
+		     pre: true;
+		     post: ticket.sector2.status == Status::Flown;
 		}		
-	  }	  
+	  }	
 }
 
 operation createFund {
@@ -214,8 +302,8 @@ operation createFund {
 	  modifies:
 
 	  group create {
-      	  	rule create {
-      	   	  pre: true;
+      	  rule create {
+      	   pre: true;
 	  	   post: fund.passengerID == passengerID AND fund.balance == initialBalance;
           }     
       }
