@@ -42,8 +42,8 @@ In practice, due to time pressures, testers are more often ad hoc than methodica
 scenarios and test data.  One part of the problem is that a realistic system might have hundreds of 
 business rules written out in plain text, and it is difficult to grasp a global view of how the rules 
 together describe the application behavior.  A related part of the problem is that it may need complex 
-reasoning to piece together test sequences that would cover each scenario. Consequently, testers end up 
-creating a multitude of tests that exercise the same business rule, or a scenario thereof, over and over 
+reasoning to piece together test sequences that would cover each scenario. Consequently, testers may end 
+up creating a multitude of tests that exercise the same business rule, or a scenario thereof, over and over 
 again without any additional benefit (especially if they are incentivised by the number of tests rather than 
 quality), and more problematically, may neglect to create tests for some other business rules.  The net 
 result is that despite a lot of resources spent in testing, bugs still escape into the field.
@@ -80,14 +80,15 @@ formalization of the business rule quoted informally at the beginning of the int
 the operation refers to an invoice record, \textit{inv}, and modifies specific attributes of \textit{inv}.
 There are three scenarios that occur in this rule.  The first scenario applies when the customer to which the
 invoice refers has balance type \textit{None}; the \textit{precondition} is shown on the left of the first arrow.  
-The second scenario applies when the customer has balance type \textit{credit}, but the credit limit is sufficient 
-to cover the order total.  (Note that the invoice has references to the customer to which this invoice pertains, 
+Note that the invoice has references to the customer to which this invoice pertains, 
 as well as an order created in the system; in a relational database, these would be foreign keys in customer and 
-order table.)  The third scenario applies when the customer has balance type \textit{credit}, but the order total 
-exceeds the credit limit.  In each scenario, the effect of the operation is to compute invoice total, and update 
-the customer's residual credit limit; this effect, or \textit{postcondition} is shown to the right of the arrow 
-in each case.  Note that business rules refer to state observable at transaction boundaries; intermediate program 
-states encountered in the implementation while a transaction is in process, are not important to business rules.
+order table.  The second scenario applies when the customer has balance type \textit{credit}, but the credit limit 
+is sufficient to cover the order total.    The third scenario applies when the customer has balance type 
+\textit{credit}, but the order total exceeds the credit limit.  In each scenario, the effect of the operation is to 
+compute invoice total, and update the customer's residual credit limit; this effect, or \textit{postcondition} is 
+shown to the right of the arrow in each case.  Note that business rules refer to state observable at transaction 
+boundaries; intermediate program states encountered in the implementation while a transaction is in process, are 
+not important to business rules.
 
 \begin{figure}
 \centering
@@ -96,29 +97,48 @@ states encountered in the implementation while a transaction is in process, are 
 \label{fig:invoice}
 \end{figure}
 
-To cover the three scenarios in business rules, it is necessary to create each of the three preconditions,
-and in each case verify that the post condition holds after the operation has completed.  This brings us to the 
-main difficulty in creating tests:  appropriate database state, such as a customer with a certain balance type,
-and an order with a certain amount, needs to be established before any of these scenarios can be exercised.  
+Coering a business rule means to exercise each of its constituent scenarios, referred henceforth as \textit{ruleparts}.
+To cover these three ruleparts in the business rule of Figure~\ref{fig:invoice}, it is necessary to create (separate)
+each of the three preconditions, and in each case verify that the post condition holds after the operation has completed.  
+This brings us to the main difficulty in creating tests:  appropriate database state, such as a customer with a certain 
+balance type, and an order with a certain amount, needs to be established before any of these scenarios can be exercised.  
 We showed in Figure~\ref{fig:jbilling-flow} the steps that would be required to create these preconditions 
 (applicable to each of the three scenarios, though the test data would need to be different).   How can we
-identify these steps, and the data to be entered in each of these steps automatically to cover a business rule, or
-one of its scenarios?
+identify these steps, and the data to be entered in each of these steps automatically to cover a rulepart of
+a business rule?
 
 Our observation is that the steps that are required to drive the database state to a desired precondition are
 carried out by operations, and those operations too would have rules that specify their functionality.  We could
 then use business rules as ``state transformers'' and piece together a sequence of operations to arrive at
-a desired state.  The piecing together can be carried out in many ways, and in similar situations, planning
-techniques from AI have been used.  
+a desired state.  The advantage of looking at business rules as state transformers is that we can adapt the
+technology developed for test generation on \textit{programs} for the problem at hand.  We clarify and emphasize, 
+though, that business rules are themselves not executable programs; rather they only are an abstract description 
+of the functionality of a program.
 
-In this work, we draw inspiration from weakest preconditions.
+At a high level, the idea is to use backward analysis to piece together a sequence of operations to arrive at 
+a desired state.  We look for an operation whose business rule has a rulepart whose postcondition would imply the 
+desired precondition.  Such an operation, if executed in a way that that specific rulepart applies, would establish 
+the desired state.  The operation may require some user-provided values, but may partially rely on prior database
+state. The process is repeated until no prior database state is assumed, that is, all the database state is 
+established by operations identified in the process.  
 
-\subsection{Challenges}
+Consider the second rulepart of the rule showed in Figure~\ref{fig:invoice}. The operation here is to generate
+an invoice.  But  
+
+
+The idea of backward traversal is definitely not novel; it is reminiscent of weakest preconditions.  Our
+contribution is to make this idea work in the context of business rules.  We solved several engineering 
+challenges ...
+
+
+\subsection{Related work}
+
+TODO move to another section.
 
 At first blush, this problem seems to be reminiscent of the problem of generating tests for programs 
 written as control-flow graphs, with the goal of exercising each acyclic path in the program, if
 possible.  There have been a number of techniques in the literature for test generation. Mostly
-notable, techniques such as \textit{concolic} testing attempt to identify a series of test data 
+notably, techniques such as \textit{concolic} testing attempt to identify a series of test data 
 that would force program execution thorough different paths.  Other approaches are based on model
 checking, with the goal of creating test inputs to reach specific program states.
 
