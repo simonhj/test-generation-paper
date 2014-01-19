@@ -23,13 +23,15 @@ such as the one above.
 It is reasonable to expect functional testing of an enterprise system to \textit{cover} its 
 business rules, which is to say, testing would exercise every distinct scenario described in each of
 its business rules.  For example, in the above rule, one of the scenario to be exercised is
-that a customer's balance type is credit, and that the order amount does not exceed the customer's credit limit.
-A test that exercises this scenario would set up a customer with the balance type as credit as well as a certain
-credit limit, create an order with the appropriate constraint on the order total, and then finally
-create an invoice for that customer, and verify the invoiced amount.  (See Figure~\ref{fig:jbilling-flow}.) 
-Thus, it requires a carefully thought out test scenario (i.e. a sequence of test steps) as well as associated 
-test data (i.e. values to be entered in the relevant test steps) to exercise a business rule, or a scenario 
-thereof.
+that a customer's balance type is credit, and that the order amount exceeds the customer's credit limit.  A test that exercises this scenario would set up a customer with the balance type as \textit{credit} 
+as well as a certain credit limit, say, \textit{100}, create an order and add items to the order to bring 
+a total to, say, \textit{120}, to exceed the credit limit for that customer, and then finally
+create an invoice for that order, and verify the invoiced amount.  See Figure~\ref{fig:jbilling-flow}.
+While the values \textit{credit}, \textit{100}, and \textit{120}
+can be identified just from this rule (by constraint solving), identifying a test sequence is also important to apply those values at the right fields on the appropriate 
+screens.\footnote{\small Not all fields on the screens in
+Figure~\ref{fig:jbilling-flow} are constrained from the point of view of exercising a particular scenario,
+but the application might still demand sensible values for them. The tester is expected to make these up.}
 
 \begin{figure*}
 \centering
@@ -38,21 +40,27 @@ thereof.
 \label{fig:jbilling-flow}
 \end{figure*}
 
+It requires a carefully thought out test scenario, i.e. a sequence of test steps as well as associated 
+test data, i.e. values to be entered in the relevant test steps to exercise a business rule, or a scenario 
+thereof.  Without systematic test creation, testers may end up creating multiple tests that
+exercise the same business rule, or a scenario thereof, over and over 
+again without any additional benefit (especially if they are incentivised by the number of tests rather than 
+quality), and more problematically, may neglect to create tests for some other business rules.
+
 In practice, due to time pressures, testers are more often ad hoc than methodical in creating test 
 scenarios and test data.  One part of the problem is that a realistic system might have hundreds of 
 business rules written out in plain text, and it is difficult to grasp a global view of how the rules 
 together describe the application behavior.  A related part of the problem is that it may need complex 
-reasoning to piece together test sequences that would cover each scenario. Consequently, testers may end 
-up creating a multitude of tests that exercise the same business rule, or a scenario thereof, over and over 
-again without any additional benefit (especially if they are incentivised by the number of tests rather than 
-quality), and more problematically, may neglect to create tests for some other business rules.  The net 
+reasoning to piece together test sequences that would cover each scenario.   The net 
 result is that despite a lot of resources spent in testing, bugs still escape into the field.
+
+\hyphenation{non-prog-ram-mers}
 
 Our vision is to make testing of enterprise software more tool based, by adapting technology developed 
 for automated and systematic test generation for programs.   In this vision, business rules would be 
 written in a structured notation that allows mechanized analysis. 
-(Special editors could be created to enable non-programmers to capture business rules in a structured notation; 
-this is an independent challenge in \textit{end user} programming).  A tool would validate business rules 
+Special editors could be created to enable non-programmers to capture business rules in a structured notation; 
+this is an independent challenge in \textit{end user} programming.  A tool would validate business rules 
 and point out any ambiguities or omissions that it can detect.  After the business rules pass validation, 
 another tool would generate test sequences and test data to exercise the application thoroughly as well as
 without redundancies.
@@ -97,13 +105,12 @@ not important to business rules.
 \label{fig:invoice}
 \end{figure}
 
-Coering a business rule means to exercise each of its constituent scenarios, referred henceforth as \textit{ruleparts}.
+Covering a business rule means to exercise each of its constituent scenarios, referred henceforth as \textit{ruleparts}.
 To cover these three ruleparts in the business rule of Figure~\ref{fig:invoice}, it is necessary to create (separate)
 each of the three preconditions, and in each case verify that the post condition holds after the operation has completed.  
 This brings us to the main difficulty in creating tests:  appropriate database state, such as a customer with a certain 
 balance type, and an order with a certain amount, needs to be established before any of these scenarios can be exercised.  
-We showed in Figure~\ref{fig:jbilling-flow} the steps that would be required to create these preconditions 
-(applicable to each of the three scenarios, though the test data would need to be different).   How can we
+We showed in Figure~\ref{fig:jbilling-flow} the steps that would be required to create these preconditions.   How can we
 identify these steps, and the data to be entered in each of these steps automatically to cover a rulepart of
 a business rule?
 
@@ -111,9 +118,13 @@ Our observation is that the steps that are required to drive the database state 
 carried out by operations, and those operations too would have rules that specify their functionality.  We could
 then use business rules as ``state transformers'' and piece together a sequence of operations to arrive at
 a desired state.  The advantage of looking at business rules as state transformers is that we can adapt the
-technology developed for test generation on \textit{programs} for the problem at hand.  We clarify and emphasize, 
+technology developed for test generation on \textit{programs} for the problem at hand.\footnote{\small We clarify, 
 though, that business rules are themselves not executable programs; rather they only are an abstract description 
-of the functionality of a program.
+of the functionality of a program.}  The disadvantage of relying on business rules to act as state transformers is that
+they need to be specified to a certain level of detail for them to work out as state transformers; this hasn't
+been a big problem---practioners tend to write business rules with an intention to be complete---but their intended
+use as input to test generation process does increase expectations from the rules and therefore from the analysts
+that write them.
 
 At a high level, the idea is to use backward analysis to piece together a sequence of operations to arrive at 
 a desired state.  We look for an operation whose business rule has a rulepart whose postcondition would imply the 
@@ -123,25 +134,10 @@ state. The process is repeated until no prior database state is assumed, that is
 established by operations identified in the process.  
 
 Consider the second rulepart of the rule showed in Figure~\ref{fig:invoice}. The operation here is to generate
-an invoice.  But  
+an invoice.  But  ... show the process. Also the output sequence and data.
 
 
 The idea of backward traversal is definitely not novel; it is reminiscent of weakest preconditions.  Our
 contribution is to make this idea work in the context of business rules.  We solved several engineering 
 challenges ...
 
-
-\subsection{Related work}
-
-TODO move to another section.
-
-At first blush, this problem seems to be reminiscent of the problem of generating tests for programs 
-written as control-flow graphs, with the goal of exercising each acyclic path in the program, if
-possible.  There have been a number of techniques in the literature for test generation. Mostly
-notably, techniques such as \textit{concolic} testing attempt to identify a series of test data 
-that would force program execution thorough different paths.  Other approaches are based on model
-checking, with the goal of creating test inputs to reach specific program states.
-
-However, the problem of test generation from business rules is different.  Business rules do not
-describe the implementation of a system: rather they only describe a model.  (Model-based test 
-generation?)
