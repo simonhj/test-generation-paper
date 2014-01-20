@@ -56,18 +56,35 @@ be setup initially or created on demand during backwards substitution.
 Some edges are specified directly by the designer of the model...next
 and triggers
 
-\subsection{Backwards substitution}
-\label{sec:backw-subst}
+\subsection{Binding}
+\label{sec:binding}
 
 When sequencing two operations we need to substitute the entities
 consumed by the successor operation by the entities created or
 modified by the predecessor operation.
 
-In our algorithm we move this problem to the underlying solver by
-creating constraints that bind the identifiers in the post condition
-of the predecessor operation to the identifiers of same type on the
-pre condition of the successor operation. This binding must account
-for objects which have subfields and create bindings for those as
-well.
+In our algorithm we move this problem to the underlying constraint
+solver by creating constraints that bind the identifiers in the post
+condition of the predecessor operation to the identifiers of same type
+in the pre condition of the successor operation. As the solver has no
+notion of objects, the binding must also ensure that object fields
+referenced are appropriately bound.
 
+Binding constraints are generated as follows: Assume that we want to
+sequence the two operations $O_{pred}$ and $O_{succ}$ and that the
+algorithm have chosen rules $r_1$ and $r_2$ from $O_{pred}$ and
+$O_{succ}$ respectively for the sequencing. Now let $v$ be an
+identifer of type $\tau$ occuring in either the creates or modfies
+clause of $O_{pred}$ and let $w$ be an identifier of same type
+occuring in the input clause of $O_{succ}$. If $\tau$ is an enum type,
+the only binding needed is $w = v$. If $\tau$ is an object type, then
+we must bind all subfields as well, yielding the following constraint:
+$w = v \wedge w.f_1 = v.f_1 \wedge \ldots \wedge w.f_n = v.f_n$ where
+$f_1, \ldots , f_n$ are fields declared on $\tau$. If any of the
+fields are of object types themselves this process is applied
+recursively on each such field to generate the final binding
+constraint.
 
+As an example of this process take the \emph{Compute Invoice Total}
+operation shown in Figure~\ref{fig:invoice}... Include figure from
+slide 12?
