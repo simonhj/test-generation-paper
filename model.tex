@@ -14,7 +14,7 @@ rules.
 {\small
 \tabcolsep=3pt
 \begin{tabular}{lll}
-\term{RuleSpec} & ::= & \term{Entities} \term{Operations} \\
+\term{RuleSpec} & ::= & \term{Entities} \term{Operations} \term{Triggers} \\
 \\
 \term{Entities} & ::= & \term{Entity} \term{Entities} | $\epsilon$ \\
 \term{Entity} & ::= & \term{Enum} | \term{Object} \\
@@ -24,7 +24,7 @@ rules.
 \\
 \term{Operations} & ::= & \term{Operation} \term{Operations} | $\epsilon$ \\
 \term{Operation} & ::= & \lit{operation} \term{ID} \{ \term{Input}
-\term{Creates} \term{Modifies} \term{Rules} \term{Triggers} \} \\
+\term{Creates} \term{Modifies} \term{Rules} \term{Next} \} \\
 \term{Input} & ::= & \lit{input} : \term{VarDecl} \\
 \term{Creates} & ::= & \lit{creates} : \term{VarDecl} \\
 \term{Modifies} & ::= & \lit{modifies} : \term{VarDecl} \\
@@ -33,7 +33,9 @@ rules.
 \term{RuleParts} & ::= & \term{RulePart} \term{RuleParts} | $\epsilon$ \\
 \term{RulePart} & ::= & \lit{rule} \term{ID} \{ \lit{pre} : \term{Expr} ;
 \lit{post} : \term{Expr} \} \\
-\term{Triggers} & ::= & \lit{next} : \term{ID} | $\epsilon$ \\
+\term{Next} & ::= & \lit{next} : \term{ID} | $\epsilon$ \\
+\\
+\term{Triggers} & ::= & \term{ID} $\rightarrow$ \term{ID} \term{Triggers} | $\epsilon$ \\
 \\
 \term{VarDecl} & ::= & \term{TypeName} : \term{ID} \term{VarDecl} | $\epsilon$
 \\
@@ -67,12 +69,25 @@ can be \subject{None}, \subject{Credit}, or \subject{Prepaid}).
 
 The key part of the syntax, which models rules, is based on
 operations. Formally, an \textit{operation} ${\cal O}$ is the tuple $(I, C, M,
-R, o_t)$, where $I$ is the set of input entities read during the execution of
+R, o_n)$, where $I$ is the set of input entities read during the execution of
 ${\cal O}$, $C$ is the set of entities created by ${\cal O}$, $M$ is the set of
 entities whose attributes are modified by ${\cal O}$, $R$ is the set of rules
-that describe the behavior of ${\cal O}$, and $o_t$ is an operation, possibly
-none, that is automatically triggered in the system after the execution of
-${\cal O}$.
+that describe the behavior of ${\cal O}$, and $o_n$ is a succeeding operation
+that, if specified, is the only operation that can execute after ${\cal O}$.
+
+The notion of a \textit{succeeding operation} can simplify the modeling of
+``coarse grained'' operations that have many rules associated with them. Such an
+operation can be broken down into a sequence of finer-grained operations---with
+the sequence specified via the \subject{next} clause---that have simpler
+rules. The specification lets the test-generation algorithm (Section ??) ensure
+that the atomic nature of the coarse-grained operation is preserved in the
+finer-grained sequence: while chaining operations, the algorithm avoids
+interleaving other operations in the middle of a finer-grained operation
+sequence.  Moreover, such decomposition is necessary when the rules of an
+operation have data dependences, which define an implicit ordering among the
+rules. One of the well-formedness properties that we impose on rule
+specifications (discussed in Section~\ref{sec:checking}) is data independence
+among the rules of an operation.
 
 A \textit{rule} $R = \{r_1, r_2, \ldots, r_k\}, k \geq 1,$ consists of a set of
 rule parts. A \textit{rule part} $r$ is a precondition-postcondition pair, $p
@@ -91,17 +106,29 @@ the case where the balance type is \subject{Credit} and the order total exceeds
 the credit limit.
 
 Often in enterprise systems, the execution of an operation or a transaction
-automatically triggers other transactions or operations. Our rule-modeling
-syntax accommodates this. For example, ...
+automatically triggers other transactions or operations. For example, in
+\subject{JBilling}, customers with balance type \subject{Prepaid} have the
+option of having their prepaid limit automatically recharged if it falls below a
+threshold amount. Our rule-modeling syntax accommodates this via the
+\subject{Triggers} clause, using which pairs of operations---where the first
+operation automatically triggers the second operation---can be specified.
+
+The primitive types (in addition to user-defined types or entities) include
+integer, boolean, and string types. The model also accommodates sets of these
+types.\footnote{\small In the currently implemented system, set types are
+  handled in a restricted manner: by limiting the set size to two and specifying
+  the predicates over a set in terms of its (two) elements. Section ??
+  discusses the implementation details.}
 
 \subsection{Rule Checking}
+\label{sec:checking}
  
-We impose a few well-formedness constraints on rule specifications to ensure
-consistency and completeness, and accuracy of operation chaining for test
-generation. These constraints are amenable to automated static checking. Thus,
-we envision that the rules can be iteratively refined in a rule editor, based on
-automatic (semantic) checking for constraint violations (in addition to
-syntactic checking for conformance to the modeling syntax).
+We define a few well-formedness properties on rule specifications to ensure
+consistency and completeness, and that also facilitate operation chaining for
+test generation. These properties are amenable to automated static
+checking. Thus, we envision that the rules can be iteratively refined in a rule
+editor, based on automatic (semantic) checking for property violations (in
+addition to syntactic checking for conformance to the modeling syntax).
 
 \paragraph*{Property 1: Rule-part Disjointedness}
 In our notation, a rule part is intended to represent disjoint preconditions so
@@ -131,14 +158,9 @@ preconditions $(a < 5)$ and $(a > 10)$, respectively, violates the completeness
 property because the operation behavior for $5 \leq a \leq 10$ is left
 unspecified.
 
-To verify this property, our technique checks, for each rule, whether the
-formula $\neg(p_1 \vee p_2 \vee \ldots \vee p_k)$ has a solution.
-
-%% \paragraph*{Postcondition uniformness property}
-%% This property requires that all postconditions for a rule must assert values for
-%% the same set of variables, which ensures that the effect of an operation is
-%% consistently specified irrespective of which part of a rule causes the rule to
-%% be applicable. \textbf{(Do we need this? Fig 2 violates it.)}
+To verify this property, our technique checks, for each rule that has two or
+more parts, whether the formula $\neg(p_1 \vee p_2 \vee \ldots \vee p_k)$ has a
+solution.
 
 \paragraph*{Property 3: Rule Compatibility}
 The rule compatibility property requires that for any set of applicable rules of
@@ -149,33 +171,46 @@ for an operation, such that $r_1 \coloneqq ((a > 0) \Longrightarrow (total =
 preconditions are not disjoint (\ie $(a > 0) \wedge (b > 0)$ is
 satisfiable). This pair of rules violates the compatibility property because the
 postconditions are conflicting, whereas the corresponding preconditions can be
-true simultaneously. In general, let $r_1 \coloneqq (p_1 \Longrightarrow q_1)$
+true simultaneously---note that the first precondition doesn't constrain the
+value of \subject{b}, whereas the second precondition doesn't constrain the
+value of \subject{a}. Thus, when both preconditions are true, it is not clear
+what value would \subject{total} have after the operation.
+
+To state this property formally, let $r_1 \coloneqq (p_1 \Longrightarrow q_1)$
 and $r_2 \coloneqq (p_2 \Longrightarrow q_2)$ be the relevant rule parts of two
 applicable rules of an operation. Then, if $(p_1 \wedge p_2)$ is satisfiable,
-$(q_1 \wedge q_2)$ must be satisfiable.
+$(q_1 \wedge q_2)$ must be satisfiable. To verify this, our technique enumerates
+all pairs of rules for an operation. Then, for each pair $R_1$ and $R_2$, the
+techniques lists each combination $(p_1, p_2)$ of the preconditions of $R_1$ and
+$R_2$, and checks the satisfiability of $(p_1 \wedge p_2)$ and the conjunction
+of the corresponding postconditions.
 
-If two rules violate this property, it might in fact indicate that their rule
-parts can be merged into one rule. In the preceding example, $R_1$ and $R_2$
-could be merged into one rule with two rule parts $R_m = \{r_{m_1}, r_{m_2}\}$,
-where $r_{m_1} \coloneqq (a > 0) \Longrightarrow (total = 10)$ and $r_{m_2}
-\coloneqq (a \leq 0 \wedge b > 0) \Longrightarrow (total = 20)$. Note adding the
-conjunct $a \leq 0$ (the negation of the precondition of $r_1$) to the
-precondition of $r_{m_2}$ makes the two preconditions disjoint, which ensures
-that $R_m$ satisfies the rule-part disjointedness property. Alternatively, the
-negation of the precondition of $r_2$ could be added to the precondition of
-$r_{m_1}$ to satisfy this property.
+If two rules violate the compatibility property, it might in fact indicate that
+their rule parts can be merged into one rule. In the preceding example, $R_1$
+and $R_2$ could be merged into one rule with two rule parts $R_m = \{r_{m_1},
+r_{m_2}\}$, where $r_{m_1} \coloneqq (a > 0) \Longrightarrow (total = 10)$ and
+$r_{m_2} \coloneqq (a \leq 0 \wedge b > 0) \Longrightarrow (total = 20)$. Note
+adding the conjunct $a \leq 0$ (the negation of the precondition of $r_1$) to
+the precondition of $r_{m_2}$ makes the two preconditions disjoint, which
+ensures that $R_m$ satisfies the rule-part disjointedness
+property. Alternatively, the negation of the precondition of $r_2$ could be
+added to the precondition of $r_{m_1}$ to satisfy this property.
 
-To verify this property, ...
-
-\paragraph*{Property 4: Rule Dependence}
+\paragraph*{Property 4: Rule Independence}
 Finally, we enforce the restriction that there can be no data dependence between
 the postcondition of one rule and the precondition of another rule of the same
 operation. This property ensures that there is no implicit ordering among the
 rules of an operation. When such an ordering exists between two rules of an
-operation, the operation should be split into two operations. We formalize this
-property as follows. Let ${\cal R} = \{R_1, R_2, \ldots, R_n\}$ be the rules
-associated with an operation. For any $R_i, R_j \in {\cal R}$, let $V_{i,
-  \mathit{post}}$ be the set of variables used in the postconditions of the rule
-parts of $R_i$ and $V_{j, \mathit{pre}}$ be the set of variables used in the
-preconditions of the rule parts of $R_j$. Then, $V_{i, \mathit{post}} \cap V_{j,
-  \mathit{pre}} = \emptyset$.
+operation, the operation should be split into two operations in a sequence
+specified using the \subject{next} clause.
+
+We formalize this property as follows. Let ${\cal R} = \{R_1, R_2, \ldots,
+R_n\}$ be the rules associated with an operation. For any $R_i, R_j \in {\cal
+  R}$, let $V_{i, \mathit{post}}$ be the set of variables used in the
+postconditions of the rule parts of $R_i$ and $V_{j, \mathit{pre}}$ be the set
+of variables used in the preconditions of the rule parts of $R_j$. Then, $V_{i,
+  \mathit{post}} \cap V_{j, \mathit{pre}} = \emptyset$. The checking of this
+property is straight forward: for each pair of rules for an operation, the
+technique computes the sets of variables used in the preconditions of one rule
+and the postconditions of the other rule, and verifies that the two sets are
+non-intersecting.
