@@ -59,9 +59,9 @@ and triggers
 \subsection{Binding}
 \label{sec:binding}
 
-When sequencing two operations we need to substitute the entities
-consumed by the successor operation by the entities created or
-modified by the predecessor operation.
+When sequencing two operations in the backwards analysis we need to
+substitute the entities consumed by the successor operation by the
+entities created or modified by the predecessor operation.
 
 In our algorithm we move this problem to the underlying constraint
 solver by creating constraints that bind the identifiers in the post
