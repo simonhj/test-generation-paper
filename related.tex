@@ -1,0 +1,13 @@
+
+\section{Related work}
+
+At first blush, this problem seems to be reminiscent of the problem of generating tests for programs 
+written as control-flow graphs, with the goal of exercising each acyclic path in the program, if
+possible.  There have been a number of techniques in the literature for test generation. Mostly
+notably, techniques such as \textit{concolic} testing attempt to identify a series of test data 
+that would force program execution thorough different paths.  Other approaches are based on model
+checking, with the goal of creating test inputs to reach specific program states.
+
+However, the problem of test generation from business rules is different.  Business rules do not
+describe the implementation of a system: rather they only describe a model.  (Model-based test 
+generation?)
