@@ -1,64 +1,115 @@
-\section{Test data generation}
+\section{Test generation}
 
-In this section we present the algorithm that generates test data
-from a model written in the modeling language defined in
-Section~\ref{sec:model}. 
+Given a model written using the modeling language defined in Section~\ref{sec:model},
+the goal of our technique is to generate sequences of operations along with data to 
+cover all rules in all operations. We next present the terminology used by our
+algorithm and then explain the core technique.
 
-At its core the algorithm uses backwards substitution to generate a
-sequence of operations that puts the application into the desired
-state needed to cover a given a target operation. 
+\subsection{Terminology}
 
-\subsection{Control Flow Graph Representation of Models}
-\label{sec:control-flow-graph}
+Our technique uses two models for generating sequences of operations that cover rule parts in 
+each operation.
 
-Before the actual backwards substitution takes place the model is
-converted into a control flow graph(CFG) representation. The process of
-converting a single operation to it's CFG is
-illustrated in Figure~\ref{fig:cfg}. As the preconditions of all rules in
+\textit{Dependency Graph.} The dependency graph captures the interactions of
+operations with the entities of the application.
+Within the graph, an operation modifying an entity will be preceded by 
+other operations that are creating that entity. This graph is primarily used while
+composing sequences to ensure that all dependencies among operations are satisfied.
+Figure~\ref{fig:sample-app} shows the dependency graph for our sample application.
+
+\textit{Operation Flow Model.} To identify combinations of rules within an operation
+that help create desired object states of entities, we model each operation as control
+flow graph (CFG). As the preconditions of all rules in
 a group are disjoint, control flow through a single group can cover
-exactly one precondition-post condition pair. The CFG reflects this by
+exactly one pre-post condition pair. The CFG reflects this by
 representing a single group as a choice between the available rules, as
-seen in Figure~\ref{fig:cfgb}. Given a CFG component for each group in
+seen in Figure~\ref{fig:cfg}. Given a CFG component for each group in
 the operation, we model the entire operation by sequencing all
-components (Figure~\ref{fig:cfgc}). As per well-formedness property 4
+components. As per property~4 regarding rule independence,
 there is no data dependence between rules in an operation and therefore
-all orderings are equivalent.
+all orderings are equivalent. The figure shows two rules, where \textit{Rule 1}
+and \textit{Rule 2} includes three and two rule parts, respectively.
 
-\begin{figure*}
-%  \centering
-  \begin{subfigure}[b]{0.4\textwidth}
-    \centering
-    \includegraphics[width=.4\linewidth]{figs/cfg-example1}
-    \caption{An operation}
-    \label{fig:cfga}
-  \end{subfigure}%
-  \begin{subfigure}[b]{0.4\textwidth}
-    \centering
-    \includegraphics[width=.4\linewidth]{figs/cfg-example2}
-    \caption{The interopertational flow for group 2}
-    \label{fig:cfgb}
-  \end{subfigure}%
-  \begin{subfigure}[b]{0.2\textwidth}
-    \centering
-    \includegraphics[width=.4\linewidth]{figs/cfg-example3}
-    \caption{The CFG component for the entire operation}
-    \label{fig:cfgc}
-  \end{subfigure}%
-  \caption{Control flow graph generation for a single operation}
-  \label{fig:cfg}
-\end{figure*}
+\textit{Operation Sequence.} An operation sequence represents a sequence of operations
+along with set of selected rules in each operation. 
 
-The interoperational flow is defined by the input/output relations
-between operations. An operation creating an entity will naturally be
-succeeded by any operation modifying the entity. These edges can either
-be setup initially or created on demand during backwards substitution. 
+\begin{figure}
+\centering
+\includegraphics[trim=45 310 430 38,clip,width=3in]{figs/cfg-example.pdf}
+\caption{Example operation flow model.}
+\label{fig:cfg}
+\end{figure}
 
-Some edges are specified directly by the designer of the model...next
-and triggers
+%\begin{figure*}
+%%  \centering
+  %\begin{subfigure}[b]{0.4\textwidth}
+    %\centering
+    %\includegraphics[width=.4\linewidth]{figs/cfg-example1}
+    %\caption{An operation}
+    %\label{fig:cfga}
+  %\end{subfigure}%
+  %\begin{subfigure}[b]{0.4\textwidth}
+    %\centering
+    %\includegraphics[width=.4\linewidth]{figs/cfg-example2}
+    %\caption{The interopertational flow for group 2}
+    %\label{fig:cfgb}
+  %\end{subfigure}%
+  %\begin{subfigure}[b]{0.2\textwidth}
+    %\centering
+    %\includegraphics[width=.4\linewidth]{figs/cfg-example3}
+    %\caption{The CFG component for the entire operation}
+    %\label{fig:cfgc}
+  %\end{subfigure}%
+  %\caption{Control flow graph generation for a single operation}
+  %\label{fig:cfg}
+%\end{figure*}
 
-\subsection{Binding}
-\label{sec:binding}
+%Some edges are specified directly by the designer of the model...next and triggers
 
+\begin{algorithm}[t]
+\SetAlgoVlined
+\footnotesize
+\KwIn{operation $op$, rule part $rp$}
+\KwOut{operation sequence $seq$ or $null$}
+\BlankLine
+
+\nl Initialize a Queue $queue$ of sequences of operations\;
+\nl Get all inputs of operation $op$\;
+\nl Create all initialization sequences for all inputs of $op$\;
+\nl Add all sequences to the Queue $queue$\;
+
+\nl \While { queue not empty }
+{
+		\nl Remove the first sequence $fseq$ from the queue\;
+		\nl seq = Invoke $CheckSequence$ ($fseq$) to check whether the sequence covers rule part $rp$\;
+		\nl \If {seq is not null}
+		{
+				\Return seq\;
+		}
+		
+		\nl Extract unsatisfied core of the sequence\;
+		\nl Identify candidate operations $ops$ that help cover unsatisfied core\;
+		
+		\ForEach {Operation $candidate$ $\in$ $ops$}
+		{
+			\nl Insert $candidate$ to $fseq$\;
+			\nl Add $fseq$ to Queue $queue$\;			
+		}
+}
+
+\Return $null$\;
+		
+\caption{\label{alg:guidedsearch} Algorithm \lang{GuidedSearch} for
+  identifying a sequence of operations that cover a given rule part.}
+\end{algorithm}
+
+
+
+\subsection{Technique}
+\label{sec:technique}
+
+
+\subsubsection{Binding.}
 When sequencing two operations we need to substitute the entities
 consumed by the successor operation by the entities created or
 modified by the predecessor operation.

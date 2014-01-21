@@ -7,12 +7,23 @@
 \usepackage{txfonts}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{alltt}
+\usepackage[usenames]{color}
+\usepackage[ruled,vlined]{algorithm2e}
 
 \begin{document}
 
 \newcommand{\ie}{\textit{i.e.,} }
 \newcommand{\eg}{\textit{e.g.,} }
 \newcommand{\subject}[1]{\texttt{\small #1}}
+\newcommand{\rules}{{\mathcal R}}
+\newcommand{\tests}{{\mathcal T}}
+\newcommand{\elemexists}{\mt{exists}}
+\newcommand{\elemenabled}{\mt{enabled}}
+\newcommand{\elemexplored}{\mt{explored}}
+\newcommand{\note}[1]{{\color{red}$[$ \bf #1 $]$}}
+\newcommand{\lang}[1]{\texttt{\scriptsize #1}}
+
 
 \title{Test Data Generation}
 
@@ -26,6 +37,7 @@ Abstract
 
 \input{intro}
 \input{model}
+\input{example}
 \input{algorithm}
 
 \end{document}
