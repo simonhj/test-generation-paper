@@ -15,6 +15,7 @@ enum Status {
      CancelledByDelay
      Refunded
      Flown
+     Unknown
 }
 
 enum BookingClass {
@@ -57,6 +58,7 @@ enum CancellationReason {
      Safety
      PassengerIllness
      Other
+     Delay
 }
 
 object Sector {
@@ -98,42 +100,42 @@ operation partialCancellation {
 	  modifies: Ticket:ticket
 	  group reasons_sector1 {
 	  	rule forceMajeur1 { //9.3.3
-		     pre: reason == CancellationReason::Safety;
+		     pre: ticket.sector1Initialized == 1 AND reason == CancellationReason::Safety;
 		     post: ticket.sector1.status == Status::CancelledByAirline AND ticket.sector1.cancelTime == time AND ticket.sector1Initialized == 0;
 		}
 
 		rule illness1 {
-		     pre:  reason == CancellationReason::PassengerIllness;
+		     pre: ticket.sector1Initialized == 1 AND reason == CancellationReason::PassengerIllness;
 		     post: ticket.sector1.status == Status::CancelledInvolountary AND ticket.sector1.cancelTime == time AND ticket.sector1Initialized == 0;
 		}
 
 		rule delay1 {
-			 pre: reason != CancellationReason::Safety AND reason != CancellationReason::PassengerIllness AND reason != CancellationReason::Other AND ticket.sector1.std > ticket.sector1.etd + 1;
+			 pre: ticket.sector1Initialized == 1 AND reason == CancellationReason::Delay AND ticket.sector1.std > ticket.sector1.etd + 1;
 			 post: ticket.sector1.status == Status::CancelledByDelay AND ticket.sector1.cancelTime == time AND ticket.sector1Initialized == 0;
 		}
  		
  		rule other1 { //9.3.4
-		      pre: reason == CancellationReason::Other;
+		      pre: ticket.sector1Initialized == 1 AND reason == CancellationReason::Other;
 		      post: ticket.sector1.status == Status::CancelledOtherReason AND ticket.sector1.cancelTime == time AND ticket.sector1Initialized == 0;
 		}				
 	  }	
 	  
 	  group reasons_sector2 {
 		rule forceMajeur2 { //9.3.3
-		     pre: reason == CancellationReason::Safety;
+		     pre: ticket.sector2Initialized == 1 AND reason == CancellationReason::Safety;
 		     post: ticket.sector2.status == Status::CancelledByAirline AND ticket.sector2.cancelTime == time AND ticket.sector2Initialized == 0;
 		}		
 		rule illness2 {
-		     pre: reason == CancellationReason::PassengerIllness;
+		     pre: ticket.sector2Initialized == 1 AND reason == CancellationReason::PassengerIllness;
 		     post: ticket.sector2.status == Status::CancelledInvolountary AND ticket.sector2.cancelTime == time AND ticket.sector2Initialized == 0;
 		}
 		rule delay2 {
-			pre: reason != CancellationReason::Safety AND reason != CancellationReason::PassengerIllness AND reason != CancellationReason::Other AND ticket.sector2.std > ticket.sector2.etd + 1;
+			pre: ticket.sector2Initialized == 1 AND reason == CancellationReason::Delay AND ticket.sector2.std > ticket.sector2.etd + 1;
 			post: ticket.sector2.status == Status::CancelledByDelay AND ticket.sector2.cancelTime == time AND ticket.sector2Initialized == 0;
 		}	
 		rule other2 { //9.3.4
-		      pre: reason == CancellationReason::Other;
-		      post: ticket.sector2.status == Status::CancelledOtherReason AND ticket.sector2.cancelTime == time AND ticket.sector2Initialized == 0;
+		    pre: ticket.sector2Initialized == 1 AND reason == CancellationReason::Other;
+		    post: ticket.sector2.status == Status::CancelledOtherReason AND ticket.sector2.cancelTime == time AND ticket.sector2Initialized == 0;
 		}
 				
 	  }		    
@@ -146,8 +148,8 @@ operation makeSector {
 	  group b {
 	  	rule build {
 		     pre: true;
-		     post: sector.flight == flight AND sector.etd == etd AND sector.std == etd AND sector.bookingClass == class AND sector.promo == promo 
-		     	     AND sector.status == Status::Scheduled;
+		     post: sector.flight == flight AND sector.bookingClass == class AND sector.promo == promo 
+		     	     AND sector.status == Status::Scheduled AND sector.etd == etd AND sector.std == etd ;
 		}
 	  }	  
 
@@ -185,7 +187,7 @@ operation rebookPartial {
 	  group clause81a { //Passenger changes reservation with 
 	  	rule rebookingSector1 {
 		  pre: ticket.fareType == FareType::Rebookable AND ticket.sector1Initialized == 1 AND currentTime + 4 < ticket.sector1.etd AND rebookingFee > 0  AND fund.balance > rebookingFee AND fund.balance > (newSector.cost - ticket.sector1.cost) AND newSector.etd < currentTime+720; //30 days
-	      post: newSector == ticket.sector1 AND ticket.sector1Initialized == 1 AND  fund.balance == fund.balance@ - (newSector.cost - ticket.sector1.cost@); 
+	      post: newSector == ticket.sector1 AND  fund.balance == fund.balance@ - (newSector.cost - ticket.sector1.cost@); 
 		}
 		
 		rule involountary1 {
@@ -194,25 +196,25 @@ operation rebookPartial {
 		}
 		
 		rule delay1 {
-		     pre: ticket.sector1.status != Status::CancelledInvolountary AND ticket.sector1.std > ticket.sector1.etd + 3 AND newSector.etd < currentTime + 720 AND rebookingFee == 0;
-		     post: newSector == ticket.sector1 AND ticket.sector1Initialized == 1;
+		     pre: ticket.sector1Initialized == 1 AND ticket.sector1.status != Status::CancelledInvolountary AND ticket.sector1.std > ticket.sector1.etd + 3 AND newSector.etd < currentTime + 720 AND rebookingFee == 0;
+		     post: newSector == ticket.sector1;
 		}				
 	  }
 	  
 	  group clause81b {
 	  	rule rebookingSector2 {
-		  pre: ticket.fareType == FareType::Rebookable AND ticket.sector2Initialized == 1 AND currentTime + 4 > ticket.sector2.etd AND rebookingFee > 0 AND fund.balance > rebookingFee AND fund.balance > (newSector.cost - ticket.sector2.cost) AND newSector.etd < currentTime+720; //30 days
-	      post: newSector == ticket.sector2 AND ticket.sector2Initialized == 1 AND  fund.balance == fund.balance@ - (newSector.cost - ticket.sector2.cost@); 
+		  pre: ticket.sector2Initialized == 1 AND ticket.fareType == FareType::Rebookable AND ticket.sector2Initialized == 1 AND currentTime + 4 > ticket.sector2.etd AND rebookingFee > 0 AND fund.balance > rebookingFee AND fund.balance > (newSector.cost - ticket.sector2.cost) AND newSector.etd < currentTime+720; //30 days
+	      post: newSector == ticket.sector2 AND  fund.balance == fund.balance@ - (newSector.cost - ticket.sector2.cost@); 
 		}
 		
 		rule involountary2 {
-		     pre: ticket.sector2.status == Status::CancelledInvolountary AND newSector.etd < currentTime + 720 AND rebookingFee == 0; 
-		     post: newSector == ticket.sector2 AND ticket.sector2Initialized == 1;
+		  pre: ticket.sector2.status == Status::CancelledInvolountary AND newSector.etd < currentTime + 720 AND rebookingFee == 0; 
+		  post: newSector == ticket.sector2 AND ticket.sector2Initialized == 1;
 		}
 		
 		rule delay2 {
-		     pre: ticket.sector2.status != Status::CancelledInvolountary AND ticket.sector2.std > ticket.sector2.etd + 3 AND newSector.etd < currentTime + 720 AND rebookingFee == 0;
-		     post: newSector == ticket.sector2 AND ticket.sector2Initialized == 1;
+		  pre: ticket.sector2Initialized == 1 AND ticket.sector2.status != Status::CancelledInvolountary AND ticket.sector2.std > ticket.sector2.etd + 3 AND newSector.etd < currentTime + 720 AND rebookingFee == 0;
+		  post: newSector == ticket.sector2;
 		}
 	  }		
 }
@@ -276,7 +278,8 @@ operation createTicket {
 	  group main {
 	  	rule r {
 		  	 pre: true; 
-		     post: ticket.fareType == fareType AND ticket.passengerID == fund.passengerID AND ticket.sector1Initialized == 0 AND ticket.sector2Initialized == 0;
+		     post: ticket.fareType == fareType AND ticket.passengerID == fund.passengerID AND ticket.sector1Initialized == 0 
+		     		AND ticket.sector2Initialized == 0 AND ticket.sector1.status == Status::Unknown AND ticket.sector2.status == Status::Unknown;
 		}
 	  }	  
 }
@@ -287,14 +290,14 @@ operation delayFlight {
 	  modifies: Ticket:ticket
 	  group main_sector1 {
 	  	rule main1 {
-		     pre: ticket.sector1.status == Status::Scheduled;
+		     pre: ticket.sector1Initialized == 1 AND ticket.sector1.status == Status::Scheduled;
 		     post: ticket.sector1.std == ticket.sector1.std@ + delay;
 		}
 	  }
 	  
 	  group main_sector2 {
 	  	rule main2 {
-		     pre: ticket.sector2.status == Status::Scheduled;
+		     pre: ticket.sector2Initialized == 1 AND ticket.sector2.status == Status::Scheduled;
 		     post: ticket.sector2.std == ticket.sector2.std@ + delay;
 		}
 	  }
@@ -306,14 +309,14 @@ operation flyPart {
 	  modifies: Ticket:ticket
 	  group main_sector1 {
 	  	rule main1 {
-		     pre: true;
+		     pre: ticket.sector1Initialized == 1;
 		     post: ticket.sector1.status == Status::Flown;
 		}		
 	  }
 	  
 	  group main_sector2 {
 		rule main2 {
-		     pre: true;
+		     pre: ticket.sector2Initialized == 1;
 		     post: ticket.sector2.status == Status::Flown;
 		}		
 	  }	
@@ -327,7 +330,7 @@ operation createFund {
 
 	  group create {
       	  rule create {
-      	   pre: true;
+      	   pre: passengerID > 0 AND initialBalance > 0;
 	  	   post: fund.passengerID == passengerID AND fund.balance == initialBalance;
           }     
       }
