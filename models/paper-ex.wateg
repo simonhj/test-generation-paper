@@ -142,7 +142,7 @@ operation generateInvoice {
 	input: Order:ord
 	creates: Invoice:inv
 	modifies:
-	
+		
 	group applyStateDiscount {
 		rule stateDiscount1 {
 			pre: ord.total > 0 AND ord.cust.state == State::NY;
