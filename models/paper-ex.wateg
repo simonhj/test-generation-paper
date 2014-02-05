@@ -12,14 +12,21 @@ enum Status {
 	Inactive
 }
 
-enum Month {
-	Nov
-	Other
+//enum Month {
+//	Nov
+//	Other
+//}
+
+enum BalanceType {
+	None
+	Credit
 }
 
 object Customer {
 	State: state
 	Status: status
+	BalanceType: balType
+	int: creditLimit
 }
 
 object Item {
@@ -83,7 +90,7 @@ operation deActivateCustomer {
 }
 
 operation createOrder {
-	input: Customer:cust Month:month
+	input: Customer:cust //Month:month
 	creates: Order: ord 
 	modifies:
 	
@@ -99,17 +106,17 @@ operation createOrder {
 		//}
 	}
 	
-	group extraDiscount {
-		rule applyExtraDiscount {
-			pre: month == Month::Nov;
-			post: ord.extraDiscount == 1;
-		} 
+	//group extraDiscount {
+	//	rule applyExtraDiscount {
+	//		pre: month == Month::Nov;
+	//		post: ord.extraDiscount == 1;
+	//	} 
 		
-		rule noExtraDiscount {
-			pre: month == Month::Other;
-			post: ord.extraDiscount == 0;
-		}
-	}
+	//	rule noExtraDiscount {
+	//		pre: month == Month::Other;
+	//		post: ord.extraDiscount == 0;
+	//	}
+	//}
 }
 
 operation createItem {
@@ -155,17 +162,34 @@ operation generateInvoice {
 		}
 	}
 	
-	group applyExtraDiscount {
-		rule extraDiscount1 {
-			pre: ord.total > 0 AND ord.extraDiscount == 1;
-			post: inv.amount == ord.total * (95 / 100);
-		}
-		
-		rule extraDiscount2 {
-			pre: ord.total > 0 AND ord.extraDiscount == 0;
+	group applyBalanceType {
+		rule balTypeNone {
+			pre: ord.total > 0 AND ord.cust.balType == BalanceType::None;
 			post: inv.amount == ord.total;
 		}
+		
+		rule balTypeCredit1 {
+			pre: ord.total > 0 AND ord.cust.balType == BalanceType::Credit AND ord.total <= ord.cust.creditLimit;
+			post: inv.amount == 0 AND ord.cust.creditLimit == ord.cust.creditLimit@ - ord.total;
+		}
+		
+		rule balTypeCredit2 {
+			pre: ord.total > 0 AND ord.cust.balType == BalanceType::Credit AND ord.total > ord.cust.creditLimit;
+			post: inv.amount == ord.total - ord.cust.creditLimit AND ord.cust.creditLimit == 0;
+		}
 	}
+	
+	//group applyExtraDiscount {
+	//	rule extraDiscount1 {
+	//		pre: ord.total > 0 AND ord.extraDiscount == 1;
+	//		post: inv.amount == ord.total * (95 / 100);
+	//	}
+		
+	//	rule extraDiscount2 {
+	//		pre: ord.total > 0 AND ord.extraDiscount == 0;
+	//		post: inv.amount == ord.total;
+	//	}
+	//}
 }
 
 TRIGGERS
