@@ -36,7 +36,7 @@ object Item {
 object Order {
 	Customer: cust
 	int: total
-	int: extraDiscount
+//	int: extraDiscount
 }
 
 object Invoice {
@@ -51,16 +51,29 @@ page DefaultPage {
 OPERATIONS
 
 operation createcustomer {
-	input: State:state
+	input: State:state BalanceType:balType
 	creates: Customer:cust
 	modifies:
 	
 	group create {
 		rule create {
 			pre: true;
-			post: cust.state == state AND cust.status == Status::Inactive; 
+			post: cust.state == state AND cust.status == Status::Inactive AND cust.balType == balType AND cust.creditLimit == 0; 
 		}
 	} 
+}
+
+operation addCreditLimit {
+	input: Customer:cust int:creditToAdd
+	creates:
+	modifies: Customer:cust
+	
+	group addCredit {
+		rule addCredit {
+			pre: creditToAdd > 0 AND cust.balType == BalanceType::Credit;
+			post: cust.creditLimit == cust.creditLimit@ + creditToAdd;
+		}
+	}
 }
 
 operation activateCustomer {
