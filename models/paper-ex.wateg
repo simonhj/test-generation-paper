@@ -1,0 +1,208 @@
+Model PaperExample
+
+ENTITIES
+
+enum State {
+	NY
+	Other
+}
+
+enum Status {
+	Active
+	Inactive
+}
+
+//enum Month {
+//	Nov
+//	Other
+//}
+
+enum BalanceType {
+	None
+	Credit
+}
+
+object Customer {
+	State: state
+	Status: status
+	BalanceType: balType
+	int: creditLimit
+}
+
+object Item {
+	int: price
+}
+
+object Order {
+	Customer: cust
+	int: total
+//	int: extraDiscount
+}
+
+object Invoice {
+	int: amount
+}
+
+PAGES
+
+page DefaultPage {
+}
+
+OPERATIONS
+
+operation createcustomer {
+	input: State:state BalanceType:balType
+	creates: Customer:cust
+	modifies:
+	
+	group create {
+		rule create {
+			pre: true;
+			post: cust.state == state AND cust.status == Status::Inactive AND cust.balType == balType AND cust.creditLimit == 0; 
+		}
+	} 
+}
+
+operation addCreditLimit {
+	input: Customer:cust int:creditToAdd
+	creates:
+	modifies: Customer:cust
+	
+	group addCredit {
+		rule addCredit {
+			pre: creditToAdd > 0 AND cust.balType == BalanceType::Credit;
+			post: cust.creditLimit == cust.creditLimit@ + creditToAdd;
+		}
+	}
+}
+
+operation activateCustomer {
+	input: Customer:cust
+	creates:
+	modifies: Customer:cust
+	
+	group activate {
+		rule activate {
+			pre: cust.status == Status::Inactive;
+			post: cust.status == Status::Active;
+		}
+	}
+}
+
+operation deActivateCustomer {
+	input: Customer:cust
+	creates:
+	modifies: Customer:cust
+	
+	group deActivate {
+		rule deActivate {
+			pre: cust.status == Status::Active;
+			post: cust.status == Status::Inactive;
+		}
+	}
+}
+
+operation createOrder {
+	input: Customer:cust //Month:month
+	creates: Order: ord 
+	modifies:
+	
+	group baseGrp {
+		rule baseRule {
+			pre: cust.status == Status::Active;
+			post: ord.total == 0 AND ord.cust == cust;
+		}
+		
+		//rule other {
+		//	pre: cust.status == Status::Inactive;
+		//	post: ord == NULL;
+		//}
+	}
+	
+	//group extraDiscount {
+	//	rule applyExtraDiscount {
+	//		pre: month == Month::Nov;
+	//		post: ord.extraDiscount == 1;
+	//	} 
+		
+	//	rule noExtraDiscount {
+	//		pre: month == Month::Other;
+	//		post: ord.extraDiscount == 0;
+	//	}
+	//}
+}
+
+operation createItem {
+	input: int:price
+	creates: Item:item
+	modifies:
+	
+	group create {
+		rule create {
+			pre: price > 0;
+			post: item.price == price;
+		}
+	}
+}
+
+operation addItem {
+	input: Order:ord Item:item
+	creates:
+	modifies: Order:ord
+	
+	group addItemGrp {
+		rule addItemRule {
+			pre: true;
+			post: ord.total == ord.total@ + item.price;
+		}
+	}
+}
+
+operation generateInvoice {
+	input: Order:ord
+	creates: Invoice:inv
+	modifies:
+		
+	group applyStateDiscount {
+		rule stateDiscount1 {
+			pre: ord.total > 0 AND ord.cust.state == State::NY;
+			post: inv.amount == ord.total * (98 / 100);
+		}
+		
+		rule stateDiscount2 {
+			pre: ord.total > 0 AND ord.cust.state == State::Other;
+			post: inv.amount == ord.total;
+		}
+	}
+	
+	group applyBalanceType {
+		rule balTypeNone {
+			pre: ord.total > 0 AND ord.cust.balType == BalanceType::None;
+			post: inv.amount == ord.total;
+		}
+		
+		rule balTypeCredit1 {
+			pre: ord.total > 0 AND ord.cust.balType == BalanceType::Credit AND ord.total <= ord.cust.creditLimit;
+			post: inv.amount == 0 AND ord.cust.creditLimit == ord.cust.creditLimit@ - ord.total;
+		}
+		
+		rule balTypeCredit2 {
+			pre: ord.total > 0 AND ord.cust.balType == BalanceType::Credit AND ord.total > ord.cust.creditLimit;
+			post: inv.amount == ord.total - ord.cust.creditLimit AND ord.cust.creditLimit == 0;
+		}
+	}
+	
+	//group applyExtraDiscount {
+	//	rule extraDiscount1 {
+	//		pre: ord.total > 0 AND ord.extraDiscount == 1;
+	//		post: inv.amount == ord.total * (95 / 100);
+	//	}
+		
+	//	rule extraDiscount2 {
+	//		pre: ord.total > 0 AND ord.extraDiscount == 0;
+	//		post: inv.amount == ord.total;
+	//	}
+	//}
+}
+
+TRIGGERS

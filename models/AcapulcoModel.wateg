@@ -1,0 +1,340 @@
+Model Acapulco
+
+ENTITIES
+
+enum LineType {
+	Fixed_line
+	Single_line
+	Massive_line
+	BAM_line
+}
+
+enum Distributor {
+	IUSACell
+	Unifon	
+}
+
+enum PlanType1 {
+	Prepaid
+	Postpaid
+	Hybrid	
+}
+
+enum PlanType2 {
+	Prepaid
+	Postpaid
+	Hybrid	
+}
+
+enum TermType {
+	WithinTerm
+	OutofTerm
+}
+
+enum FamilyStatus {
+	Valid
+	Obsolete
+}
+
+enum FrequentlyUsedNumberPlan {
+	number_3
+	number_5
+	number_10
+	number_15
+	unknown
+}
+
+object Mobile {
+	int: number
+}
+
+object Plan1 {
+	PlanType1: planType1
+	int: rental1
+	int: planId
+	int: commerciallyAvailable	//1 - available, 0 - not available
+}
+
+object Plan2 {
+	PlanType2: planType2
+	int: rental2
+	int: planId
+	int: commerciallyAvailable	//1 - available, 0 - not available
+}
+
+object Family {
+	Plan1: plan1
+	int: plan1Initialized
+	Plan2: plan2
+	int: plan2Initialized
+	FamilyStatus: familyStatus
+	int: commerciallyAvailable
+}
+
+object Subscriber {
+	string: name
+	Mobile: mobile
+	Distributor: distributor
+	LineType: lineType
+	Plan1: plan1
+	int: plan1Initialized
+	Plan2: plan2
+	int: plan2Initialized
+	Family: family
+	int: active	
+	int: lastSuspendedDate
+	int: defaulter				// 0: not a defaulter, 1: a defaulter
+	int: migrationRequestInProgress	//0: no request is in progress, 1: some request is in progress
+	TermType: termType
+}
+
+
+PAGES
+
+page EditFrequentlyUsedNumbersPage {	
+}
+
+OPERATIONS
+
+operation createMobile {
+	input: int: number
+	creates: Mobile: mobile
+	modifies:
+	
+	group main {
+		rule initialize {
+			pre: number > 0 AND number < 999999999;
+			post: mobile.number == number;
+		}
+	}
+}
+
+operation createFamily {
+	input: FamilyStatus:status int:available
+	creates: Family: family
+	modifies:
+	
+	group family_main {
+		rule initialize {
+			pre: true;
+			post: family.commerciallyAvailable == available AND family.familyStatus == status AND family.plan1Initialized == 0 AND family.plan2Initialized == 0; 
+		}		
+	}
+}
+
+operation createPlan1 {
+	input: PlanType1:planType1 int:rental1 int:planId int:available
+	creates: Plan1:plan1
+	modifies:
+	
+	group main {
+		rule createPlan1 {
+			pre: rental1 > 0;
+			post: plan1.planId == planId AND plan1.planType1 == planType1 AND plan1.rental1 == rental1 AND plan1.commerciallyAvailable == available;
+		}
+	}
+}
+
+operation createPlan2 {
+	input: PlanType2:planType2 int:rental2 int:planId int:available
+	creates: Plan2:plan2
+	modifies:
+	
+	group main {
+		rule createPlan1 {
+			pre: rental2 > 0;
+			post: plan2.planId == planId AND plan2.planType2 == planType2 AND plan2.rental2 == rental2 AND plan2.commerciallyAvailable == available;
+		}
+	}
+}
+
+operation addPlan1ToFamily {
+	input: Plan1:plan1 Family:family
+	creates:
+	modifies: Family:family
+	
+	group addFamily1 {
+		rule addFamily1 {
+			pre: plan1.commerciallyAvailable == 1;
+			post: family.plan1 == plan1 AND family.plan1Initialized == 1;
+		}
+	}
+}
+
+operation addPlan2ToFamily {
+	input: Plan2:plan Family:family
+	creates:
+	modifies: Family:family
+	
+	group addFamily2 {
+		rule addFamily2 {
+			pre: plan.commerciallyAvailable == 1;
+			post: family.plan2 == plan AND family.plan2Initialized == 1;
+		}
+	}
+}
+
+/**
+ * A new subscriber is created by using plan 1, where later he can change to other plans within the family (which 
+ * is plan2 in our case)
+ */
+operation createSubscriber {
+	input: Mobile:mobile Distributor:distributor LineType:lineType Family:family
+	creates: Subscriber:subs
+	modifies:
+	
+	group main {
+		rule initialize {
+			pre: family.plan1Initialized == 1;
+			post: subs.family == family AND subs.plan1 == family.plan1 AND subs.plan1Initialized == 1 AND subs.plan2Initialized == 1 
+					AND subs.active == 1 AND subs.defaulter == 0
+					AND subs.migrationRequestInProgress == 0 AND  subs.termType == TermType::WithinTerm;
+		}	
+	}
+}
+
+operation moveSubscriberToOutOfTerm {
+	input: Subscriber:subs
+	creates:
+	modifies: Subscriber:subs
+	
+	group changeTerm {
+		rule changeTerm {
+			pre: subs.termType == TermType::WithinTerm;
+			post: subs.termType == TermType::OutofTerm;
+		}
+	}
+}
+
+operation changeOfPlanCompleted {
+	input: Subscriber:subs
+	creates:
+	modifies: Subscriber:subs
+	
+	group changeCompleted {
+		rule changeCompleted {
+			pre: subs.migrationRequestInProgress == 1;
+			post: subs.migrationRequestInProgress == 0;
+		}
+	}
+}
+
+operation changeOfPlanWithInTerm_ObsoleteFamily {
+	input: Subscriber: subs
+	creates:
+	modifies: Subscriber: subs
+	
+	group planChange {
+		rule hybrid_to_hybrid {
+			pre: subs.defaulter == 0 AND subs.migrationRequestInProgress == 0 AND subs.family.familyStatus == FamilyStatus::Obsolete AND subs.family.commerciallyAvailable == 1 
+							AND subs.termType == TermType::WithinTerm AND subs.plan1Initialized == 1 
+							AND subs.plan1.planType1 == PlanType1::Hybrid AND subs.family.plan2Initialized == 1 
+							AND subs.family.plan2.planType2 == PlanType2::Hybrid AND subs.family.plan2.rental2 >= subs.plan1.rental1 - 5;
+			post: subs.migrationRequestInProgress == 1 AND subs.plan2 == subs.family.plan2 AND subs.plan2Initialized == 1 AND subs.plan1Initialized == 0;			 
+		}
+		
+		rule postpaid_to_postpaid {
+			pre: subs.defaulter == 0 AND subs.migrationRequestInProgress == 0 AND subs.family.familyStatus == FamilyStatus::Obsolete AND subs.family.commerciallyAvailable == 1 
+							AND subs.termType == TermType::WithinTerm AND subs.plan1Initialized == 1 
+							AND subs.plan1.planType1 == PlanType1::Postpaid AND subs.family.plan2Initialized == 1 
+							AND subs.family.plan2.planType2 == PlanType2::Postpaid AND subs.family.plan2.rental2 >= subs.plan1.rental1 - 5;
+			post: subs.migrationRequestInProgress == 1 AND subs.plan2 == subs.family.plan2 AND subs.plan2Initialized == 1 AND subs.plan1Initialized == 0;			 
+		}
+		
+		rule hybrid_to_postpaid {
+			pre: subs.defaulter == 0 AND subs.migrationRequestInProgress == 0 AND subs.family.familyStatus == FamilyStatus::Obsolete AND subs.family.commerciallyAvailable == 1 
+							AND subs.termType == TermType::WithinTerm AND subs.plan1Initialized == 1  
+							AND subs.plan1.planType1 == PlanType1::Hybrid AND subs.family.plan2Initialized == 1 
+							AND subs.family.plan2.planType2 == PlanType2::Postpaid AND subs.family.plan2.rental2 >= subs.plan1.rental1 - 100;
+			post: subs.migrationRequestInProgress == 1 AND subs.plan2 == subs.family.plan2 AND subs.plan2Initialized == 1 AND subs.plan1Initialized == 0;		
+		}
+		
+		rule postpaid_to_hybrid {
+			pre: subs.defaulter == 0 AND subs.migrationRequestInProgress == 0 AND subs.family.familyStatus == FamilyStatus::Obsolete AND subs.family.commerciallyAvailable == 1 
+							AND subs.termType == TermType::WithinTerm AND subs.plan1Initialized == 1  
+							AND subs.plan1.planType1 == PlanType1::Postpaid AND subs.family.plan2Initialized == 1 
+							AND subs.family.plan2.planType2 == PlanType2::Hybrid AND subs.family.plan2.rental2 >= subs.plan1.rental1 + 180;
+			post: subs.migrationRequestInProgress == 1 AND subs.plan2 == subs.family.plan2 AND subs.plan2Initialized == 1 AND subs.plan1Initialized == 0;		
+		}
+	}	
+}
+
+operation changeOfPlanWithInTerm_ValidFamily {
+	input: Subscriber: subs
+	creates:
+	modifies: Subscriber: subs
+	
+	group planChange {
+		rule hybrid_to_hybrid {
+			pre: subs.defaulter == 0 AND subs.migrationRequestInProgress == 0 AND subs.family.familyStatus == FamilyStatus::Valid AND subs.family.commerciallyAvailable == 1 
+							AND subs.termType == TermType::WithinTerm AND subs.plan1Initialized == 1  
+							AND subs.plan1.planType1 == PlanType1::Hybrid AND subs.family.plan2Initialized == 1 
+							AND subs.family.plan2.planType2 == PlanType2::Hybrid AND subs.family.plan2.rental2 >= subs.plan1.rental1 - 5;
+			post: subs.migrationRequestInProgress == 1 AND subs.plan2 == subs.family.plan2 AND subs.plan2Initialized == 1 AND subs.plan1Initialized == 0;			 
+		}
+		
+		rule postpaid_to_postpaid {
+			pre: subs.defaulter == 0 AND subs.migrationRequestInProgress == 0 AND subs.family.familyStatus == FamilyStatus::Valid AND subs.family.commerciallyAvailable == 1 
+							AND subs.termType == TermType::WithinTerm AND subs.plan1Initialized == 1
+							AND subs.plan1.planType1 == PlanType1::Postpaid AND subs.family.plan2Initialized == 1 
+							AND subs.family.plan2.planType2 == PlanType2::Postpaid AND subs.family.plan2.rental2 >= subs.plan1.rental1 - 5;
+			post: subs.migrationRequestInProgress == 1 AND subs.plan2 == subs.family.plan2 AND subs.plan2Initialized == 1 AND subs.plan1Initialized == 0;			 
+		}
+		
+		rule hybrid_to_postpaid {
+			pre: subs.defaulter == 0 AND subs.migrationRequestInProgress == 0 AND subs.family.familyStatus == FamilyStatus::Valid AND subs.family.commerciallyAvailable == 1 
+							AND subs.termType == TermType::WithinTerm AND subs.plan1Initialized == 1
+							AND subs.plan1.planType1 == PlanType1::Hybrid AND subs.family.plan2Initialized == 1 
+							AND subs.family.plan2.planType2 == PlanType2::Postpaid AND subs.family.plan2.rental2 >= subs.plan1.rental1 - 100;
+			post: subs.migrationRequestInProgress == 1 AND subs.plan2 == subs.family.plan2 AND subs.plan2Initialized == 1 AND subs.plan1Initialized == 0;		
+		}
+		
+		rule postpaid_to_hybrid {
+			pre: subs.defaulter == 0 AND subs.migrationRequestInProgress == 0 AND subs.family.familyStatus == FamilyStatus::Valid AND subs.family.commerciallyAvailable == 1 
+							AND subs.termType == TermType::WithinTerm AND subs.plan1Initialized == 1
+							AND subs.plan1.planType1 == PlanType1::Postpaid AND subs.family.plan2Initialized == 1 
+							AND subs.family.plan2.planType2 == PlanType2::Hybrid AND subs.family.plan2.rental2 >= subs.plan1.rental1 + 180;
+			post: subs.migrationRequestInProgress == 1 AND subs.plan2 == subs.family.plan2 AND subs.plan2Initialized == 1 AND subs.plan1Initialized == 0;		
+		}
+	}	
+}
+
+operation changeOfPlanOutsideTerm_ObsoleteFamily {
+	input: Subscriber: subs
+	creates:
+	modifies: Subscriber: subs
+	
+	group planChange {
+		rule non_commercial_family {
+			pre: subs.defaulter == 0 AND subs.migrationRequestInProgress == 0 AND subs.family.familyStatus == FamilyStatus::Obsolete  
+							AND subs.termType == TermType::OutofTerm AND subs.family.plan2Initialized == 1 
+							AND subs.plan1Initialized == 1 AND subs.family.plan2.rental2 >= subs.plan1.rental1;
+			post: subs.migrationRequestInProgress == 1 AND subs.plan2 == subs.family.plan2 AND subs.plan2Initialized == 1 AND subs.plan1Initialized == 0;			 
+		}
+		
+		rule commercial_family {
+			pre: subs.defaulter == 0 AND subs.migrationRequestInProgress == 0 AND subs.family.familyStatus == FamilyStatus::Obsolete AND subs.family.commerciallyAvailable == 1 
+							AND subs.termType == TermType::OutofTerm AND subs.family.plan2Initialized == 1  
+							AND subs.family.plan2Initialized == 1;							
+			post: subs.migrationRequestInProgress == 1 AND subs.plan2 == subs.family.plan2 AND subs.plan2Initialized == 1 AND subs.plan1Initialized == 0;			 
+		}		
+	}	
+}
+
+operation changeOfPlanOutsideTerm_ValidFamily {
+	input: Subscriber: subs
+	creates:
+	modifies: Subscriber: subs
+	
+	group planChange {
+		rule change_plan {
+			pre: subs.defaulter == 0 AND subs.migrationRequestInProgress == 0 AND subs.family.familyStatus == FamilyStatus::Valid AND  subs.family.commerciallyAvailable == 1
+							AND subs.termType == TermType::OutofTerm AND subs.plan1Initialized == 1 AND subs.family.plan2Initialized == 1;
+			post: subs.migrationRequestInProgress == 1 AND subs.plan2 == subs.family.plan2 AND subs.plan2Initialized == 1 AND subs.plan1Initialized == 0;			 
+		}
+	}	
+}
+
+
+
+TRIGGERS

@@ -142,13 +142,13 @@ operation partialCancellation {
 }
 
 operation makeSector {
-	  input: Flight:flight  int:etd BookingClass:class bool:promo
+	  input: Flight:flight  int:etd BookingClass:class bool:promo int:cost
 	  creates: Sector:sector
 	  modifies:
 	  group b {
 	  	rule build {
 		     pre: true;
-		     post: sector.flight == flight AND sector.bookingClass == class AND sector.promo == promo 
+		     post: sector.flight == flight AND sector.bookingClass == class AND sector.promo == promo AND sector.cost == cost 
 		     	     AND sector.status == Status::Scheduled AND sector.etd == etd AND sector.std == etd ;
 		}
 	  }	  
@@ -273,13 +273,13 @@ operation refund {
 
 operation createTicket {
 	  input: FareType:fareType PassengerFund:fund
-	  creates: Ticket:ticket
+	  creates: Ticket:ticket_new
 	  modifies: PassengerFund:fund
 	  group main {
 	  	rule r {
 		  	 pre: true; 
-		     post: ticket.fareType == fareType AND ticket.passengerID == fund.passengerID AND ticket.sector1Initialized == 0 
-		     		AND ticket.sector2Initialized == 0 AND ticket.sector1.status == Status::Unknown AND ticket.sector2.status == Status::Unknown;
+		     post: ticket_new.fareType == fareType AND ticket_new.passengerID == fund.passengerID AND ticket_new.sector1Initialized == 0 
+		     		AND ticket_new.sector2Initialized == 0 AND ticket_new.sector1.status == Status::Unknown AND ticket_new.sector2.status == Status::Unknown;
 		}
 	  }	  
 }

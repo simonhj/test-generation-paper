@@ -20,34 +20,41 @@ enum Status {
   Active
   InActive
 }
+
 object Item {
   int:value
 }
+
 enum Country {  
   INDIA
   DENMARK
   CANADA
 }
+
 enum Type {
   PREPAID
   POSTPAID
 }
+
 enum BalanceType {
   None
   Credit
   PrePaid
 }
+
 enum Currency {
   UNKNOWN
   USD
   INR
   DKK
 }
+
 enum Period {
   Quarterly
   OneTime
   Monthly
 }
+
 object Customer {
   Currency:currency
   Country:country  
@@ -56,6 +63,7 @@ object Customer {
   int:prepaidLimit
   int:creditLimit
 }
+
 object Order {
   Status:status
   int:total
@@ -82,22 +90,17 @@ page DefaultPage {
 
 OPERATIONS
 
-operation login {
-	input: Username:nn password:pw
-	creates: UserCredentials:uc
-	modifies:
-	group l {
-		rule admin {
-			pre: nn == Username::admin AND pw == password::qwe;
-			post: uc.name == Username::admin;
-		}
-	}
-}
-
 operation createorder {
   input: int:creationDate int:activeSince Customer:cust Period:p Type:typ 
   creates: Order:ord 
   modifies: 
+  group total {
+  	rule total {
+  		pre: true;
+  		post: ord.total == 0 AND ord.promotionCode == 0;
+  	}
+  }
+  
   group Period {
     rule rule2 {
       pre: (typ) == (Type::PREPAID) AND (p) == (Period::OneTime);
@@ -112,12 +115,14 @@ operation createorder {
       post: (ord.period) == (p) AND (ord.nextInvoice) == ((creationDate) + (1));
     }
   }
+  
   group singleton0 {
     rule rule1 {
       pre: true;
       post: (ord.cust) == (cust) AND (ord.creationDate) == (creationDate) AND (ord.status) == (Status::Active);
     }
   }
+  
   group activeSinceRelated {
     rule rule6 {
       pre: (activeSince) != (0);
@@ -138,17 +143,22 @@ operation additem {
     rule canada {
       pre: (ordai.cust.country) == (Country::CANADA) AND (itmai.value) > (0);
       post: (ordai.total) == ((ordai.total@) + ((2) * (itmai.value)));
+    }
+    
+    rule non_canada {
+      pre: (ordai.cust.country) == (Country::CANADA) AND (itmai.value) > (0);
+      post: (ordai.total) == ((ordai.total@) + (itmai.value));	
     }    
   }
 }
 
 operation createcustomer {
-  input: Country:country Currency:curr BalanceType:balanceType int:prepaidLimit int:rechargeAmount int:creditLimit UserCredentials:ccuc
+  input: Country:country Currency:curr BalanceType:balanceType int:prepaidLimit int:rechargeAmount int:creditLimit
   creates: Customer:c 
   modifies: 
   group singleton0 {
     rule rule1 {
-      pre: ccuc.name == Username::admin;
+      pre: true;
       post: (c.country) == (country) AND (c.currency) == (curr) 
       		AND (c.prepaidLimit) == (prepaidLimit) AND (c.rechargeAmount) == (rechargeAmount)
       		AND (c.balanceType) == (balanceType) AND (c.creditLimit) == (creditLimit);
@@ -162,13 +172,14 @@ operation createcustomer {
     }
   }
 }
+
 operation createitem {
   input: int:value
   creates: Item:itmm 
   modifies: 
   group singleton0 {
     rule makeitem {
-      pre: true;
+      pre: value > 0;
       post: (itmm.value) == (value);
     }
   }
