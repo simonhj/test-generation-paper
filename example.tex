@@ -4,7 +4,7 @@
 
 \begin{figure}[t]
 \centering
-\includegraphics[trim=47 378 380 42,clip,width=\columnwidth]{figs/appModel.pdf}
+\includegraphics[trim=47 350 380 42,clip,width=\columnwidth]{figs/appModel.pdf}
 \vspace*{-15pt}
 \caption{Sample operations and their interactions in \subject{jBilling}.}
 \vspace*{-12pt}
@@ -43,8 +43,8 @@ adding a new item to the order.
 \hline \hline
 Create & \{{\tt State,} & \{{\tt Customer}\} &
 \multicolumn{1}{|c|}{$\emptyset$} &
-The \textit{status} of newly created customers &
-$({\tt true}) \Longrightarrow ({\tt cust.state} = {\tt state} \; \wedge$ \\
+$R_1$: The \textit{status} of newly created customers &
+$RP_{1.1}$: $({\tt true}) \Longrightarrow ({\tt cust.state} = {\tt state} \; \wedge$ \\
 Customer & {\tt BalanceType}\} & & & should be \textit{Inactive} until they are &
 \hspace*{10pt}${\tt cust.status} = {\tt Inactive} \wedge
 {\tt cust.balType} = {\tt  balType} \; \wedge$ \\
@@ -52,14 +52,14 @@ Customer & {\tt BalanceType}\} & & & should be \textit{Inactive} until they are 
 \hspace*{10pt}${\tt cust.crLimit} = 0)$ \\
 \hline
 Create & \{{\tt Int}\} & \{{\tt Item}\} & \multicolumn{1}{|c|}{$\emptyset$} &
-The price of an item must be greater &
-$({\tt price} > 0) \Longrightarrow ({\tt item.price} = {\tt price})$ \\
+$R_2$: The price of an item must be greater &
+$RP_{2.1}$: $({\tt price} > 0) \Longrightarrow ({\tt item.price} = {\tt price})$ \\
 Item & & & & than zero & \\
 \hline
 Create & \{{\tt Customer}\} & \{{\tt Order}\} &
 \multicolumn{1}{|c|}{$\emptyset$} &
-New orders can be created only for &
-$({\tt cust.status} = {\tt Active}) \Longrightarrow$ \\
+$R_3$: New orders can be created only for &
+$RP_{3.1}$: $({\tt cust.status} = {\tt Active}) \Longrightarrow$ \\
 Order & & & & customers whose \textit{status} is \textit{Active} &
 \hspace*{10pt}$({\tt ord.total} = 0 \wedge
 {\tt ord.cust} = {\tt cust})$ \\
@@ -73,12 +73,12 @@ Order & & & & customers whose \textit{status} is \textit{Active} &
 \hline
 Generate & \{{\tt Order}\} & \{{\tt Invoice}\} &
 \multicolumn{1}{|c|}{$\emptyset$} &
-A customer's balance type determines &
-$({\tt ord.total} > 0 \wedge {\tt ord.cust.balType} = {\tt None}) \Longrightarrow$ \\
+$R_4$: A customer's balance type determines &
+$RP_{4.1}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.balType} = {\tt None}) \Longrightarrow$ \\
 Invoice & & & & how the invoice total is computed &
 \hspace*{10pt}$({\tt inv.total} = {\tt ord.total})$ \\
 & & & & (see complete rule in the Introduction) &
-$({\tt ord.total} > 0 \wedge {\tt ord.cust.balType} = {\tt Credit} \; \wedge$ \\
+$RP_{4.2}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.balType} = {\tt Credit} \; \wedge$ \\
 & & & & &
 \hspace*{10pt}${\tt ord.cust.crLimit} \geq {\tt ord.total}) \Longrightarrow$ \\
 & & & & &
@@ -86,7 +86,7 @@ $({\tt ord.total} > 0 \wedge {\tt ord.cust.balType} = {\tt Credit} \; \wedge$ \\
 & & & & &
 \hspace*{10pt}${\tt ord.cust.crLimit} = {\tt ord.cust.crLimit@} - {\tt ord.total})$ \\
 & & & & &
-$({\tt ord.total} > 0 \wedge {\tt ord.cust.balType} = {\tt Credit} \; \wedge$ \\
+$RP_{4.3}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.balType} = {\tt Credit} \; \wedge$ \\
 & & & & &
 \hspace*{10pt}${\tt ord.cust.creditLimit} < {\tt ord.total}) \Longrightarrow$ \\
 & & & & &
@@ -94,21 +94,21 @@ $({\tt ord.total} > 0 \wedge {\tt ord.cust.balType} = {\tt Credit} \; \wedge$ \\
 & & & & &
 \hspace*{10pt}${\tt ord.cust.crLimit} = 0)$ \\
 \cline{5-6}
-& & & & If the customer's residence is in &
-$({\tt ord.total} > 0 \wedge {\tt ord.cust.state} = {\tt NY})
+& & & & $R_5$: If the customer's residence is in &
+$RP_{5.1}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.state} = {\tt NY})
 \Longrightarrow$ \\ 
 & & & & NY \textit{state}, an additional 2\% discount &
 \hspace*{10pt}$({\tt inv.total} = {\tt ord.total} * (98 / 100))$ \\ 
 & & & & is given while generating invoices &
-$({\tt ord.total} > 0 \wedge {\tt ord.cust.state} = {\tt Other})
+$RP_{5.2}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.state} = {\tt Other})
 \Longrightarrow$ \\
 & & & & &
 \hspace*{10pt}$({\tt inv.total} = {\tt ord.total})$ \\
 \hline
 Add Credit & \{{\tt Customer,} & \multicolumn{1}{|c|}{$\emptyset$} &
 \{{\tt Customer}\} &
-The credit limit can be incremented for &
-$({\tt cust.balType} = {\tt Credit} \wedge {\tt amount} > 0) \Longrightarrow$ \\
+$R_6$: The credit limit can be incremented for &
+$RP_{6.1}$: $({\tt cust.balType} = {\tt Credit} \wedge {\tt amount} > 0) \Longrightarrow$ \\
 Limit & {\tt Int}\} & & & customers with balance type \textit{Credit} &
 \hspace*{10pt}$({\tt cust.crLimit} = {\tt cust.crLimit@} + {\tt amount})$\\
 \hline
@@ -120,8 +120,8 @@ Limit & {\tt Int}\} & & & customers with balance type \textit{Credit} &
 %% \hline
 Add Item & \{{\tt Order}, {\tt Item}\} &
 \multicolumn{1}{|c|}{$\emptyset$} & \{{\tt Order}\} &
-Adding an item to an order increases &
-$({\tt true}) \Longrightarrow ({\tt ord.total} = {\tt ord.total@} +
+$R_7$: Adding an item to an order increases &
+$RP_{7.1}$: $({\tt true}) \Longrightarrow ({\tt ord.total} = {\tt ord.total@} +
 {\tt item.price})$ \\
 to Order & & & & the order's total by the item's price & \\
 \hline
