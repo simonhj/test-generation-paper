@@ -16,7 +16,7 @@ generation?)
 
 Previous work has applied AI planning to software testing~\cite{Scheetz99ai,Howe97testcase}. The sequencing of operations done by our algorithm is similar to the AI planning problem(cite) where actions with pre- and postconditions are sequenced by a planner algorithm using either forward or backward chaining. The algorithms used by AI planners have been proven insufficient for the size of models in our domain (backref). 
 
-Part of an AI planning problem is the initial state of the program, including what objects exists and which conditions that can be assumed. Our technique does need this: The objects that exist in the system are defined in the model along with operations that create them. A test sequence will construct any object needed to achieve the goal. 
+Part of an AI planning problem is the initial state of the program, including what objects exists and which conditions that can be assumed. Our technique does not need this: The types of objects that exist in the system are defined in the model along with operations that create them. A test sequence will construct any object needed to cover a given rule. 
 
 Paradkar et al~\cite{conf/icws/ParadkarSWJOSL07} presents a system for testing web services specified in the semantic markup language OWL-S. OWL-S is similar to our modeling language but does not have any well-formedness properties. The focus of the presented technique is conformance testing, that is, testing if a given implementation conforms to the specification whereas our approach aims to cover a set of business rules with tests. The paper does not mention the size of the models the technique was evaluated on or the size of the generated test sequences.
 
