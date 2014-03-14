@@ -221,9 +221,9 @@ preceding constructor sequence includes only one rule part.
 {\small
 \begin{alltt}
   State st; BalanceType bt;
-  CreateCustomer(st, bt, out Customer cust) [\(RP\sb{1.1}\)];
-  CreateOrder(cust, out Order ord) [\(RP\sb{3.1}\)];	
-  GenerateInvoice(ord, out Invoice inv) [\(RP\sb{4.2}\)];  
+  CreateCustomer(st, bt, out Customer cust) [\(r\sb{1.1}\)];
+  CreateOrder(cust, out Order ord) [\(r\sb{3.1}\)];	
+  GenerateInvoice(ord, out Invoice inv) [\(r\sb{4.2}\)];  
 \end{alltt}
 }
 \vspace*{-5pt}
@@ -322,12 +322,12 @@ follows:
 {\small
 \begin{alltt}
   State st; BalanceType bt; int price; int crLimit;
-  CreateCustomer(st, bt, out Customer cust) [\(RP\sb{1.1}\)];
-  AddCreditLimit(cust, crLimit, out Customer cust1) [\(RP\sb{6.1}\)];
-  CreateOrder(cust, out Order ord) [\(RP\sb{3.1}\)];
-  CreateItem(price, out Item item) [\(RP\sb{2.1}\)];
-  AddItemToOrder(ord, item, out Order ord1) [\(RP\sb{7.1}\)];
-  GenerateInvoice(ord1, out Invoice inv) [\(RP\sb{4.2}\)];  
+  CreateCustomer(st, bt, out Customer cust) [\(r\sb{1.1}\)];
+  AddCreditLimit(cust, crLimit, out Customer cust1) [\(r\sb{6.1}\)];
+  CreateOrder(cust, out Order ord) [\(r\sb{3.1}\)];
+  CreateItem(price, out Item item) [\(r\sb{2.1}\)];
+  AddItemToOrder(ord, item, out Order ord1) [\(r\sb{7.1}\)];
+  GenerateInvoice(ord1, out Invoice inv) [\(r\sb{4.2}\)];  
 \end{alltt}
 }
 \vspace*{-5pt}
