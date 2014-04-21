@@ -171,10 +171,10 @@ for an operation, such that $r_1 \coloneqq ((a > 0) \Longrightarrow (total =
 preconditions are not disjoint (\ie $(a > 0) \wedge (b > 0)$ is
 satisfiable). This pair of rules violates the compatibility property because the
 postconditions are conflicting, whereas the corresponding preconditions can be
-true simultaneously---note that the first precondition doesn't constrain the
-value of \subject{b}, whereas the second precondition doesn't constrain the
+true simultaneously---note that the first precondition does not constrain the
+value of \subject{b}, whereas the second precondition does not constrain the
 value of \subject{a}. Thus, when both preconditions are true, it is not clear
-what value would \subject{total} have after the operation.
+what value \subject{total} would have after the operation.
 
 To state this property formally, let $r_1 \coloneqq (p_1 \Longrightarrow q_1)$
 and $r_2 \coloneqq (p_2 \Longrightarrow q_2)$ be the relevant rule parts of two
@@ -214,3 +214,30 @@ property is straight forward: for each pair of rules for an operation, the
 technique computes the sets of variables used in the preconditions of one rule
 and the postconditions of the other rule, and verifies that the two sets are
 non-intersecting.
+
+\subsection{Guided Model Creation}
+
+\begin{figure}[t]
+\centering
+\includegraphics[trim=43 65 114 36,clip,width=\columnwidth]{figs/rule-editor.pdf}
+\vspace*{-15pt}
+\caption{Screenshot of the Eclipse-based rule editor.}
+\vspace*{-12pt}
+\label{fig:rule-editor}
+\end{figure}
+
+Our end goal of test-data generation requires accurate rule models. Moreover, to
+get to that goal, we want the modeling process to be realistic in that users
+should be able to create and refine models in a tool-assisted manner, with
+immediate checking of, and feedback on, errors in the models.  We have
+implemented such a rule editor in the form of an Eclipse plugin;
+Figure~\ref{fig:rule-editor} shows a screenshot of the editor. Specifically, the
+editor is built using Eclipse Xtext,\footnote{\scriptsize
+  \url{https://www.eclipse.org/Xtext/}} which is a general framework for
+developing domain-specific and programming languages. Much like any modern
+syntax-directed editor for a programming language, the rule editor provides
+syntax highlighting, navigation features, auto-completion assistance, and
+on-the-fly detection of syntax errors.  The user can also run a semantic checker
+to detect violations of the four well-formedness properties discussed
+previously. Thus, the editor provides a convenient environment for writing
+rules, in which the user is guided by automated checking and feedback.

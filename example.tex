@@ -1,5 +1,5 @@
 
-\section{Example Application and Model}
+\section{Example Application Model}
 \label{sec:example}
 
 \begin{figure}[t]
@@ -43,26 +43,21 @@ adding a new item to the order.
 \hline \hline
 Create & \{{\tt State,} & \{{\tt Customer}\} &
 \multicolumn{1}{|c|}{$\emptyset$} &
-$R_1$: The \textit{status} of newly created customers &
-$RP_{1.1}$: $({\tt true}) \Longrightarrow ({\tt cust.state} = {\tt state} \; \wedge$ \\
-Customer & {\tt BalanceType}\} & & & should be \textit{Inactive} until they are &
-\hspace*{10pt}${\tt cust.status} = {\tt Inactive} \wedge
-{\tt cust.balType} = {\tt  balType} \; \wedge$ \\
-& & & & verified and activated &
-\hspace*{10pt}${\tt cust.crLimit} = 0)$ \\
+$R_1$: The \textit{credit limit (crLimit)} of newly  &
+$r_{1.1}$: $({\tt true}) \Longrightarrow ({\tt cust.state} = {\tt state} \; \wedge$ \\
+Customer & {\tt BalanceType}\} & & & created customers should be \textit{zero} &
+\hspace*{10pt}$ {\tt cust.balType} = {\tt  balType} \; \wedge {\tt cust.crLimit} = 0)$ \\
 \hline
 Create & \{{\tt Int}\} & \{{\tt Item}\} & \multicolumn{1}{|c|}{$\emptyset$} &
 $R_2$: The price of an item must be greater &
-$RP_{2.1}$: $({\tt price} > 0) \Longrightarrow ({\tt item.price} = {\tt price})$ \\
+$r_{2.1}$: $({\tt price} > 0) \Longrightarrow ({\tt item.price} = {\tt price})$ \\
 Item & & & & than zero & \\
 \hline
 Create & \{{\tt Customer}\} & \{{\tt Order}\} &
 \multicolumn{1}{|c|}{$\emptyset$} &
-$R_3$: New orders can be created only for &
-$RP_{3.1}$: $({\tt cust.status} = {\tt Active}) \Longrightarrow$ \\
-Order & & & & customers whose \textit{status} is \textit{Active} &
-\hspace*{10pt}$({\tt ord.total} = 0 \wedge
-{\tt ord.cust} = {\tt cust})$ \\
+$R_3$: The \textit{total} of a newly created order &
+$r_{3.1}$: $({\tt true}) \Longrightarrow$ $({\tt ord.total} = 0 \wedge {\tt ord.cust} = {\tt cust})$ \\
+Order & & & & should be zero & \\
 %% \cline{5-6}
 %% & & & & Orders created in the month of &
 %% $({\tt month} = {\tt Nov}) \Longrightarrow ({\tt ord.extraDiscount} = 1)$ \\
@@ -74,11 +69,11 @@ Order & & & & customers whose \textit{status} is \textit{Active} &
 Generate & \{{\tt Order}\} & \{{\tt Invoice}\} &
 \multicolumn{1}{|c|}{$\emptyset$} &
 $R_4$: A customer's balance type determines &
-$RP_{4.1}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.balType} = {\tt None}) \Longrightarrow$ \\
+$r_{4.1}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.balType} = {\tt None}) \Longrightarrow$ \\
 Invoice & & & & how the invoice total is computed &
 \hspace*{10pt}$({\tt inv.total} = {\tt ord.total})$ \\
 & & & & (see complete rule in the Introduction) &
-$RP_{4.2}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.balType} = {\tt Credit} \; \wedge$ \\
+$r_{4.2}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.balType} = {\tt Credit} \; \wedge$ \\
 & & & & &
 \hspace*{10pt}${\tt ord.cust.crLimit} \geq {\tt ord.total}) \Longrightarrow$ \\
 & & & & &
@@ -86,7 +81,7 @@ $RP_{4.2}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.balType} = {\tt Credit} \
 & & & & &
 \hspace*{10pt}${\tt ord.cust.crLimit} = {\tt ord.cust.crLimit@} - {\tt ord.total})$ \\
 & & & & &
-$RP_{4.3}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.balType} = {\tt Credit} \; \wedge$ \\
+$r_{4.3}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.balType} = {\tt Credit} \; \wedge$ \\
 & & & & &
 \hspace*{10pt}${\tt ord.cust.creditLimit} < {\tt ord.total}) \Longrightarrow$ \\
 & & & & &
@@ -95,12 +90,12 @@ $RP_{4.3}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.balType} = {\tt Credit} \
 \hspace*{10pt}${\tt ord.cust.crLimit} = 0)$ \\
 \cline{5-6}
 & & & & $R_5$: If the customer's residence is in &
-$RP_{5.1}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.state} = {\tt NY})
+$r_{5.1}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.state} = {\tt NY})
 \Longrightarrow$ \\ 
 & & & & NY \textit{state}, an additional 2\% discount &
 \hspace*{10pt}$({\tt inv.total} = {\tt ord.total} * (98 / 100))$ \\ 
 & & & & is given while generating invoices &
-$RP_{5.2}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.state} = {\tt Other})
+$r_{5.2}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.state} = {\tt Other})
 \Longrightarrow$ \\
 & & & & &
 \hspace*{10pt}$({\tt inv.total} = {\tt ord.total})$ \\
@@ -108,7 +103,7 @@ $RP_{5.2}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.state} = {\tt Other})
 Add Credit & \{{\tt Customer,} & \multicolumn{1}{|c|}{$\emptyset$} &
 \{{\tt Customer}\} &
 $R_6$: The credit limit can be incremented for &
-$RP_{6.1}$: $({\tt cust.balType} = {\tt Credit} \wedge {\tt amount} > 0) \Longrightarrow$ \\
+$r_{6.1}$: $({\tt cust.balType} = {\tt Credit} \wedge {\tt amount} > 0) \Longrightarrow$ \\
 Limit & {\tt Int}\} & & & customers with balance type \textit{Credit} &
 \hspace*{10pt}$({\tt cust.crLimit} = {\tt cust.crLimit@} + {\tt amount})$\\
 \hline
@@ -121,7 +116,7 @@ Limit & {\tt Int}\} & & & customers with balance type \textit{Credit} &
 Add Item & \{{\tt Order}, {\tt Item}\} &
 \multicolumn{1}{|c|}{$\emptyset$} & \{{\tt Order}\} &
 $R_7$: Adding an item to an order increases &
-$RP_{7.1}$: $({\tt true}) \Longrightarrow ({\tt ord.total} = {\tt ord.total@} +
+$r_{7.1}$: $({\tt true}) \Longrightarrow ({\tt ord.total} = {\tt ord.total@} +
 {\tt item.price})$ \\
 to Order & & & & the order's total by the item's price & \\
 \hline
@@ -155,7 +150,6 @@ attributes of the entities. For example, some of the relevant attributes of
 \begin{verbatim}
   Customer {
       State: state
-      Status: status
       BalanceType: balType
       int: crLimit
   }
@@ -163,9 +157,9 @@ attributes of the entities. For example, some of the relevant attributes of
 }
 \vspace*{-5pt}
 
-where \subject{State}, \subject{Status}, and \subject{BalanceType} are
-enumerated types (\eg \subject{Status} can take on two values---\subject{Active}
-or \subject{Inactive}) and \subject{crLimit} is an integer type.
+where \subject{State} and \subject{BalanceType} are
+enumerated types (\eg attribute \subject{BalanceType} can take two values---\subject{None}
+or \subject{Credit}) and the attribute \subject{crLimit} is an integer type.
 
 If an expression needs to refer to the old and new values of an attribute (\ie
 the values prior and subsequent to an operation invocation), the old value is
