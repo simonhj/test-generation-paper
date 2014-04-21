@@ -1,14 +1,22 @@
 \documentclass{sig-alternate}
 
+
+\usepackage{amssymb}
+\usepackage{verbatim}
 \usepackage{times}
 \usepackage{graphicx}
 \usepackage{epsfig}
 \usepackage{url}
 \usepackage{txfonts}
-\usepackage{caption}
-\usepackage{subcaption}
+\usepackage{xspace}
+\usepackage{float}
+\usepackage{latexsym}
+%\usepackage{natbib}
 \usepackage{alltt}
-\usepackage[usenames]{color}
+\usepackage{color}
+\usepackage{textcomp}
+\usepackage{balance}
+%\usepackage[pass,letterpaper]{geometry}
 \usepackage[ruled,vlined]{algorithm2e}
 
 \begin{document}
@@ -32,7 +40,20 @@
 \maketitle
 
 \begin{abstract}
-Abstract
+Enterprise applications are difficult to test, because their intended functionality is either 
+not described precisely enough, or described in cumbersome business rules. It takes a lot of 
+effort on the part of a test architect to understand all the business rules are design tests 
+that "cover" them, i.e. exercise all their constituent scenarios. Part of the problem is that 
+it takes a complicated set up sequence to drive an application to a state in which a business 
+rule can even fire.  In this paper we show a business rule modeling language that can be used 
+to capture functional specification of an enterprise system. The language makes it possible to 
+build tool support for rule authoring, so that obvious deficiencies in rules can be detected 
+mechanically. Most importantly, we show how to mechanically generate test sequences -- i.e. 
+test steps and test data -- needed to exercise these business rules. For this end, we translate 
+the set of rules in to logical formulae and use constraint solving to generate test sequences. 
+One of our contributions is to overcome scalability issues in this process, and we do this by 
+using a novel algorithm for organizing search through the space of rules (?? does not read well ??). 
+Our results on three case studies show the promise of our approach.
 \end{abstract}
 
 \input{intro}
