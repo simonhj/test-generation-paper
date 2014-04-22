@@ -39,26 +39,28 @@ rules.
 \\
 \term{VarDecl} & ::= & \term{TypeName} : \term{ID} \term{VarDecl} | $\epsilon$
 \\
-\term{TypeName} & ::= & \lit{int} | \lit{bool} | \lit{float} | \lit{string} |
+\term{TypeName} & ::= & \lit{bool} | \lit{int} | \lit{float} | \lit{string} |
 \lit{set<\term{\textrm{TypeName}}>} | \term{ID} \\
-\term{Expr} & ::= & \\
+\term{Expr} & ::= & $\ldots$ \\
 \end{tabular}
 }
+\vspace*{-7pt}
 \caption{Partial rule-modeling syntax.}
+\vspace*{-2pt}
 \label{fig:model-syntax}
 \end{figure}
 
 \subsection{Rule-Modeling Language}
 
 Overall, our approach models rules in the context of operations in the system
-under test.  An operation has a set of input entities, a set of created
-entities, a set of modified entities, and a set of rules, where each rule
-consists of a set of precondition-postcondition pairs. For example,
+under test.  An operation is described by a set of input entities, a set of
+created entities, a set of modified entities, and a set of rules, where each
+rule consists of a set of precondition-postcondition pairs. For example,
 Figure~\ref{fig:invoice} shows the operation for computing invoice totals in the
 \subject{jBilling} application, which takes as input an invoice and modifies
-certain attributes. The rules associated with this operation, which govern how
-the invoice total and the customer's credit limit are updated, are modeled with
-the operation in the form of precondition-postcondition pairs.
+some attributes of the invoice. The rules associated with this operation, which
+govern how the invoice total and the customer's credit limit are updated, are
+modeled with the operation in the form of precondition-postcondition pairs.
 
 Figure~\ref{fig:model-syntax} presents the formal syntax of the rule-modeling
 language (for clarity, we omit some of the details and present only the
@@ -75,19 +77,19 @@ entities whose attributes are modified by ${\cal O}$, $R$ is the set of rules
 that describe the behavior of ${\cal O}$, and $o_n$ is a succeeding operation
 that, if specified, is the only operation that can execute after ${\cal O}$.
 
-The notion of a \textit{succeeding operation} can simplify the modeling of
+The notion of \textit{succeeding operation} can simplify the modeling of
 ``coarse grained'' operations that have many rules associated with them. Such an
 operation can be broken down into a sequence of finer-grained operations---with
 the sequence specified via the \subject{next} clause---that have simpler
-rules. The specification lets the test-generation algorithm (Section ??) ensure
-that the atomic nature of the coarse-grained operation is preserved in the
-finer-grained sequence: while chaining operations, the algorithm avoids
-interleaving other operations in the middle of a finer-grained operation
-sequence.  Moreover, such decomposition is necessary when the rules of an
-operation have data dependences, which define an implicit ordering among the
-rules. One of the well-formedness properties that we impose on rule
-specifications (discussed in Section~\ref{sec:checking}) is data independence
-among the rules of an operation.
+rules. The specification lets the test-generation algorithm ensure that the
+atomic nature of the coarse-grained operation is preserved in the finer-grained
+sequence: while chaining operations, the algorithm avoids interleaving other
+operations in the middle of a finer-grained operation sequence.  Moreover, such
+decomposition is necessary when the rules of an operation have data dependences,
+which define an implicit ordering among the rules. One of the well-formedness
+properties that we impose on rule specifications (discussed in
+Section~\ref{sec:checking}) is data independence among the rules of an
+operation.
 
 A \textit{rule} $R = \{r_1, r_2, \ldots, r_k\}, k \geq 1,$ consists of a set of
 rule parts. A \textit{rule part} $r$ is a precondition-postcondition pair, $p
@@ -107,28 +109,28 @@ the credit limit.
 
 Often in enterprise systems, the execution of an operation or a transaction
 automatically triggers other transactions or operations. For example, in
-\subject{JBilling}, customers with balance type \subject{Prepaid} have the
-option of having their prepaid limit automatically recharged if it falls below a
-threshold amount. Our rule-modeling syntax accommodates this via the
-\subject{Triggers} clause, using which pairs of operations---where the first
-operation automatically triggers the second operation---can be specified.
+\subject{jBilling}, customers with balance type \subject{Prepaid} have the
+option of getting their prepaid limit automatically recharged if it falls below
+a threshold amount. Our rule-modeling syntax accommodates this via the
+\subject{Triggers} clause, using which the triggers relation between a pair of
+operations---where the first operation automatically triggers the second
+operation---can be specified.
 
-The primitive types (in addition to user-defined types or entities) include
-integer, boolean, and string types. The model also accommodates sets of these
-types.\footnote{\small In the currently implemented system, set types are
-  handled in a restricted manner: by limiting the set size to two and specifying
-  the predicates over a set in terms of its (two) elements. Section ??
-  discusses the implementation details.}
+The primitive types include boolean, integer, float, and string types. The model
+also accommodates sets of these types.\footnote{\small In the currently
+  implemented system, set types are handled in a restricted manner: by limiting
+  the set size to two and specifying the predicates over a set in terms of its
+  (two) elements.}
 
 \subsection{Rule Checking}
 \label{sec:checking}
  
 We define a few well-formedness properties on rule specifications to ensure
 consistency and completeness, and that also facilitate operation chaining for
-test generation. These properties are amenable to automated static
-checking. Thus, we envision that the rules can be iteratively refined in a rule
-editor, based on automatic (semantic) checking for property violations (in
-addition to syntactic checking for conformance to the modeling syntax).
+test generation. These properties are amenable to mechanical checking. Thus, we
+envision that the rules can be iteratively refined in a rule editor, based on
+automatic semantic checking for property violations (in addition to syntactic
+checking for conformance to the modeling syntax).
 
 \paragraph*{Property 1: Rule-part Disjointedness}
 In our notation, a rule part is intended to represent disjoint preconditions so
@@ -144,9 +146,9 @@ example, $a = 5$.  The rule parts illustrated in Figure~\ref{fig:invoice} have
 disjoint preconditions.
 
 To check that a rule satisfies this property, first, we enumerate all pairs of
-rule parts for the rule. Then, for each pair of rule parts (with preconditions
-$p_i$ and $p_j$), we determine whether the boolean formula $(p_i \wedge p_j)$
-has a solution; if it does, we flag a violation of the property.
+rule parts. Then, for each pair of rule parts (with preconditions $p_i$ and
+$p_j$), we determine whether the boolean formula $(p_i \wedge p_j)$ has a
+solution; if it does, we flag a violation of the property.
 
 \paragraph*{Property 2: Rule-part Completeness}
 This property is intended to ensure that a rule specifies the complete operation
@@ -171,10 +173,10 @@ for an operation, such that $r_1 \coloneqq ((a > 0) \Longrightarrow (total =
 preconditions are not disjoint (\ie $(a > 0) \wedge (b > 0)$ is
 satisfiable). This pair of rules violates the compatibility property because the
 postconditions are conflicting, whereas the corresponding preconditions can be
-true simultaneously---note that the first precondition does not constrain the
-value of \subject{b}, whereas the second precondition does not constrain the
-value of \subject{a}. Thus, when both preconditions are true, it is not clear
-what value \subject{total} would have after the operation.
+true simultaneously---the first precondition does not constrain the value of
+\subject{b}, and the second precondition does not constrain the value of
+\subject{a}. Thus, when both preconditions are true, it is not clear what value
+\subject{total} would have after the operation.
 
 To state this property formally, let $r_1 \coloneqq (p_1 \Longrightarrow q_1)$
 and $r_2 \coloneqq (p_2 \Longrightarrow q_2)$ be the relevant rule parts of two
@@ -222,7 +224,7 @@ non-intersecting.
 \includegraphics[trim=43 65 114 36,clip,width=\columnwidth]{figs/rule-editor.pdf}
 \vspace*{-15pt}
 \caption{Screenshot of the Eclipse-based rule editor.}
-\vspace*{-12pt}
+\vspace*{-0pt}
 \label{fig:rule-editor}
 \end{figure}
 

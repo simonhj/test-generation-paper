@@ -1,30 +1,4 @@
 
-\section{Example Application Model}
-\label{sec:example}
-
-\begin{figure}[t]
-\centering
-\includegraphics[trim=47 350 380 42,clip,width=\columnwidth]{figs/appModel.pdf}
-\vspace*{-15pt}
-\caption{Sample operations and their interactions in \subject{jBilling}.}
-\vspace*{-12pt}
-\label{fig:sample-app}
-\end{figure}
-
-Before presenting our technique, we elaborate upon the billing application
-example (\subject{jBilling}) mentioned in the previous sections: we explain
-various operations and rules for the application, which we use subsequently to
-illustrate our technique. To facilitate the illustration, we use a simplified
-version inspired by the actual application.\footnote{\scriptsize
-  \url{http://www.jbilling.com/}} (In the empirical evaluation, we modeled a
-larger part of the actual application.) The model for \subject{jBilling}
-includes four entities: \subject{Customer}, \subject{Item}, \subject{Order}, and
-\subject{Invoice}.  Figure~\ref{fig:sample-app} shows the flow among some of the
-operations, which create and/or modify these entities. For example, operation
-\subject{CreateCustomer} creates an instance of \subject{Customer}, whereas the
-operation \subject{AddItemToOrder} modifies an \subject{Order} instance by
-adding a new item to the order.
-
 \begin{table*}[t]
 \caption{Formal specification of sample business rules in \subject{jBilling}.}
 \centering
@@ -125,28 +99,54 @@ to Order & & & & the order's total by the item's price & \\
 \label{tab:bookstore-rules-spec}
 \end{table*}
 
-Table~\ref{tab:bookstore-rules-spec} presents the formal modeling of the
-\subject{jBilling} operations and the rules associated with the
-operations. Columns~2--4 list, respectively, the entities read, created, and
-modified by an operation. Columns~5 and 6 provide informal descriptions and
-formal representations of the rules associated with an operation.
-\subject{GenerateInvoice} has two rules associated with it, whereas all the
-other operations have only one rule associated with them. The first rule for
-\subject{GenerateInvoice} has three rule parts, which determine how the invoice
-total and the customer's credit limit are updated by the operation, based on the
-customer's balance type.  The second rule for \subject{GenerateInvoice} has two
-rule parts---which also determine the computation of invoice total, this time
-based on the customer's state of residence.
+\section{Example Application Model}
+\label{sec:example}
+
+\begin{figure}[t]
+\centering
+\includegraphics[trim=47 350 380 42,clip,width=.9\columnwidth]{figs/appModel.pdf}
+\vspace*{-12pt}
+\caption{Sample operations and their interactions in \subject{jBilling}.}
+\vspace*{-0pt}
+\label{fig:sample-app}
+\end{figure}
+
+Before presenting our technique, we elaborate upon the billing application
+example (\subject{jBilling}) mentioned in the previous sections: we explain
+various operations and rules for the application, which we use subsequently to
+illustrate our technique. To facilitate the illustration, we use a simplified
+version inspired by the actual application.\footnote{\scriptsize
+  \url{http://www.jbilling.com/}} (In the empirical evaluation, we modeled a
+larger part of the application.) The model for \subject{jBilling} includes four
+entities: \subject{Customer}, \subject{Item}, \subject{Order}, and
+\subject{Invoice}.  Figure~\ref{fig:sample-app} shows the flow among some of the
+operations, which create, read, or modify these entities. For example, operation
+\subject{CreateCustomer} creates an instance of \subject{Customer}, whereas the
+operation \subject{AddItemToOrder} modifies an \subject{Order} instance by
+adding a new item to the order.
+
+Table~\ref{tab:bookstore-rules-spec} presents the formal specification of the
+\subject{jBilling} operations and rules. Columns~2--4 list, respectively, the
+entities read, created, and modified by an operation. Columns~5 and 6 provide
+informal descriptions and formal representations of the rules associated with an
+operation.  \subject{GenerateInvoice} has two rules associated with it, whereas
+all the other operations have only one rule associated with them. The first rule
+for \subject{GenerateInvoice} has three rule parts, which determine how the
+invoice total and the customer's credit limit are updated by the operation,
+based on the customer's balance type.  The second rule for
+\subject{GenerateInvoice} has two rule parts---which also determine the
+computation of invoice total, this time based on the customer's state of
+residence.
 
 The boolean expressions in the rule parts refer to the input/crea\-ted/modified
 entities by names: \eg the rule part for \subject{CreateOrder} refers to the
 input \subject{Customer} instance as \subject{cust} and the created
 \subject{Order} instance as \subject{ord}. The expressions also refer to
 attributes of the entities. For example, some of the relevant attributes of
-\subject{Customer} are as follows
+\subject{Customer} are:
 
 \vspace*{-5pt}
-{\small
+{\scriptsize
 \begin{verbatim}
   Customer {
       State: state
@@ -155,11 +155,11 @@ attributes of the entities. For example, some of the relevant attributes of
   }
 \end{verbatim}
 }
-\vspace*{-5pt}
+\vspace*{-7pt}
 
 where \subject{State} and \subject{BalanceType} are
 enumerated types (\eg attribute \subject{BalanceType} can take two values---\subject{None}
-or \subject{Credit}) and the attribute \subject{crLimit} is an integer type.
+or \subject{Credit}) and the attribute \subject{crLimit} is an integer.
 
 If an expression needs to refer to the old and new values of an attribute (\ie
 the values prior and subsequent to an operation invocation), the old value is
