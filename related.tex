@@ -22,15 +22,15 @@ are not pertinent.
 The set of business rules can viewed as a model of an actual system
 that supports them and our approach then becomes a variant of model
 based test generation~\cite{utting2012}. Compared to the formalisms commonly used in the
-litterature our business rule language is more light weight. We do not
+literature our business rule language is more light weight. We do not
 require the programmer to specify control flow properties or other
 program level details.
 
 Typical modeling languages used by model based testing systems include
-UML sequence diagrams~\cite{nayak2009}, modelling specific languages
+UML sequence diagrams~\cite{nayak2009}, modeling specific languages
 such as the Systems Modeling Language~\cite{friedenthal2011} and
 finite state machine notations such as UML
-statecharts~\cite{offhut99}. While business rules as presented in this
+state charts~\cite{offhut99}. While business rules as presented in this
 paper could be expressed in any of these notations it would be
 cumbersome and require some degree of non-trivial encoding on part of
 the author, making it unattractive to a non-programmer. Our business
@@ -40,9 +40,9 @@ to non-programmers.
 
 Sriganesh and Ramanathan~\cite{sriganesh2012} extract business rules
 from systems described in the Business Process Model and Notation
-langauge, a graphical notation used to describe business
+language, a graphical notation used to describe business
 processes. The rule output is in a format similar to our formalism and
-our algorithm could concievably be applied to generate test sequences
+our algorithm could conceivably be applied to generate test sequences
 from these rules.
 
 \subsection{AI Planning}
@@ -64,12 +64,12 @@ cover a given rule part.
 
 Paradkar et al~\cite{conf/icws/ParadkarSWJOSL07}.\ presents a system
 for testing web services specified in the semantic markup language
-OWL-S. OWL-S represents operations in a manner similar to our langauge
+OWL-S. OWL-S represents operations in a manner similar to our language
 with pre- and postcondtion. However each operation has only one
-assoicated pre- and postcondition pair making it more akin to a rule
+associated pre- and postcondition pair making it more akin to a rule
 in our language. If one where to translate a model in our business
 rule language into OWL-S each rule would have to be turned into a
-standlone operation. Such a translation could potentially increase the
+standalone operation. Such a translation could potentially increase the
 size of the search space and lead to spurious sequences being
 reported. The focus of the technique presented in the paper is on
 conformance testing, that is, testing if a given implementation
