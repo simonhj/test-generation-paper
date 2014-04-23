@@ -1,5 +1,5 @@
 % !TEX root = paper.tex
-\section{Related work}
+\section{Related Work}
 
 At first blush, this problem seems to be reminiscent of the problem of
 generating tests for programs written as control-flow graphs, with the
@@ -17,7 +17,7 @@ system: rather they only describe a model and many of the concerns
 that arise when dealing with control flow graph derived from real code
 are not pertinent.
 
-\subsection{Model based testing}
+\subsection{Model Based Testing}
 
 The set of business rules can viewed as a model of an actual system
 that supports them and our approach then becomes a variant of model
@@ -50,10 +50,9 @@ from these rules.
 Previous work has applied AI planning to software
 testing~\cite{Scheetz99ai,Howe97testcase}. The sequencing of
 operations done by our algorithm is similar to the AI planning
-problem~\cite{Weld94} where actions with pre- and postconditions are sequenced
-by a planner algorithm using either forward or backward chaining. The
-algorithms used by AI planners have been proven insufficient for the
-size of models in our domain (backref).
+problem~\cite{Weld94} where actions with pre- and postconditions are
+sequenced by a planner algorithm using either forward or backward
+chaining. 
 
 Part of an AI planning problem is the initial state of the program,
 including what objects exists and which conditions that can be
@@ -65,19 +64,20 @@ cover a given rule part.
 Paradkar et al~\cite{conf/icws/ParadkarSWJOSL07}.\ presents a system
 for testing web services specified in the semantic markup language
 OWL-S. OWL-S represents operations in a manner similar to our language
-with pre- and postcondtion. However each operation has only one
+with pre- and postcondtions. However each operation has only one
 associated pre- and postcondition pair making it more akin to a rule
 in our language. If one where to translate a model in our business
-rule language into OWL-S each rule would have to be turned into a
-standalone operation. Such a translation could potentially increase the
-size of the search space and lead to spurious sequences being
-reported. The focus of the technique presented in the paper is on
-conformance testing, that is, testing if a given implementation
-conforms to the specification. In our approach the business rules are
-the specification and the aim is instead to generates tests that cover
-all rules. The paper does not mention the size of the models the
-technique was evaluated on or the size of the generated test
-sequences.
+rule language into OWL-S each rule would be translated into a standalone
+operation. Such a translation could potentially increase the size of
+the search space and lead to spurious sequences being reported. The
+focus of the technique presented in the paper is on conformance
+testing, that is, testing if a given implementation conforms to the
+specification. In our approach the business rules are the
+specification and the aim is instead to generates tests that cover all
+rules. The paper does not mention the size of the models the technique
+was evaluated on or the size of the generated test sequences.
 
-\subsection{OO testing}
- ...
+\subsection{Method Sequence Generation}
+
+
+
