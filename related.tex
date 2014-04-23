@@ -26,8 +26,8 @@ based test generation~\cite{utting2012}.
 Typical modeling languages used by model based testing systems include
 UML sequence diagrams~\cite{nayak2009}, modeling specific languages
 such as the Systems Modeling Language~\cite{friedenthal2011} and
-finite state machine notations such as UML
-state charts~\cite{offhut99}. While business rules as presented in this
+finite state machine notations such as UML state
+charts~\cite{offhut99}. While the business rules as presented in this
 paper could be expressed in any of these notations it would be
 cumbersome and require some degree of non-trivial encoding on part of
 the author, making it unattractive to a non-programmer. Our business
@@ -85,7 +85,9 @@ When testing object oriented code acheiving high branch coverage of a
 method requires driving the reciever object and any objects passed as
 arguments into a desired state. One apprach is to produce the desired
 object state by generating sequences of method calls that create and
-mutate objects analogously to how we sequence
-operations~\cite{pacheco2007,tillmann2008,thummalapenta2011}.  
+mutate objects similar to how we sequence
+operations~\cite{pacheco2007,tillmann2008,thummalapenta2011}. However
+the techniques are usually either based on random exploration or
+symbolic execution neither of which apply in our business rule setting.
 
 Something about unsat core
