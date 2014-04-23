@@ -21,10 +21,7 @@ are not pertinent.
 
 The set of business rules can viewed as a model of an actual system
 that supports them and our approach then becomes a variant of model
-based test generation~\cite{utting2012}. Compared to the formalisms commonly used in the
-literature our business rule language is more light weight. We do not
-require the programmer to specify control flow properties or other
-program level details.
+based test generation~\cite{utting2012}.
 
 Typical modeling languages used by model based testing systems include
 UML sequence diagrams~\cite{nayak2009}, modeling specific languages
@@ -50,9 +47,11 @@ from these rules.
 Previous work has applied AI planning to software
 testing~\cite{Scheetz99ai,Howe97testcase}. The sequencing of
 operations done by our algorithm is similar to the AI planning
-problem~\cite{Weld94} where actions with pre- and postconditions are
-sequenced by a planner algorithm using either forward or backward
-chaining. 
+problem~\cite{Weld94} where actions with pre- and postconditions are sequenced
+by a planner algorithm using either forward or backward chaining. The
+algorithms used by AI planners are similiar the naive technique
+presented in Section~\ref{sec:eval} which proved insuffecient for our
+benchmarks. 
 
 Part of an AI planning problem is the initial state of the program,
 including what objects exists and which conditions that can be
@@ -63,21 +62,30 @@ cover a given rule part.
 
 Paradkar et al~\cite{conf/icws/ParadkarSWJOSL07}.\ presents a system
 for testing web services specified in the semantic markup language
-OWL-S. OWL-S represents operations in a manner similar to our language
-with pre- and postcondtions. However each operation has only one
-associated pre- and postcondition pair making it more akin to a rule
-in our language. If one where to translate a model in our business
-rule language into OWL-S each rule would be translated into a standalone
-operation. Such a translation could potentially increase the size of
-the search space and lead to spurious sequences being reported. The
-focus of the technique presented in the paper is on conformance
-testing, that is, testing if a given implementation conforms to the
-specification. In our approach the business rules are the
-specification and the aim is instead to generates tests that cover all
-rules. The paper does not mention the size of the models the technique
-was evaluated on or the size of the generated test sequences.
+OWL-S. The system is backed by an AI planner. OWL-S represents
+operations in a manner similar to our language with pre- and
+postcondtions. However each operation has only one associated pre- and
+postcondition pair making it more akin to a rule in our language. If
+one where to translate a model in our business rule language into
+OWL-S each rule would be translated into a standalone operation. Such
+a translation could potentially increase the size of the search space
+and lead to spurious sequences being constructed. The focus of the
+technique presented in the paper is on conformance testing, that is,
+testing if a given implementation conforms to the specification. In
+our approach the business rules are the specification and the aim is
+instead to generates tests that cover all rules. The paper does not
+mention the size of the models the technique was evaluated on nor the
+size of the generated test sequences.
 
 \subsection{Method Sequence Generation}
 
+Do we need this section?
 
+When testing object oriented code acheiving high branch coverage of a
+method requires driving the reciever object and any objects passed as
+arguments into a desired state. One apprach is to produce the desired
+object state by generating sequences of method calls that create and
+mutate objects analogously to how we sequence
+operations~\cite{pacheco2007,tillmann2008,thummalapenta2011}.  
 
+Something about unsat core
