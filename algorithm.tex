@@ -84,7 +84,7 @@ rules, $R_4$ and $R_5$, which have three and two rule parts, respectively.
 Because preconditions of all rule parts in a rule are disjoint (Property~1,
 Section~\ref{sec:model}), control flow through a rule covers exactly one rule
 part.  The rule subgraph captures this aspect by representing each rule as a
-choice among its rule parts. Moreover, because there are no data dependence
+choice among its rule parts. Moreover, because there are no data dependences
 between rules of an operation (Property~4, Section~\ref{sec:model}), the rule
 subgraphs can be composed in any order in the operation flow graph (\ie all
 orderings are equivalent).
@@ -330,11 +330,11 @@ candidate operations that modify those entities.  For each such candidate
 operation, it identifies rule parts that modify the desired attributes and also
 whose postconditions are compatible with \subject{ucore-}, \ie{} $q \wedge b
 \wedge \subject{ucore-}$ is satisfiable, where $q$ is the postcondition of the
-selected rule part in the candidate operation and $b$ represents binding constraints.
-This additional satisfiability check helps discard candidate operations that do
-modify the desired attributes but still cannot not help in identifying a
-covering sequence for $r$; this can significantly reduce the search space of
-candidate sequences.
+selected rule part in the candidate operation and $b$ represents binding
+constraints.  This additional satisfiability check helps discard candidate
+operations that do modify the desired attributes but still cannot help in
+identifying a covering sequence for $r$; this can significantly reduce the
+search space of candidate sequences.
 
 For our illustrative example, our algorithm computes \subject{ucore-} as
 \subject{ord.total > 0}, and identifies the entity as \subject{Order} and the
