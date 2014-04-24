@@ -330,7 +330,7 @@ candidate operations that modify those entities.  For each such candidate
 operation, it identifies rule parts that modify the desired attributes and also
 whose postconditions are compatible with \subject{ucore-}, \ie{} $q \wedge b
 \wedge \subject{ucore-}$ is satisfiable, where $q$ is the postcondition of the
-selected rule part in the candidate operation and $b$ is the binding constraint.
+selected rule part in the candidate operation and $b$ represents binding constraints.
 This additional satisfiability check helps discard candidate operations that do
 modify the desired attributes but still cannot not help in identifying a
 covering sequence for $r$; this can significantly reduce the search space of
