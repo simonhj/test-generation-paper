@@ -4,7 +4,7 @@ A business rule articulates some aspect of the expected functional behavior (or
 a \textit{requirement}) of an enterprise application. Here is a simple business
 rule that determines how an invoice total is determined in a billing
 application:
-
+%
 \begin{quote}
 	The \textit{Balance Type} of a customer affects how invoice total is computed; it can be 
 	one of the following:
@@ -16,7 +16,7 @@ application:
 	Charges will automatically be paid from the users credit pool until the set limit is reached. 
 	Users are responsible for paying their credit debt as well as any overages.
 \end{quote}	
-
+%
 We will examine this rule closely later; for now, suffice it to say that the
 requirements of an enterprise system are typically captured by a large number
 (often, hundreds) of business rules such as the one above.
@@ -220,3 +220,18 @@ sequences and test data for 99\% of the rule parts and missed only one rule part
 solver). By comparison, a technique that performs exhaustive (unguided) search
 could cover 74\% of the rule parts, although it explored substantially more
 candidate sequences than our technique.
+
+In summary the contributions of this paper are as follows:
+\begin{itemize}[noitemsep]
+\item A notation for describing business rules formally and a set of
+  well-formedness properties. We have also developed an editor for the
+  language.
+\item An algorithm which can mechanically construct test sequences
+  that exercise the business rules of a model. The algorithm uses a
+  novel optimization to prune the search space. We have implemented
+  the algorithm in the \tool{} tool.
+\item To evaluate our approach we have formalized the business rules
+  of three enterprise systems and used \tool{} to generate test
+  sequences. Using our approach we are able to generate tests for 99\%
+  of the rule parts.
+\end{itemize}
