@@ -102,15 +102,6 @@ to Order & & & & the order's total by the item's price & \\
 \section{Example Application Model}
 \label{sec:example}
 
-\begin{figure}[t]
-\centering
-\includegraphics[trim=47 350 380 42,clip,width=.9\columnwidth]{figs/appModel.pdf}
-\vspace*{-12pt}
-\caption{Sample operations and their interactions in \subject{jBilling}.}
-\vspace*{-0pt}
-\label{fig:sample-app}
-\end{figure}
-
 Before presenting our technique, we elaborate upon the billing application
 example (\subject{jBilling}) mentioned in the previous sections: we explain
 various operations and rules for the application, which we use subsequently to
@@ -137,6 +128,15 @@ based on the customer's balance type.  The second rule for
 \subject{GenerateInvoice} has two rule parts---which also determine the
 computation of invoice total, this time based on the customer's state of
 residence.
+
+\begin{figure}[t]
+\centering
+\includegraphics[trim=47 350 380 42,clip,width=.9\columnwidth]{figs/appModel.pdf}
+\vspace*{-12pt}
+\caption{Sample operations and their interactions in \subject{jBilling}.}
+\vspace*{-0pt}
+\label{fig:sample-app}
+\end{figure}
 
 The boolean expressions in the rule parts refer to the input/crea\-ted/modified
 entities by names: \eg the rule part for \subject{CreateOrder} refers to the

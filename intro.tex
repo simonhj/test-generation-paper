@@ -1,8 +1,9 @@
 \section{Introduction}
 
-A business rule articulates some aspect of the expected functional behavior (or a \textit{requirement})
-of an enterprise application. Here is a simple business rule that determines how an invoice total is 
-determined in a billing application:
+A business rule articulates some aspect of the expected functional behavior (or
+a \textit{requirement}) of an enterprise application. Here is a simple business
+rule that determines how an invoice total is determined in a billing
+application:
 
 \begin{quote}
 	The \textit{Balance Type} of a customer affects how invoice total is computed; it can be 
@@ -16,57 +17,73 @@ determined in a billing application:
 	Users are responsible for paying their credit debt as well as any overages.
 \end{quote}	
 
-We will examine this rule closely later; for now, suffice it to say that the requirements 
-of an enterprise system are typically captured by a large number (often in hundreds) of business rules
-such as the one above.
+We will examine this rule closely later; for now, suffice it to say that the
+requirements of an enterprise system are typically captured by a large number
+(often, hundreds) of business rules such as the one above.
 
-It is reasonable to expect functional testing of an enterprise system to \textit{cover} its 
-business rules, which is to say, testing would exercise every distinct scenario described in each of
-its business rules.  For example, in the above rule, one of the scenario to be exercised is
-that a customer's balance type is credit, and that the order amount exceeds the customer's credit limit.  A test that exercises this scenario would set up a customer with the balance type as \textit{credit} 
-as well as a certain credit limit, say, \textit{100}, create an order and add items to the order to bring 
-a total to, say, \textit{120}, to exceed the credit limit for that customer, and then finally
-create an invoice for that order, and verify the invoiced amount.  See Figure~\ref{fig:jbilling-flow}.
-While the values \textit{credit}, \textit{100}, and \textit{120}
-can be identified just from this rule (by constraint solving), identifying a test sequence is also important to apply those values at the right fields on the appropriate 
+It is reasonable to expect functional testing of an enterprise system to
+\textit{cover} its business rules, which is to say, testing would exercise every
+distinct scenario described in each of its business rules.  For example, in the
+preceding rule, one of the scenario to be exercised is that a customer's balance
+type is credit, and that the order amount exceeds the customer's credit limit.
+A test that exercises this scenario would set up a customer with the balance
+type as \textit{credit} as well as a certain credit limit, say, \textit{100},
+create an order and add items to the order to bring a total to, say,
+\textit{120}, to exceed the credit limit for that customer, and then finally
+create an invoice for that order,and verify the invoiced amount.
+Figure~\ref{fig:jbilling-flow} illustrates this flow.  Although the values
+\textit{credit}, \textit{100}, and \textit{120} can be identified just from this
+rule (by constraint solving), identifying a test sequence is also important to
+apply those values at the right fields on the appropriate
 screens.\footnote{\small Not all fields on the screens in
-Figure~\ref{fig:jbilling-flow} are constrained from the point of view of exercising a particular scenario,
-but the application might still demand sensible values for them. The tester is expected to make these up.}
+  Figure~\ref{fig:jbilling-flow} are constrained from the point of view of
+  exercising a particular scenario, but the application might still demand
+  sensible values for them. The tester is expected to make these up.}
 
 \begin{figure*}
 \centering
-\includegraphics[trim=0 200 0 50,clip,width=7.5in]{figs/jbilling-flow}
-\caption{Test sequence for a business rule from jBilling application}
+\includegraphics[trim=47 210 35 50,clip,width=\textwidth]{figs/jbilling-flow}
+\vspace*{-10pt}
+\caption{Test sequence for exercising a business rule from the
+  \subject{jBilling} application.}
+\vspace*{-7pt}
 \label{fig:jbilling-flow}
 \end{figure*}
 
-It requires a carefully thought out test scenario, i.e. a sequence of test steps as well as associated 
-test data, i.e. values to be entered in the relevant test steps to exercise a business rule, or a scenario 
-thereof.  Without systematic test creation, testers may end up creating multiple tests that
-exercise the same business rule, or a scenario thereof, over and over 
-again without any additional benefit (especially if they are incentivised by the number of tests rather than 
-quality), and more problematically, may neglect to create tests for some other business rules.
+It requires a carefully thought-out test scenario, \ie a sequence of test steps
+as well as associated test data, \ie values to be entered in the relevant test
+steps to exercise a business rule, or a scenario thereof.  Without systematic
+test creation, testers may end up creating multiple tests that exercise the same
+business rule, or a scenario thereof, over and over again without any additional
+benefit (especially if they are incentivised by the number of tests created
+rather than quality of the created tests), and more problematically, may neglect
+to create tests for some other business rules.
 
-In practice, due to time pressures, testers are more often ad hoc than methodical in creating test 
-scenarios and test data.  One part of the problem is that a realistic system might have hundreds of 
-business rules written out in plain text, and it is difficult to grasp a global view of how the rules 
-together describe the application behavior.  A related part of the problem is that it may need complex 
-reasoning to piece together test sequences that would cover each scenario.   The net 
-result is that despite a lot of resources spent in testing, bugs still escape into the field.
+In practice, due to time pressures, testers are more often ad-hoc than
+methodical in creating test scenarios and test data.  One part of the problem is
+that a realistic system might have hundreds of business rules written out in
+plain text, and it is difficult to grasp a global view of how the rules together
+describe the application behavior.  A related part of the problem is that it may
+need complex reasoning to piece together test sequences that would cover each
+scenario.  The net result is that, despite a lot of resources spent in testing,
+bugs still escape into the field.
 
 \hyphenation{non-prog-ram-mers}
 
-Our vision is to make testing of enterprise software more tool based, by adapting technology developed 
-for automated and systematic test generation for programs.   In this vision, business rules would be 
-written in a structured notation that allows mechanized analysis. 
-Special editors could be created to enable non-programmers to capture business rules in a structured notation; 
-this is an independent challenge in \textit{end user} programming.  A tool would validate business rules 
-and point out any ambiguities or omissions that it can detect.  After the business rules pass validation, 
-another tool would generate test sequences and test data to exercise the application thoroughly as well as
+Our vision is to make testing of enterprise software more tool-based, by
+adapting technology developed for automated and systematic test generation for
+programs.  In this vision, business rules would be written in a structured
+notation that allows mechanized analysis.  Special editors could be created
+to enable non-programm\-ers to capture business rules in a structured notation;
+this is an independent challenge in \textit{end-user} programming.  A tool would
+validate business rules and point out any ambiguities or omissions that it can
+detect.  After the business rules pass validation, another tool would generate
+test sequences and test data to exercise the application thoroughly as well as
 without redundancies.
 
-We have built a system to partially fulfil this vision.  In the rest of this introductory section, we
-give an overview of our system, describe some of the challenges in automating test data generation, and 
+We have built a system to partially fulfil this vision.  In the rest of this
+introductory section, we give an overview of our system, describe some of the
+challenges in automating test generation for covering business rules, and
 briefly summarize our results.
 
 %Randomly generated test data cannot be expected to suffice for enterprise
@@ -78,66 +95,128 @@ briefly summarize our results.
 %such as statement or branch coverage, rather than coverage of complex business
 %rules.
 
-\subsection{An overview}
+\subsection{An Overview}
 
-Enterprise systems of interest to us are transaction oriented, which means that they consist of a set of
-transactions or operations (e.g. create a customer, add an item to an order, and so on) that operate on databases.  
-A business rule applies to a particular operation supported by the system.  Formally, a business rule
-describes the relation between the database state before the operation and after it.  Figure~\ref{fig:invoice} shows
-formalization of the business rule quoted informally at the beginning of the introduction.  It says that
-the operation refers to an invoice record, \textit{inv}, and modifies specific attributes of \textit{inv}.
-There are three scenarios that occur in this rule.  The first scenario applies when the customer to which the
-invoice refers has balance type \textit{None}; the \textit{precondition} is shown on the left of the first arrow.  
-Note that the invoice has references to the customer to which this invoice pertains, 
-as well as an order created in the system; in a relational database, these would be foreign keys in customer and 
-order table.  The second scenario applies when the customer has balance type \textit{credit}, but the credit limit 
-is sufficient to cover the order total.    The third scenario applies when the customer has balance type 
-\textit{credit}, but the order total exceeds the credit limit.  In each scenario, the effect of the operation is to 
-compute invoice total, and update the customer's residual credit limit; this effect, or \textit{postcondition} is 
-shown to the right of the arrow in each case.  Note that business rules refer to state observable at transaction 
-boundaries; intermediate program states encountered in the implementation while a transaction is in process, are 
-not important to business rules.
+Enterprise systems of interest to us are transaction-oriented, which means that
+they consist of a set of transactions or operations (\eg create a customer, add
+an item to an order, and so on) that operate on databases.  A business rule
+applies to a particular operation supported by the system.  Formally, a business
+rule describes the relation between the database state before and after the
+operation.  Figure~\ref{fig:invoice} shows formalization of the business rule
+quoted informally at the beginning of the introduction.  It says that the
+operation refers to an invoice record, \subject{inv}, and modifies specific
+attributes of \subject{inv}.  There are three scenarios that occur in this rule.
+The first scenario applies when the customer to which the invoice refers has
+balance type \subject{None}; the \textit{precondition} is shown on the left of
+the first arrow.  Note that the invoice has references to the customer to which
+this invoice pertains and an order created in the system; in a relational
+database, these would be foreign keys in the customer and order tables.  The
+second scenario applies when the customer has balance type \subject{Credit} and
+the credit limit is sufficient to cover the order total.  The third scenario
+applies when the customer has balance type \subject{Credit}, but the order total
+exceeds the credit limit.  In each scenario, the effect of the operation is to
+compute invoice total and update the customer's residual credit limit; this
+effect, or \textit{postcondition} is shown to the right of the arrow in each
+case.  Note that business rules refer to the state observable at transaction
+boundaries; intermediate program states encountered in the implementation while
+a transaction is in process, are not important to business rules.
 
 \begin{figure}
 \centering
-\includegraphics[trim=30 300 270 0,clip,width=\columnwidth]{figs/invoice}
-\caption{Business rule for computing invoice amount}
+\includegraphics[trim=55 320 286 54,clip,width=\columnwidth]{figs/invoice}
+\vspace*{-14pt}
+\caption{Business rule for computing invoice amount.}
 \label{fig:invoice}
 \end{figure}
 
-Covering a business rule means to exercise each of its constituent scenarios, referred henceforth as \textit{ruleparts}.
-To cover these three ruleparts in the business rule of Figure~\ref{fig:invoice}, it is necessary to create (separate)
-each of the three preconditions, and in each case verify that the post condition holds after the operation has completed.  
-This brings us to the main difficulty in creating tests:  appropriate database state, such as a customer with a certain 
-balance type, and an order with a certain amount, needs to be established before any of these scenarios can be exercised.  
-We showed in Figure~\ref{fig:jbilling-flow} the steps that would be required to create these preconditions.   How can we
-identify these steps, and the data to be entered in each of these steps automatically to cover a rulepart of
-a business rule?
+Covering a business rule means to exercise each of its constituent scenarios,
+referred henceforth as \textit{rule parts}.  To cover these three rule parts in
+the business rule of Figure~\ref{fig:invoice}, it is necessary to create
+(separately) each of the three preconditions and, in each case, verify that the
+postcondition holds after the operation has completed.  This brings us to the
+main difficulty in creating tests: appropriate database state, such as a
+customer with a certain balance type and an order with a certain amount, needs
+to be established before any of these scenarios can be exercised.  We showed in
+Figure~\ref{fig:jbilling-flow} the steps that would be required to create these
+preconditions.  How can we identify these steps, and the data to be entered in
+each of these steps automatically to cover a rule part of a business rule?
 
-Our observation is that the steps that are required to drive the database state to a desired precondition are
-carried out by operations, and those operations too would have rules that specify their functionality.  We could
-then use business rules as ``state transformers'' and piece together a sequence of operations to arrive at
-a desired state.  The advantage of looking at business rules as state transformers is that we can adapt the
-technology developed for test generation on \textit{programs} for the problem at hand.\footnote{\small We clarify, 
-though, that business rules are themselves not executable programs; rather they only are an abstract description 
-of the functionality of a program.}  The disadvantage of relying on business rules to act as state transformers is that
-they need to be specified to a certain level of detail for them to work out as state transformers; this hasn't
-been a big problem---practioners tend to write business rules with an intention to be complete---but their intended
-use as input to test generation process does increase expectations from the rules and therefore from the analysts
-that write them.
+Our observation is that the steps that are required to drive the database state
+to a desired precondition are carried out by operations, and those operations
+too would have rules that specify their functionality.  We could then use
+business rules as ``state transformers'' and piece together a sequence of
+operations to arrive at a desired state.  The advantage of looking at business
+rules as state transformers is that we can adapt the technology developed for
+test generation on \textit{programs} for the problem at hand.\footnote{\small We
+  clarify, though, that business rules are themselves not executable programs;
+  rather they only are an abstract description of the functionality of a
+  program.}  The disadvantage of relying on business rules to act as state
+transformers is that they need to be specified to a certain level of detail for
+them to work out as state transformers; this is generally not a big
+problem---practioners tend to write business rules with an intention to be
+complete---but their intended use as input to test generation process does
+increase expectations from the rules and, therefore, from the analysts who write
+them.
 
-At a high level, the idea is to use backward analysis to piece together a sequence of operations to arrive at 
-a desired state.  We look for an operation whose business rule has a rulepart whose postcondition would imply the 
-desired precondition.  Such an operation, if executed in a way that that specific rulepart applies, would establish 
-the desired state.  The operation may require some user-provided values, but may partially rely on prior database
-state. The process is repeated until no prior database state is assumed, that is, all the database state is 
-established by operations identified in the process.  
+\subsection{Our Approach and Results}
 
-Consider the second rulepart of the rule showed in Figure~\ref{fig:invoice}. The operation here is to generate
-an invoice.  But  ... show the process. Also the output sequence and data.
+At a high level, the idea is to use backward analysis to piece together a
+sequence of operations to arrive at a desired state.  We look for an operation
+whose business rule has a rule part whose postcondition would imply the desired
+precondition.  Such an operation, if executed in a way that that specific rule
+part applies, would establish the desired state.  The operation may require some
+user-provided values, but may partially rely on prior database state. The
+process is repeated until no prior database state is assumed---that is, all the
+database state is established by operations identified in the process.
 
+Consider the second rule part of the rule shown in Figure~\ref{fig:invoice} for
+the operation to generate an invoice. To satisfy the precondition of the rule
+part, a customer with balance type \subject{Credit}, and an associated credit
+limit, needs to be created first. Then, an order whose total does not exceed the
+customer's credit limit needs to be generated, which involves adding items with
+suitable prices to the order. Only after this state has been set up, the
+operation for invoice generation can be invoked. An operation sequence and test
+data (we explain the notation in Section~\ref{sec:approach}) that achieves this
+is:
 
-The idea of backward traversal is definitely not novel; it is reminiscent of weakest preconditions.  Our
-contribution is to make this idea work in the context of business rules.  We solved several engineering 
-challenges ...
+\vspace*{-4pt}
+{\scriptsize
+\begin{alltt}
+ bt = Credit, crLimit = 100, price = 20;
+ CreateCustomer(State st, BalanceType bt, out: Customer cust);
+ AddCreditLimit(Customer cust, int crLimit, out: Customer cust1);
+ CreateOrder(Customer cust, out: Order ord);
+ CreateItem(int price, out: Item item);
+ AddItemToOrder(Order ord, Item item, out: Order ord1);
+ GenerateInvoice(Order ord1, out: Invoice inv);  
+\end{alltt}
+}
+\vspace*{-5pt}
 
+The idea of backward traversal is definitely not novel; it is reminiscent of
+weakest preconditions.  Our contribution is to make this idea work in the
+context of business rules.  In general, the space of possible operation
+sequences can be large, in which only a few sequences cover the target rule
+part. Thus, the challenge is to search this space soundly, but efficiently in a
+goal-driven manner. Specifically, our technique builds the sequence
+incrementally using constraint solving. If the logical formula for a sequence is
+not satisfiable, it extracts the unsatisfied core of the formula and constructs
+new candidate sequences by considering only those operations and rule parts
+whose postconditions are compatible with the unsatisfied core. In this way---and
+using additional optimizations---the technique can prune out large parts of the
+search space and efficiently narrow down to the covering sequences.
+
+We also present a notation for capturing business rules formally, which enables
+mechanized analysis for test generation. Moreover, prior to test generation,
+formally specified rules can be checked for various consistency and completeness
+properties.
+
+We have implemented a prototype system, which includes a business rule editor
+(an Eclipse plug-in) and automated analyses for rule checking and test
+generation. Our preliminary results illustrate the promise of the approach: for
+77~rule parts, modeled from three applications, our technique generated covering
+sequences and test data for 99\% of the rule parts and missed only one rule part
+(which could not be covered because of limitations of the underlying constraint
+solver). By comparison, a technique that performs exhaustive (unguided) search
+could cover 74\% of the rule parts, although it explored substantially more
+candidate sequences than our technique.

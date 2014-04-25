@@ -1,14 +1,13 @@
 \section{Empirical Evaluation}
 \label{sec:eval}
 
-We implemented our technique in a prototype tool called \tool{} (BUSiness TEsting Rules),
-and conducted two empirical studies using two open-source applications 
-and one IBM proprietary application. In the first study, we compared
-the effectiveness of \tool{} in covering business rules with 
-a related technique that systematically explores search space 
-without any guidance. In the second study, we investigated the efficiency
-of both the techniques. After describing the experimental setup,
-we present results of the two studies.
+We implemented our technique in a prototype tool called \tool{} (BUSiness
+TEsting Rules), and conducted two empirical studies using two open-source
+applications and one proprietary enterprise application. In the first study, we
+compared the effectiveness of \tool{} in covering business rules with a related
+technique that systematically explores the search space without any guidance. In
+the second study, we investigated the efficiency of both the techniques. After
+describing the experimental setup, we present results of the two studies.
 
 \begin{table}[t]
 \caption{Subjects used in our empirical studies.}
@@ -39,103 +38,141 @@ App 				 & \multicolumn{1}{|c|}{---}	& 12 & 13 &     & 20 \\
 We implemented \tool{} as an Eclipse plugin, where users can model business
 rules in a syntax-directed editor with various features such as auto completion
 and on-the-fly detection of syntax errors. \tool{} uses \choco{} constraint
-solver~\cite{Choco} for checking the satisfiability of sequences.
-Currently, \tool{} provides a limited support for set types, where the number
-of elements in sets is limited to size two. Also, since \choco{} does not 
-provide functionality for extracting unsatisfied core, we use a heuristic-based
+solver~\cite{Choco} for checking the satisfiability of sequences.  Currently,
+\tool{} provides limited support for set types, where the number of elements in
+a set is restricted to two. Also, because \choco{} does not provide
+functionality for extracting unsatisfied core, we use a heuristic-based
 implementation to extract the core. While checking whether a concrete sequence
 is satisfiable, \tool{} starts with the last operation of the sequence and
-performs backward analysis by handling each operation and their rule parts. Therefore, when
-a composed formula is unsatisfiable, it can happen only due to some
-constraint in the most recently analyzed rule part. If the rule part includes
-multiple constraints, \tool{} further analyzes each individual constraint to identify
-the exact constraint that resulted unsatisfiability. Next \tool{} uses
-variables involved in the identified constraint to extract the complete
-unsatisfied core. Note that \tool{} may not extract 
-the minimal unsatisfied core, however, the extracted core is sufficient
-to suggest candidate operations. In future work, we plan to improve the efficiency
-of our implementation by exploring advanced algorithms for extracting unsatisfied core~\cite{Liffiton:2008:ACM}
-and also leverage other constraint solvers~\cite{DeMoura:2008}. We
-also plan to leverage Green~\cite{VisserGD12} to cache the results of constraints
-for further increasing the performance of our tool.
+performs backward analysis by handling each operation and their rule
+parts. Therefore, when a composed formula is unsatisfiable, it can be caused
+only by a constraint in the most recently analyzed rule part. If the rule part
+includes multiple constraints, \tool{} further analyzes each individual
+constraint to identify the exact constraint that caused unsatisfiability. Next,
+it uses the variables involved in that constraint to extract the complete
+unsatisfied core. Note that \tool{} may not extract the minimal unsatisfied
+core; however, the extracted core is sufficient to suggest candidate
+operations. We leave improvements in the implementation to future work, for
+example, by exploring advanced algorithms for extracting unsatisfied
+core~\cite{Liffiton:2008:ACM} and also leverage other constraint
+solvers~\cite{DeMoura:2008}. Another optimization could include caching and
+reusing constraints (\eg as discussed in the Green approach~\cite{VisserGD12})
+to improve further the efficiency of the search.
 
-To show the efficiency of \tool{}, we 
-implemented another tool, called \exhaust{}, that systematically explores sequences
-without any guidance. Similar to \tool{}, \exhaust{} also uses a queue $q$
-to store sequences. Given an operation ${\cal O}$ and a rule target $r$, 
-\exhaust{} initially creates a sequence $seq$ with ${\cal O}\ [r]$ and adds $seq$
-to $q$. For each $seq$, \exhaust{} associates a list of entities, referred to as \subject{ilist}. 
-Initially, \subject{ilist} includes input entities of ${\cal O}$.
-Next, \exhaust{} dequeues a sequence $qseq$ from $q$, removes an entity from its \subject{ilist},
-and identifies all operations \{${\cal O}_1, {\cal O}_2, \ldots, {\cal O}_n$\}
-that either create or modify that entity. \exhaust{} creates new sequences 
-by adding each ${\cal O}_i$ to $qseq$. Also, if an ${\cal O}_i$ requires additional
-input entities, it adds those entities to the \subject{ilist} corresponding to its newly
-created sequence. Next, it adds all these newly created sequences to $q$
-and repeats the process. Whenever \exhaust{} encounters a concrete sequence,
-\ie{} sequence whose \subject{ilist} is empty, it uses \choco{} to check whether
-the sequence is satisfiable. If yes, it returns the sequence; otherwise, continues
-analyzing other sequences in the queue. \exhaust{} repeats this process until 
-it finds a satisfiable sequence or it explores user-defined number of concrete
-sequences. Being an unguided technique, \exhaust{} helps evaluate
-the effectiveness of leveraging unsatisfied core as a guidance for searching
-the desired sequence.
+To compare the effectiveness and efficiency of \tool{} with an unguided search
+over the space of candidate sequences, we implemented another tool, called
+\exhaust{}, that systematically explores sequences without guidance via
+unsatisfied core. Similar to \tool{}, \exhaust{} uses a queue $q$ to store
+candidate sequences. Given an operation ${\cal O}$ and a target rule part $r$,
+\exhaust{} first creates a sequence $seq$ with ${\cal O}\ [r]$ and adds $seq$ to
+$q$. For each $seq$, \exhaust{} associates a list of input entities, referred to
+as \subject{ilist}.  Initially, \subject{ilist} contains the input entities of
+${\cal O}$ only.  Next, \exhaust{} dequeues a sequence $qseq$ from $q$, removes
+an entity from \subject{ilist}, and identifies all operations \{${\cal O}_1,
+{\cal O}_2, \ldots, {\cal O}_n$\} that create or modify that entity. \exhaust{}
+creates new sequences by adding each ${\cal O}_i$ to $qseq$. Also, if an ${\cal
+  O}_i$ requires additional input entities, it adds those entities to the
+\subject{ilist} for the newly created sequence. Next, it adds the new sequences
+to $q$ and repeats the process. When \exhaust{} encounters a concrete sequence,
+\ie{} a sequence whose \subject{ilist} is empty, it uses \choco{} to check
+whether the sequence is satisfiable: if it is, \exhaust{} returns the sequence
+and terminates; otherwise, it continues analyzing other sequences in
+$q$. \exhaust{} repeats this process until it finds a satisfiable sequence or
+reaches the user-defined upper bound on the number of sequences to be
+explored. Being an unguided technique, \exhaust{} lets us evaluate the
+effectiveness of leveraging unsatisfied core to guide the search for covering
+sequences.
 
 \subsubsection{Subjects and Rules}
 
-We used two open-source applications and one IBM proprietary application, listed
-in Table~\ref{tab:subjects}, as experimental subjects. Due to confidentiality reasons,
-we refer to the proprietary application as \subject{App}. \subject{Cebu-pacific} is
-an airlines application, \subject{jBilling} is an enterprise billing application,
-and \subject{App} is a telecom application. Column~2 shows URL of each subject.
-Columns~3--6 show additional details such as number of entities, operations,
-and rules. For each subject, we identified a module that is likely to have large
-number of interesting rules with respect to test data, and modeled those modules using our tool. In particular,
-we used \textit{ticket cancellation} and \textit{generate invoice} modules for \subject{Cebu-pacific} and 
-\subject{jBilling}, respectively. Overall, we modeled $33$ operations with $XX$ rules and
-$77$ rule parts.\footnote{The complete dataset including the models and the generated
-test sequences is available at \url{http://tinyurl.com/k4b4j8x} (also available on request
-from the authors).}
+We used two open-source applications and a proprietary enterprise application,
+listed in Table~\ref{tab:subjects}, as the experimental subjects. Due to
+confidentiality reasons, we refer to the proprietary application as
+\subject{App}. \subject{Cebu-pacific} is an airlines application,
+\subject{jBilling} is an enterprise billing application, and \subject{App} is a
+telecom application. Column~2 shows the URLs of the first two subjects.
+Columns~3--6 show additional details, such as the number of entities,
+operations, and rules. For each subject, we identified a module that is likely
+to have large number of interesting rules with respect to the sequences and test
+data required for coverage, and modeled those modules using our tool. In
+particular, we used the \textit{ticket cancellation} and \textit{generate
+  invoice} modules for \subject{Cebu-pacific} and \subject{jBilling},
+respectively. In total, we modeled $33$ operations with $XX$ rules and $77$ rule
+parts.\footnote{\small The complete dataset including the models and the
+  generated test sequences is available at \url{http://tinyurl.com/k4b4j8x}
+  (also available on request from the authors).}
 
 \subsubsection{Method}
 
-We applied both \tool{} and \exhaust{} on models created for each subject and generated
-test sequences. For each rule part, we let each tool explore up to a maximum of $100$
-concrete sequences. Next, we inspected generated sequences to ensure that 
-they cover respective rule parts. To study the efficiency of both the tools, we measured the number of sequences
-explored and also measured lengths of sequences produced by each tool.
-All experiments were conducted on an Intel Core 2 Duo CPU
-machine with 2.53 GHz and 8GB RAM. Next, we present the results of the studies.
+We applied \tool{} and \exhaust{} on the models created for each subject and
+generated test sequences. For each rule part, we let each tool explore up to a
+maximum of $100$ concrete sequences. Next, we inspected the generated sequences
+to ensure that they cover the targeted rule parts. To evaluate the efficiency of
+the tools, we measured the number of sequences explored and the lengths of
+sequences produced by each tool.  All experiments were conducted on an Intel
+Core 2 Duo CPU machine with 2.53 GHz and 8GB RAM. Next, we present the results
+of the studies.
 
 \subsection{Coverage of Business Rules}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.7\columnwidth, clip, trim = 18mm 120mm 140mm
+\includegraphics[width=0.75\columnwidth, clip, trim = 18mm 120mm 140mm
   18mm]{figs/Study-1.pdf}
+\vspace*{-10pt}
 \caption{Effectiveness of the two techniques in covering business rules.}
 \label{fig:effectiveness}
 \end{figure}
 
-Figure~\ref{fig:effectiveness} shows the results for all three subjects. 
-In the figure, x axis shows subjects, whereas y axis shows percentages of rule parts
-covered by each tool. For example, for \subject{Cebu-pacific},
-\tool{} generated desired sequences for all $31$ rule parts, whereas \exhaust{} was able
-to generate sequences only for $16$ rule parts. Overall, the results show 
-that \tool{} handled $99$\% of rule parts, whereas \exhaust{}
-handled only $74$\% of rule parts.
+Figure~\ref{fig:effectiveness} presents the results for all three subjects: it
+shows the percentages of rule parts covered by each tool. For example, for
+\subject{Cebu-pacific}, \tool{} generated covering sequences for all $31$ rule
+parts, whereas \exhaust{} was able to generate sequences only for $16$ rule
+parts. Overall, the results show that \tool{} covered $99$\% of the rule parts,
+whereas \exhaust{} could cover only $74$\% of the rule parts.
 
-While analyzing our results, we identified that the rule parts that were 
-not covered by \exhaust{} require complex sequences. In particular, \exhaust{}
-could handle subjects such as \subject{jBilling}, where there are only a few
-operations that create or modify each entity. On the other hand, it could not
-handle subjects such as \subject{Cebu-pacific}, where there are several operations
-that modify the same entity. Both \tool{} and \exhaust{} could not cover 
-one rule part in \subject{jBilling} due to an issue with \choco{} solver. \choco{} produced
-out of memory error while solving the composed formula for that rule part. We next present a complex sequence
-generated by \tool{} for a rule part in \subject{Cebu-pacific}. This rule part is
-related to refunding money to the passenger because of cancellation of flight due
-to a delay of more than two hours.
+We further analyzed the cases where the tools could not cover the targeted rule
+parts. We found that, in general, \exhaust{} performs poorly if there are many
+operations that create or modify the required input entities. This is expected
+because it results in a large search space of candidate operation sequences,
+which \tool{} is able to navigate effectively in a goal-directed manner (guided
+by the unsatisfied core), whereas \exhaust{} has to try the candidate sequences
+in a blind manner. Thus, \exhaust{} performed well on \subject{jBilling}, in
+which each entity is created or modified by only a few operations. But, for
+\subject{Cebu-pacific}, where some entities are modified by many operations,
+\exhaust{} was much less effective. In such cases, a directed search guided by
+unsatisfied core, is necessary---and can be highly effective---for attaining
+high rule coverage.
+
+For \subject{jBilling}, both \tool{} and \exhaust{} could not cover one rule
+part because of an issue with \choco{} solver: \choco{} terminated with an
+out-of-memory error while solving the composed formula for that rule part.
+
+%% While analyzing our results, we identified that the rule parts that were not
+%% covered by \exhaust{} require complex sequences. In particular, \exhaust{} could
+%% handle subjects such as \subject{jBilling}, where there are only a few
+%% operations that create or modify each entity. On the other hand, it could not
+%% handle subjects such as \subject{Cebu-pacific}, where there are several
+%% operations that modify the same entity. Both \tool{} and \exhaust{} could not
+%% cover one rule part in \subject{jBilling} due to an issue with \choco{}
+%% solver. \choco{} produced out of memory error while solving the composed formula
+%% for that rule part.
+
+Next, we illustrate a complex sequence generated by \tool{} for a rule part in
+\subject{Cebu-pacific}. This rule part pertains to fare refunds because of
+flight cancellation due to a delay of more than two
+hours. \subject{Cebu-pacific} allows a ticket to be booked as multiple sectors,
+where each sector represents part of the journey from one city to another
+city. The airlines has a refund policy that if the flight corresponding to any
+sector gets canceled due to a delay of more than two hours, passengers can get a
+refund so as to make alternative travel arrangements. To cover this rule part
+that belongs to operation \subject{Refund}, a specific instance of
+\subject{Ticket} entity is required. First, the ticket should include at least
+one sector and the passenger should have sufficient funds to add a sector to the
+ticket. Next, the flight corresponding to that sector should be delayed by more
+than two hours and, consequently, canceled. \tool{} successfully generated the
+following covering sequence and test data, whereas \exhaust{} failed to generate
+a covering sequence.
 
 {\scriptsize
 \begin{alltt}
@@ -154,19 +191,8 @@ to a delay of more than two hours.
 \end{alltt}
 }
 
-\subject{Cebu-pacific} allows booking a ticket as multiple sectors, 
-where each sector represents part of the journey from one city to another city. The airlines
-has a refund policy where if the flight corresponding to any sector gets canceled
-due to a delay of more than two hours, passengers can get refund so as to make alternate
-travel arrangements. To cover this rule part that belongs to the operation
-\subject{Refund}, a specific instance of \subject{Ticket} entity
-is required. First, the ticket should include at least one sector and the passenger
-should have sufficient funds to add a sector to the ticket. Next, the flight corresponding
-to that sector should be delayed by more than two hours, and hence should be canceled
-due to significant delay. \tool{} was able to successfully generate the preceding sequence,
-whereas \exhaust{} was not able to generate any sequence for this rule part.
-Overall, our results show promising benefits of our technique in effectively generating
-complex sequences for covering business rules.
+Overall, our results illustrate the promise of our technique in effectively
+generating complex sequences for covering business rules.
 
 \begin{table}[t]
 \caption{Efficiency of \tool{} and \exhaust{}.}
@@ -192,16 +218,17 @@ App					 	 &  9		& 6 & 10 &  6	 &  51 &  5	& 100  & 46 \\
 
 \subsection{Efficiency}
 
-Table~\ref{tab:stats} shows data about lengths of sequences and number 
-of sequences generated by both the tools. Columns~2--5 show the maximum 
-and average lengths of sequences generated for all rule parts. 
-On the other hand, Columns~6--9 show the number of 
-sequences explored by each technique for all rule parts. 
+Table~\ref{tab:stats} presents data about the lengths of sequences and the
+number of sequences generated by \tool{} and \exhaust{}. Columns~2--5 show the
+maximum and average lengths of sequences generated for all rule parts, whereas
+Columns~6--9 show the number of sequences explored by each tool for all rule
+parts.
 
-Our results show that \tool{} generated relatively shorter sequences
-compared to \exhaust{}. Furthermore, on average, \tool{} explored
-only a few sequences compared to \exhaust{}. For example,
-for \subject{Cebu-pacific}, \tool{} explored an average of $4$ sequences
-(maximum of $27$), whereas \exhaust{} explored an average of $73$ sequences
-for each rule part. Overall, the results show that \tool{} is highly efficient
-compared to \exhaust{}.
+The results show that, in some cases, \tool{} generated relatively shorter
+sequences compared to \exhaust{}. More significantly, \tool{} explored much
+fewer sequences than \exhaust{}. For example, for \subject{Cebu-pacific},
+\tool{} explored on average only $4$ sequences (maximum of $27$), whereas
+\exhaust{} explored on average $73$ sequences for each rule part (and also hit
+the upper bound of $100$ sequences). In none of the cases, \tool{} terminated by
+reaching the upper bound. Overall, these results indicate that guided search via
+unsatisfied code can make \tool{} highly efficient compared to \exhaust{}.
