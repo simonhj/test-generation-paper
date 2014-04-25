@@ -46,7 +46,7 @@ rules.
 }
 \vspace*{-7pt}
 \caption{Partial rule-modeling syntax.}
-\vspace*{-2pt}
+\vspace*{0pt}
 \label{fig:model-syntax}
 \end{figure}
 
@@ -57,8 +57,7 @@ under test.  An operation is described by a set of input entities, a set of
 created entities, a set of modified entities, and a set of rules, where each
 rule consists of a set of precondition-postcondition pairs. For example,
 Figure~\ref{fig:invoice} shows the operation for computing invoice totals in the
-\subject{jBilling} application, which takes as input an invoice and modifies
-some attributes of the invoice. The rules associated with this operation, which
+\subject{jBilling} application. The rules associated with this operation, which
 govern how the invoice total and the customer's credit limit are updated, are
 modeled with the operation in the form of precondition-postcondition pairs.
 
@@ -228,18 +227,17 @@ non-intersecting.
 \label{fig:rule-editor}
 \end{figure}
 
-Our end goal of test-data generation requires accurate rule models. Moreover, to
-get to that goal, we want the modeling process to be realistic in that users
-should be able to create and refine models in a tool-assisted manner, with
-immediate checking of, and feedback on, errors in the models.  We have
-implemented such a rule editor in the form of an Eclipse plugin;
-Figure~\ref{fig:rule-editor} shows a screenshot of the editor. Specifically, the
-editor is built using Eclipse Xtext,\footnote{\scriptsize
+%% Our end goal of test generation requires accurate rule models. Moreover, we want
+The modeling process must be realistic in that users should be able to create
+and refine models in a tool-assisted manner, with immediate checking of, and
+feedback on, errors in the models.  We have implemented such a rule editor as an
+Eclipse plugin; Figure~\ref{fig:rule-editor} shows a screenshot of the
+editor. The editor is built using Eclipse Xtext,\footnote{\scriptsize
   \url{https://www.eclipse.org/Xtext/}} which is a general framework for
 developing domain-specific and programming languages. Much like any modern
 syntax-directed editor for a programming language, the rule editor provides
-syntax highlighting, navigation features, auto-completion assistance, and
-on-the-fly detection of syntax errors.  The user can also run a semantic checker
-to detect violations of the four well-formedness properties discussed
-previously. Thus, the editor provides a convenient environment for writing
-rules, in which the user is guided by automated checking and feedback.
+syntax highlighting, navigation features, auto completion, and on-the-fly
+detection of syntax errors.  The user can also run a semantic checker to detect
+violations of the well-formedness properties discussed previously. Thus, the
+editor provides a convenient environment for writing rules, in which the user is
+guided by automated checking and feedback.

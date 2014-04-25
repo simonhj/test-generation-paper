@@ -1,12 +1,13 @@
 \section{Test generation}
+\label{sec:approach}
 
 Given an operation ${\cal O}$ and a target rule part $r$ in ${\cal O}$, our
 technique attempts to generate a \textit{test sequence}, consisting of an
 operation sequence and test data, that \textit{covers} $r$---that is, the
 sequence produces all input entities of ${\cal O}$ in appropriate object states
-to ensure that the precondition of $r$ is satisfied. The challenge in doing this
-is searching efficiently for a covering sequence from a large set of candidate
-sequences. For example, one of our subjects, \subject{Cebu-pacific}, has eight
+to ensure that the precondition of $r$ is satisfied. The challenge is to search
+for a covering sequence efficiently from a large set of candidate sequences. For
+example, one of our experimental subjects, \subject{Cebu-pacific}, has eight
 operations that accept an entity \subject{Ticket} as input and modify
 it. Therefore, any sequence composed using one or more of these operations can
 be a candidate sequence; however, different sequences and orderings produce
@@ -25,27 +26,18 @@ manner, by ignoring sequences that are not likely to cover the target rule.
 %% addresses this challenge by efficiently exploring the large search space via
 %% composing sequences incrementally.
 
-In particular, our technique first enumerates sequences of operations (along
-with selected rule parts in those operations) that create all input entities of
-the operation ${\cal O}$.  Next, for each sequence, it checks whether the
-sequence generates the desired object states (for all input entities of ${\cal
-  O}$) so that $r$ is covered. If the sequence is satisfiable, our technique
-infers test data for all inputs that are of primitive and enumerated types.
-Otherwise, it identifies an entity $e$ and its attribute $attr$ that needs to be
-modified to achieve the desired object state. Next, it identifies candidate
-operations that modify $attr$, composes new sequences using those candidate
-operations, and further checks whether those new sequences are satisfiable. Our
-technique repeats this process until it identifies a satisfiable sequence or
-reaches a user-defined threshold of the maximum number of sequences to be
-explored.
-
-\begin{figure}[t]
-\centering
-\includegraphics[trim=47 390 520 47,clip,width=.5\columnwidth]{figs/cfg-example.pdf}
-\vspace*{-20pt}
-\caption{Operation flow graph for \subject{GenerateInvoice}.}
-\label{fig:cfg}
-\end{figure}
+%% Overall, our technique first enumerates sequences of operations (along with
+%% selected rule parts in those operations) that create all input entities of
+%% ${\cal O}$.  Next, for each sequence, it checks whether the sequence generates
+%% the desired object states (for all input entities of ${\cal O}$) so that $r$ is
+%% covered. If the sequence is satisfiable, our technique infers test data for all
+%% inputs that are of primitive and enumerated types.  Otherwise, it identifies an
+%% entity $e$ and its attribute $attr$ that needs to be modified to achieve the
+%% desired object state. Next, it identifies candidate operations that modify
+%% $attr$, composes new sequences using those candidate operations, and further
+%% checks whether those new sequences are satisfiable. Our technique repeats this
+%% process until it identifies a satisfiable sequence or reaches a user-defined
+%% threshold of the maximum number of sequences to be explored.
 
 \subsection{Terminology}
 
@@ -68,6 +60,14 @@ graph for our example application.
 %% While composing sequences, our technique uses this graph to ensure that the
 %% dependencies among operations are satisfied.  Figure~\ref{fig:sample-app}
 %% shows the dependency graph for our example application.
+
+\begin{figure}[t]
+\centering
+\includegraphics[trim=47 390 520 47,clip,width=.5\columnwidth]{figs/cfg-example.pdf}
+\vspace*{-20pt}
+\caption{Operation flow graph for \subject{GenerateInvoice}.}
+\label{fig:cfg}
+\end{figure}
 
 \vskip -7pt
 \paragraph*{Operation Flow Graph} To identify combinations of rule parts (within
@@ -136,6 +136,16 @@ concrete sequence for the preceding abstract sequence is:
 }
 \vspace*{-5pt}
 
+\subsection{The Algorithm}
+\label{sec:technique}
+
+The test-generation algorithm (shown as Algorithm~\ref{alg:guidedsearch}) takes
+as inputs an operation ${\cal O}$ and a rule part $r$, and generates a concrete
+sequence $seq$ that cover $r$. To illustrate the algorithm, we consider the
+operation \subject{GenerateInvoice} and rule part $r_{4.2}$. For brevity, we
+omit details such as exiting the main loop (lines~6--15) when the user-defined
+threshold of maximum number of sequences to be explored is reached.
+
 \begin{algorithm}[t]
 \small
 \SetAlgoVlined
@@ -180,16 +190,6 @@ concrete sequence for the preceding abstract sequence is:
 \caption{\label{alg:guidedsearch} The algorithm for
   generating a concrete sequence that covers a given rule part.}
 \end{algorithm}
-
-\subsection{The Algorithm}
-\label{sec:technique}
-
-The test-generation algorithm takes as inputs an operation ${\cal O}$ and a rule
-part $r$, and generates a concrete sequence $seq$ that cover $r$. To illustrate
-the algorithm, we consider the operation \subject{GenerateInvoice} and rule part
-$r_{4.2}$. For brevity, we omit details such as exiting the main loop
-(lines~6--15) when the user-defined threshold of maximum number of sequences to
-be explored is reached.
 
 \vskip -7pt
 \paragraph*{Generate Initialization Sequences (Lines 2--5)} The algorithm first
