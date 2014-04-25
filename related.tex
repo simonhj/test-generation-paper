@@ -1,4 +1,3 @@
-% !TEX root = paper.tex
 \section{Related Work}
 
 At first blush, this problem seems to be reminiscent of the problem of
@@ -25,22 +24,22 @@ based test generation~\cite{utting2012}.
 
 Typical modeling languages used by model based testing systems include
 UML sequence diagrams~\cite{nayak2009}, modeling specific languages
-such as the Systems Modeling Language~\cite{friedenthal2011} and
+such as Systems Modeling Language~\cite{friedenthal2011} and
 finite state machine notations such as UML state
 charts~\cite{offhut99}. While the business rules as presented in this
-paper could be expressed in any of these notations it would be
+paper could be expressed in any of these notations, it would be
 cumbersome and require some degree of non-trivial encoding on part of
-the author, making it unattractive to a non-programmer. Our business
-rule language is designed so that rules are written in much the same
-way as one would write them in prose thereby making it more accessible
+users, making it unattractive to a non-programmer such as a business analyst. Our business
+rule language is designed to be user friendly, where rules are written 
+in much the same way as one would write them in prose thereby making it more accessible
 to non-programmers.
 
-Sriganesh and Ramanathan~\cite{sriganesh2012} extract business rules
+Sriganesh and Ramanathan~\cite{sriganesh2012} extracts business rules
 from systems described in the Business Process Model and Notation
 language, a graphical notation used to describe business
 processes. The rule output is in a format similar to our formalism and
 our algorithm could conceivably be applied to generate test sequences
-from these rules.
+from those rules.
 
 \subsection{AI Planning}
 
@@ -49,31 +48,30 @@ testing~\cite{Scheetz99ai,Howe97testcase}. The sequencing of
 operations done by our algorithm is similar to the AI planning
 problem~\cite{Weld94} where actions with pre- and postconditions are sequenced
 by a planner algorithm using either forward or backward chaining. The
-algorithms used by AI planners are similar the naive technique
-presented in Section~\ref{sec:eval} which proved insufficient for our
-benchmarks. 
-
-Part of an AI planning problem is the initial state of the program,
-including what objects exists and which conditions that can be
-assumed. Our technique does not need this: The types of objects that
+algorithms used by AI planners are similar to \exhaust{}
+(presented in Section~\ref{sec:eval}) and proved to be insufficient for our
+benchmarks. Part of an AI planning problem is the initial state of the program,
+including what objects exist and what conditions can be
+assumed. Our technique does not need such information---the types of objects that
 exist in the system are defined in the model along with operations
-that create them. A test sequence will construct any object needed to
-cover a given rule part.
+that create them. 
+%A test sequence will construct any object needed to
+%cover a given rule part.
 
 Paradkar et al~\cite{conf/icws/ParadkarSWJOSL07}.\ presents a system
 for testing web services specified in the semantic markup language
-OWL-S. The system is backed by an AI planner. OWL-S represents
+OWL-S~\cite{owls}. The system is backed by an AI planner. OWL-S represents
 operations in a manner similar to our language with pre- and
 postcondtions. However each operation has only one associated pre- and
 postcondition pair making it more akin to a rule in our language. If
 one where to translate a model in our business rule language into
-OWL-S each rule would be translated into a standalone operation. Such
+OWL-S, each rule would be translated into a standalone operation. Such
 a translation could potentially increase the size of the search space
 and lead to spurious sequences being constructed. The focus of the
 technique presented in the paper is on conformance testing, that is,
-testing if a given implementation conforms to the specification. In
-our approach the business rules are the specification and the aim is
-instead to generates tests that cover all rules. The paper does not
+to test whether a given implementation conforms to the specification. In
+our technique, business rules are the specification and the aim is
+instead to generate sequences that cover all rules. The paper does not
 mention the size of the models the technique was evaluated on nor the
 size of the generated test sequences.
 
@@ -81,17 +79,35 @@ size of the generated test sequences.
 
 Our work is also related to existing techniques that focus on test 
 generation for object-oriented programs~\cite{pacheco2007,tillmann2008,thummalapenta2011, xie:symstra,
-csallner:jcrasher, phil:evo, tonella:etoc}
+csallner:jcrasher, phil:evo, tonella:etoc}. At a high level,
+these techniques also focus on inferring operation sequences 
+with a goal of generating different object states for receiver
+or arguments of method under test so as to achieve high code coverage.
+Among these techniques, Symstra~\cite{xie:symstra} generates sequences
+exhaustively up to a small bound on sequence length. 
+Randoop~\cite{pacheco2007} and JCrasher~\cite{csallner:jcrasher} generate
+sequences by randomly selecting methods that produce instances of receiver
+or argument types. Tonella~\cite{tonella:etoc} and McMinn and Holcombe~\cite{phil:evo}
+use evolutionary approaches that accept an initial set of sequences
+and evolve those sequences based on a fitness function. Among all
+these techniques, our work is closely related to Seeker~\cite{thummalapenta2011}
+that also attempts to compose sequences incrementally based on branches that
+are not yet covered. The major contribution of Seeker is to infer
+candidate operations especially when those branches include private fields,
+since private fields cannot be modified directly. In our current work,
+we do not face that issue, since our model does not have the notion of public
+and private attributes. Our current work extends Seeker by extracting
+unsatisfied core and using to guide the search process. 
+We believe that Seeker can greatly benefit with
+our new algorithm of leveraging unsatisfied core as a guidance for suggesting
+candidate operations.
 
-Do we need this section?
-
-When testing object oriented code achieving high branch coverage of a
-method requires driving the receiver object and any objects passed as
-arguments into a desired state. One approach is to produce the desired
-object state by generating sequences of method calls that create and
-mutate objects similar to how we sequence
-operations~\cite{pacheco2007,tillmann2008,thummalapenta2011}. However
-the techniques are usually either based on random exploration or
-symbolic execution neither of which apply in our business rule setting.
-
-Something about unsat core
+Finally, our previous work \wateg{}~\cite{Thummalapenta:2013} also accepts business rules 
+and generates tests by crawling an application's GUI. The rules handled in our previous
+work are primarily related to application behaviors such as access control
+or navigational properties. Thus, those rules are expressed 
+using GUI elements such as links, text boxes, or buttons. In our future work, we plan
+to combine \tool{} with \wateg{}, where \tool{} generates sequences (with
+necessary test data) and then \wateg{} accepts sequences and flow-specifications 
+for each operation in those sequences as inputs, and automatically
+generates executable test cases by crawling the application's GUI.

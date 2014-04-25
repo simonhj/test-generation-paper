@@ -1,24 +1,24 @@
 \section{Conclusion}
 
-In this paper we have presented a new domain specific language for
-modeling business rules that can used to capture functional
+In this paper, we presented a new domain specific language for
+modeling business rules that can be used to capture functional
 specifications of enterprise systems. Previously such rules would only
-be expressed in prose. The language is amenable to tooling and We have
-defined 4 well-formedness properties of the language that all can be
-verified mechanically. To enable non-programmers to write models we
-have developed an IDE prototype where a user can create and refine
+be expressed in prose. We also defined four well-formedness properties,
+which can also be verified mechanically. To enable non-programmers 
+such as business analysts to create models we
+developed an Eclipse IDE prototype, where a user can create and refine
 models in a guided fashion. The tool includes a semantic checker that
-can verify wellformedness of a model.
+can verify well-formedness of a model.
 
-We present an algorithm that mechanically generates test sequences to
-exercise rules in a model. The algorithm translates the rules in the
+We presented an algorithm that mechanically generates test sequences to
+exercise rules in the model. The algorithm translates the rules in the
 model into logical expressions and uses a constraint solver to infer
 the needed input values. For optimization, the algorithm uses a novel
 approach to prune the search space based on unsatisfiable cores. 
 
-Our technique have been evaluated on three models written in the
+Our technique was evaluated using three models written in the
 business rule language. These models were derived from business rules
 written in prose. The results show that our algorithm, with the
-optimization, is able to cover 99\% of all business rules. Furthermore
-the results show that our optimization is a crucial component in
+optimization, is able to cover 99\% of all business rules. Furthermore,
+the results also show that our optimization is a crucial component in
 achieving full coverage.
