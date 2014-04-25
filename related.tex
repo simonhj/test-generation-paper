@@ -1,6 +1,10 @@
 % !TEX root = paper.tex
 \section{Related Work}
 
+This section discusses the major reaseach areas related to \tool{}.
+
+\subsection{Automated Testing}
+
 At first blush, this problem seems to be reminiscent of the problem of
 generating tests for programs written as control-flow graphs, with the
 goal of exercising each acyclic path in the program, if possible.
@@ -16,6 +20,15 @@ different. Business rules do not describe the implementation of a
 system: rather they only describe a model and many of the concerns
 that arise when dealing with control flow graph derived from real code
 are not pertinent.
+
+When testing object oriented code achieving high branch coverage of a
+method requires driving the receiver object and any objects passed as
+arguments into a desired state. One approach is to produce the desired
+object state by generating sequences of method calls that create and
+mutate objects similar to how we sequence
+operations~\cite{pacheco2007,tillmann2008,thummalapenta2011}. However
+the techniques are usually either based on random exploration or
+symbolic execution neither of which apply in our business rule setting.
 
 \subsection{Model Based Testing}
 
@@ -62,7 +75,7 @@ cover a given rule part.
 
 Paradkar et al~\cite{conf/icws/ParadkarSWJOSL07}.\ presents a system
 for testing web services specified in the semantic markup language
-OWL-S. The system is backed by an AI planner. OWL-S represents
+OWL-S~\cite{owls}. The system is backed by an AI planner. OWL-S represents
 operations in a manner similar to our language with pre- and
 postcondtions. However each operation has only one associated pre- and
 postcondition pair making it more akin to a rule in our language. If
@@ -76,18 +89,3 @@ our approach the business rules are the specification and the aim is
 instead to generates tests that cover all rules. The paper does not
 mention the size of the models the technique was evaluated on nor the
 size of the generated test sequences.
-
-\subsection{Method Sequence Generation}
-
-Do we need this section?
-
-When testing object oriented code achieving high branch coverage of a
-method requires driving the receiver object and any objects passed as
-arguments into a desired state. One approach is to produce the desired
-object state by generating sequences of method calls that create and
-mutate objects similar to how we sequence
-operations~\cite{pacheco2007,tillmann2008,thummalapenta2011}. However
-the techniques are usually either based on random exploration or
-symbolic execution neither of which apply in our business rule setting.
-
-Something about unsat core
