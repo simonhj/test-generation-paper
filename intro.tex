@@ -178,19 +178,18 @@ suitable prices to the order. Only after this state has been set up, the
 operation for invoice generation can be invoked. An operation sequence and test
 data (we explain the notation in Section~\ref{sec:approach}) that achieves this
 is:
-
-\vspace*{-4pt}
+%
+\vspace*{-4pt}%
 {\scriptsize
 \begin{alltt}
  bt = Credit, crLimit = 100, price = 20;
- CreateCustomer(State st, BalanceType bt, out: Customer cust);
- AddCreditLimit(Customer cust, int crLimit, out: Customer cust1);
- CreateOrder(Customer cust, out: Order ord);
- CreateItem(int price, out: Item item);
- AddItemToOrder(Order ord, Item item, out: Order ord1);
- GenerateInvoice(Order ord1, out: Invoice inv);  
-\end{alltt}
-}
+ CreateCustomer(\emph{State} st, \emph{BalanceType} bt, out: \emph{Customer} cust);
+ AddCreditLimit(\emph{Customer} cust, int crLimit, out: \emph{Customer} cust1);
+ CreateOrder(\emph{Customer} cust, out: \emph{Order} ord);
+ CreateItem(\emph{int} price, out: \emph{Item} item);
+ AddItemToOrder(\emph{Order} ord, \emph{Item} item, out: \emph{Order} ord1);
+ GenerateInvoice(\emph{Order} ord1, out: \emph{Invoice} inv);  
+\end{alltt}}%
 \vspace*{-5pt}
 
 The idea of backward traversal is definitely not novel; it is reminiscent of
