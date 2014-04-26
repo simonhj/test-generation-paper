@@ -355,14 +355,15 @@ as follows:
 \vspace*{-5pt}
 
 
-\subsection{Optimization}
+\subsection{Optimizations}
 \label{sec:optimization}
 
 The preceding algorithm can handle only small models where there exist only
 a few operations that modify entities. Instead, if there exist many operations 
 that modify each entity, the search space can easily become exponential. To
-address this issue, we use an optimization based on unsatisfied core 
-that helps prune the search space.
+address this issue, we use the following optimizations based on unsatisfied core 
+that helps prune the search space. These optimizations replace Line~10
+of Algorithm~\ref{alg:guidedsearch} for identifying candidate operations.
 
 \paragraph*{Extract Unsatisfiable Core} In particular, if the composed formula in
 Line~8 is unsatisfiable, we extract the unsatisfiable core, \subject{ucore},
@@ -371,9 +372,8 @@ the unsatisfiability but is simplified compared to the original formula.
 \subject{ucore} guides our algorithm towards operations that modify
 attributes of entities that help produce the desired object
 states. (Section~\ref{sec:impl} presents the implementation details of how we
-extract \subject{ucore} from a formula.)
-
-For our example, for sequence $S_2$, we extract \subject{ucore} as \subject{ord.total =
+extract \subject{ucore} from a formula.) In our example, for sequence $S_2$, 
+we extract \subject{ucore} as \subject{ord.total =
   0 $\wedge$ ord.total > 0}, composed of constraints from rule parts $r_{3.1}$
 and $r_{4.2}$.
 
@@ -405,9 +405,9 @@ many operations that modify the \subject{Order} entity, our optimization
 helps discard many of those operations, thereby increases the efficiency
 by aggressively pruning the search space. 
 After creating the new concrete sequence, we check satisfiability of the new
-sequence, where we further identify the unsatisfiable core as
-\subject{cust.crLimit = 0 $\wedge$ cust.crLimit > 0} and find the
-candidate operation as \subject{AddCreditLimit}.
+sequence, where we further identify \subject{ucore} as
+\subject{cust.crLimit = 0 $\wedge$ cust.crLimit > 0} and find \subject{AddCreditLimit}
+as a candidate operation.
 
 \vskip -7pt
 \paragraph*{Check Progress} While identifying candidate operations, our
