@@ -182,10 +182,10 @@ is:
 \vspace*{-4pt}%
 {\scriptsize
 \begin{alltt}
- State st, BalanceType bt = Credit,  int crLimit = 100, int price = 20;
+ State st; BalanceType bt = Credit; int crLimit = 100, price = 20;
  Customer cust = CreateCustomer(st, bt);
- Customer cust1 = AddCreditLimit(cust, int crLimit);
- Order ord = CreateOrder(cust);
+ Customer cust1 = AddCreditLimit(cust, crLimit);
+ Order ord = CreateOrder(cust1);
  Item item = CreateItem(int price);
  Order ord1 = AddItemToOrder(ord, item);
  Invoice inv = GenerateInvoice(ord1);  

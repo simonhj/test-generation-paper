@@ -101,7 +101,7 @@ sequence for \subject{GenerateInvoice} is:
 \vspace*{-4pt}
 {\scriptsize
 \begin{alltt} 
- State st, BalanceType bt; int price;
+ State st; BalanceType bt; int price;
  Customer cust = CreateCustomer(st, bt);
  Order ord = CreateOrder(cust);	 
  Item item = CreateItem(price);
@@ -128,7 +128,7 @@ concrete sequence for the preceding abstract sequence is:
 \vspace*{-4pt}
 {\scriptsize
 \begin{alltt} 
- State st, BalanceType bt, int price;
+ State st; BalanceType bt; int price;
  Customer cust = CreateCustomer(st, bt) [\(r\sb{1.1}\)];
  Order ord = CreateOrder(cust) [\(r\sb{3.1}\)];	
  Item item = CreateItem(price) [\(r\sb{2.1}\)];
@@ -217,7 +217,7 @@ sequence for the operation \subject{GenerateInvoice} is:
 {\scriptsize
 \begin{alltt}
  Sequence \(S\sb{1}\):
- State st, BalanceType bt;
+ State st; BalanceType bt;
  Customer cust = CreateCustomer(st, bt);  
  Order ord = CreateOrder(cust);
  Invoice inv = GenerateInvoice(ord);  
@@ -237,7 +237,7 @@ in the initialization sequence has only one rule part:
 {\scriptsize
 \begin{alltt}
  Sequence \(S\sb{2}\):
- State st, BalanceType bt;
+ State st; BalanceType bt;
  Customer cust = CreateCustomer(st, bt) [\(r\sb{1.1}\)];
  Order ord = CreateOrder(cust) [\(r\sb{3.1}\)];	
  Invoice inv = GenerateInvoice(ord) [\(r\sb{4.2}\)];  
@@ -343,7 +343,7 @@ as follows:
 {\scriptsize
 \begin{alltt}
  Sequence \(S\sb{3}\):
- State st, BalanceType bt, int price;
+ State st; BalanceType bt; int price;
  Customer cust = CreateCustomer(st, bt) [\(r\sb{1.1}\)];
  Customer cust1 = AddCreditLimit(cust, crLimit) [\(r\sb{6.1}\)];
  Order ord = CreateOrder(cust1) [\(r\sb{3.1}\)];
