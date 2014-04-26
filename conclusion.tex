@@ -1,13 +1,12 @@
 \section{Conclusion}
 
-In this paper, we presented a new domain specific language for
-modeling business rules that can be used to capture functional
-specifications of enterprise systems. We also defined four well-formedness properties,
-which can also be verified mechanically. To enable non-programmers 
-such as business analysts to create models we
-developed an Eclipse IDE prototype, where a user can create and refine
-models in a guided fashion. The tool includes a semantic checker that
-can verify well-formedness of a model.
+In this paper, we presented a new domain-specific language for modeling business
+rules that can be used to capture functional specifications of enterprise
+systems. We defined well-formedness properties on the model that can be verified
+mechanically. To enable non-prog\-rammers, such as business analysts, to create
+models, we developed an Eclipse IDE prototype, where a user can create and
+refine models in a guided fashion.
+%% The tool includes a semantic checker that can verify well-formedness of a model.
 
 We presented an algorithm that mechanically generates test sequences to
 exercise rules in the model. The algorithm translates the rules in the
@@ -15,17 +14,23 @@ model into logical expressions and uses a constraint solver to infer
 the needed input values. For optimization, the algorithm uses a novel
 approach to prune the search space based on unsatisfiable cores. 
 
-Our technique was evaluated using three models written in the
-business rule language. These models were derived from business rules
-written in prose. The results show that our algorithm, with the
-optimization, is able to cover 99\% of all business rules. Furthermore,
-the results also show that our optimization is a crucial component in
-achieving full coverage. With these promising results, we plan to
-conduct more experiments with wider varieties of subjects. This work
-is part of our longer-term vision of generating executable GUI scripts,
-where, for each operation, we plan to extend support for users to provide flow specifications 
-for operations. In our future work, we plan to integrate the
-current technique with our previous work, where \tool{} generates sequences (with
-necessary test data) and then \wateg{} accepts sequences and flow-specifications 
-for each operation in those sequences as inputs, and automatically
-generates executable test cases by crawling the application's GUI.
+Our technique was evaluated using three models written in the business
+rule language. These models were derived from business rules written
+in prose. The results show that our algorithm, with the optimization,
+is able to cover 99\% of all business rules. Furthermore, the results
+also show that our optimization is a crucial component in achieving
+full coverage. With these promising results, we plan to conduct more
+experiments with wider varieties of subjects. Toward our longer-term
+vision of bringing end-to-end automation to the testing of enterprise
+applications, we will investigate the integration between \tool{} and
+\wateg{} to generate executable test cases for validating an
+application's conformance to business rules.
+
+%% This work is part of our longer-term vision of generating executable
+%% GUI scripts, where, for each operation, we plan to extend support for
+%% users to provide flow specifications for operations. In our future
+%% work, we plan to integrate the current technique with our previous
+%% work, where \tool{} generates sequences (with necessary test data) and
+%% then \wateg{} accepts sequences and flow-specifications for each
+%% operation in those sequences as inputs, and automatically generates
+%% executable test cases by crawling the application's GUI.
