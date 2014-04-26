@@ -10,7 +10,6 @@ testing attempt to identify a series of test data that would force
 program execution thorough different paths~\cite{dart, concolic}.  Other
 approaches are based on model checking, with the goal of creating test
 inputs to reach specific program states.
-
 However, the problem of test generation from business rules is
 different. Business rules do not describe the implementation of a
 system: rather they only describe a model and many of the concerns
@@ -29,9 +28,8 @@ charts~\cite{offhut99}. While the business rules as presented in this
 paper could be expressed in any of these notations, it would be
 cumbersome and require some degree of non-trivial encoding on part of
 users, making it unattractive to a non-programmer such as a business analyst. Our business
-rule language is designed to be user friendly, where rules are written 
-in much the same way as one would write them in prose thereby making it more accessible
-to non-programmers.
+rule language is designed to be user friendly, where syntax
+is close to prose, thereby making it more accessible to non-programmers.
 
 %Sriganesh and Ramanathan~\cite{sriganesh2012} extracts business rules
 %from systems described in the Business Process Model and Notation
@@ -74,7 +72,7 @@ and lead to spurious sequences being constructed. The focus of the
 technique presented in the paper is on conformance testing, that is,
 to test whether a given implementation conforms to the specification. In
 our technique, business rules are the specification and the aim is
-instead to generate sequences that cover all rules. The paper does not
+instead to generate sequences that cover all rules. Their paper does not
 mention the size of the models the technique was evaluated on nor the
 size of the generated test sequences.
 
@@ -84,13 +82,10 @@ csallner:jcrasher, phil:evo, tonella:etoc}. At a high level,
 these techniques also focus on inferring operation sequences 
 with a goal of generating different object states for receiver
 or arguments of method under test so as to achieve high code coverage.
-Among these techniques, Symstra~\cite{xie:symstra} generates sequences
-exhaustively up to a small bound on sequence length. 
-Randoop~\cite{pacheco2007} and JCrasher~\cite{csallner:jcrasher} generate
-sequences by randomly selecting methods that produce instances of receiver
-or argument types. Tonella~\cite{tonella:etoc} and McMinn and Holcombe~\cite{phil:evo}
-use evolutionary approaches that accept an initial set of sequences
-and evolve those sequences based on a fitness function. Among all
+Among these techniques, Symstra~\cite{xie:symstra} uses
+bounded-exhaustive technique, Randoop~\cite{pacheco2007} and JCrasher~\cite{csallner:jcrasher} 
+select methods randomly to compose sequences, and Tonella~\cite{tonella:etoc} and McMinn et al.~\cite{phil:evo}
+use evolutionary approaches. Among all
 these techniques, our work is closely related to Seeker~\cite{thummalapenta2011}
 that also attempts to compose sequences incrementally based on branches that
 are not yet covered. The major contribution of Seeker is to infer
