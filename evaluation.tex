@@ -170,13 +170,12 @@ a covering sequence.
 
 {\scriptsize
 \begin{alltt}
- int fund = 200, passenger = 1;
+ int fund = 200, passenger = 1, delay = 3, sectorid = 1;
  Fund fund = CreateFund(fund, passenger);
  Ticket ticket = CreateTicket(passenger);
  int flight = 901, price = 100, departure = 10; 
  Sector sector = MakeSector(flight, price, departure);
- AddSector(ticket, sector, fund, out Ticket ticket1, out Fund f1);
- int delay = 3, sectorid = 1; 
+ AddSector(ticket, sector, fund, out Ticket ticket1, out Fund f1); 
  Ticket ticket2 = DelayFlight(ticket1, sectorid, delay);
  Ticket ticket3 = PartialCancellation(ticket2, sectorid);
  Refund(ticket3, sectorid, f1, out Ticket ticket4, out Fund f2);
