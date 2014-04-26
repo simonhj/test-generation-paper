@@ -2,8 +2,7 @@
 
 In this paper, we presented a new domain specific language for
 modeling business rules that can be used to capture functional
-specifications of enterprise systems. Previously such rules would only
-be expressed in prose. We also defined four well-formedness properties,
+specifications of enterprise systems. We also defined four well-formedness properties,
 which can also be verified mechanically. To enable non-programmers 
 such as business analysts to create models we
 developed an Eclipse IDE prototype, where a user can create and refine
@@ -21,4 +20,12 @@ business rule language. These models were derived from business rules
 written in prose. The results show that our algorithm, with the
 optimization, is able to cover 99\% of all business rules. Furthermore,
 the results also show that our optimization is a crucial component in
-achieving full coverage.
+achieving full coverage. With these promising results, we plan to
+conduct more experiments with wider varieties of subjects. This work
+is part of our longer-term vision of generating executable GUI scripts,
+where, for each operation, we plan to extend support for users to provide flow specifications 
+for operations. In our future work, we plan to integrate the
+current technique with our previous work, where \tool{} generates sequences (with
+necessary test data) and then \wateg{} accepts sequences and flow-specifications 
+for each operation in those sequences as inputs, and automatically
+generates executable test cases by crawling the application's GUI.

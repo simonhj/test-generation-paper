@@ -100,19 +100,20 @@ sequence for \subject{GenerateInvoice} is:
 
 \vspace*{-4pt}
 {\scriptsize
-\begin{alltt}
- CreateCustomer(State st, BalanceType bt, out: Customer cust);
- CreateOrder(Customer cust, out: Order ord);	
- CreateItem(int price, out: Item item);
- AddItemToOrder(Order ord, Item item, out: Order ord1);
- GenerateInvoice(Order ord1, out: Invoice inv);  
+\begin{alltt} 
+ State st, BalanceType bt; int price;
+ Customer cust = CreateCustomer(st, bt);
+ Order ord = CreateOrder(cust);	 
+ Item item = CreateItem(price);
+ Order ord1 = AddItemToOrder(ord, item);
+ Invoice inv = GenerateInvoice(ord1);  
 \end{alltt}
 }
 \vspace*{-5pt}
 
-In the notation, variables that are created or modified by an operation are
-represented using the keyword \subject{out}. As shown, all variables are
-instances of entities are initialized within the sequence.
+As shown, all variables are instances of entities are initialized within the sequence.
+In case an operation creates or modifies multiple entities,
+we represent those entities as arguments prefixed with the keyword \subject{out}. 
 
 \vskip -7pt
 \paragraph*{Concrete Sequence} A \textit{concrete sequence} constrains an
@@ -126,12 +127,13 @@ concrete sequence for the preceding abstract sequence is:
 
 \vspace*{-4pt}
 {\scriptsize
-\begin{alltt}
- CreateCustomer(State st, BalanceType bt, out: Customer cust) [\(r\sb{1.1}\)];
- CreateOrder(Customer cust, out: Order ord) [\(r\sb{3.1}\)];	
- CreateItem(int price, out: Item item) [\(r\sb{2.1}\)];
- AddItemToOrder(Order ord, Item item, out: Order ord1) [\(r\sb{7.1}\)];
- GenerateInvoice(Order ord1, out: Invoice inv) [\(r\sb{4.1}\)];  
+\begin{alltt} 
+ State st, BalanceType bt, int price;
+ Customer cust = CreateCustomer(st, bt) [\(r\sb{1.1}\)];
+ Order ord = CreateOrder(cust) [\(r\sb{3.1}\)];	
+ Item item = CreateItem(price) [\(r\sb{2.1}\)];
+ Order ord1 = AddItemToOrder(ord, item) [\(r\sb{7.1}\)];
+ Invoice inv = GenerateInvoice(ord1) [\(r\sb{4.1}\)];  
 \end{alltt}
 }
 \vspace*{-5pt}
@@ -143,8 +145,10 @@ The test-generation algorithm (shown as Algorithm~\ref{alg:guidedsearch}) takes
 as inputs an operation ${\cal O}$ and a rule part $r$, and generates a concrete
 sequence $seq$ that cover $r$. To illustrate the algorithm, we consider the
 operation \subject{GenerateInvoice} and rule part $r_{4.2}$. For brevity, we
-omit details such as exiting the main loop (lines~6--15) when the user-defined
-threshold of maximum number of sequences to be explored is reached.
+omit details such as exiting the main loop (lines~6--13) when the user-defined
+threshold of maximum number of sequences to be explored is reached. We first
+explain the core algorithm and then present our optimization based on using
+unsatisfied cores for efficiently exploring the search space.
 
 \begin{algorithm}[t]
 \small
@@ -170,14 +174,7 @@ threshold of maximum number of sequences to be explored is reached.
 				\Return $cseq$\;
 		}
 		
-		\nl Extract unsatisfiable core $ucore$ of $cseq$\;
-		
-		\nl \If {$cseq$ not helping to make progress}
-		{
-				{\bf continue}\;
-		}
-		
-		\nl Identify operations $ops$ that help satisfy $ucore$\;		
+		\nl Identify candidate operations $ops$\;		
 		\nl \ForEach {operation $op \in ops$}
 		{
 			\nl Generate new sequences $nseqs$ by adding $op$ to $cseq$\;
@@ -219,9 +216,11 @@ sequence for the operation \subject{GenerateInvoice} is:
 \vspace*{-4pt}
 {\scriptsize
 \begin{alltt}
- CreateCustomer(State st, BalanceType bt, out Customer cust);  
- CreateOrder(Customer cust, out: Order ord);
- GenerateInvoice(Order ord, out: Invoice inv);  
+ Sequence \(S\sb{1}\):
+ State st, BalanceType bt;
+ Customer cust = CreateCustomer(st, bt);  
+ Order ord = CreateOrder(cust);
+ Invoice inv = GenerateInvoice(ord);  
 \end{alltt}
 }
 \vspace*{-5pt}
@@ -237,9 +236,11 @@ in the initialization sequence has only one rule part:
 \vspace*{-4pt}
 {\scriptsize
 \begin{alltt}
- CreateCustomer(State st, BalanceType bt, out: Customer cust) [\(r\sb{1.1}\)];
- CreateOrder(Customer cust, out: Order ord) [\(r\sb{3.1}\)];	
- GenerateInvoice(Order ord, out: Invoice inv) [\(r\sb{4.2}\)];  
+ Sequence \(S\sb{2}\):
+ State st, BalanceType bt;
+ Customer cust = CreateCustomer(st, bt) [\(r\sb{1.1}\)];
+ Order ord = CreateOrder(cust) [\(r\sb{3.1}\)];	
+ Invoice inv = GenerateInvoice(ord) [\(r\sb{4.2}\)];  
 \end{alltt}
 }
 \vspace*{-5pt}
@@ -292,20 +293,6 @@ zero to attribute \subject{total} of \subject{Order}, whereas the precondition
 in rule part $r_{4.2}$ of \subject{GenerateInvoice} requires the value of
 \subject{total} to be greater than zero.
 
-\vskip -7pt
-\paragraph*{Extract Unsatisfiable Core (Line 10)} If the composed formula is
-unsatisfiable, the algorithm extracts the unsatisfiable core, \subject{ucore},
-of the formula. The unsatisfiable core is a subset of the formula that preserves
-the unsatisfiability but is simplified compared to the original formula.
-\subject{ucore} guides the algorithm toward other operations that modify
-attributes of entities to produce the goal object
-states. (Section~\ref{sec:impl} presents the implementation details of how we
-extract \subject{ucore} from a formula.)
-
-For our example, the algorithm extracts \subject{ucore} as \subject{ord.total =
-  0 $\wedge$ ord.total > 0}, composed of constraints from rule parts $r_{3.1}$
-and $r_{4.2}$. For ease of explanation, we discuss line~11 after explaining the
-rest of the algorithm.
 
 %If the unsatisfiable core is already seen for this sequence, our algorithm
 %ignores the sequence. The reason is that the candidate operation that is suggested
@@ -313,11 +300,83 @@ rest of the algorithm.
 %TODO: Refer to Tao's DSN paper for fitness functions.
 
 \vskip -7pt
-\paragraph*{Identify Candidate Operations (Line 12)}
+\paragraph*{Identify Candidate Operations (Line 10)}
 %% Since our algorithm checks satisfiability for each operation in the sequence
 %% beginning from the last operation, when we extract unsatisfiable core, it
 %% contains constraints from the formula that was composed so far and also the
 %% constraints from the last analyzed operation.
+
+Our algorithm next identifies candidate operations $ops$ (along with relevant
+rule parts in those operations) that modify any of the entities
+that were produced in the sequence. The reason is that sometimes object states 
+corresponding to intermediate objects need to be modified to produce desired object states
+for input entities of ${\cal O}$ to cover the rule part $r$. 
+For instance, in our running example, the customer whose balance type
+is \subject{Credit} should have sufficient credit limit to cover rule target $r_{4.2}$.
+
+\vskip -7pt
+\paragraph*{Generate Alternate Sequences (Lines 11--13)} After a candidate
+operation $op$ (along with relevant rule parts) is identified, the algorithm checks
+whether any additional input entities that are not yet available in the current
+sequence $cseq$ are required by the operation $op$.  If so, it identifies the
+additional operations that create those entities. Then, using the dependence
+graph, it identifies all positions in $cseq$ where the candidate operation
+(along with the additional operations) can be inserted. Note that there can be
+multiple positions that satisfy dependencies for inserting the candidate
+operation, and the resulting sequences can produce different object states for
+the input entities of ${\cal O}$.  Therefore, the algorithm can generate
+multiple sequences while inserting candidate operation into $cseq$. Finally, the
+algorithm adds all newly generated sequences to the queue to further analyze
+those sequences. Our algorithm also prunes duplicate sequences that were already
+explored in the previous iterations.
+
+For our running example, it identifies candidate operations as 
+\subject{AddItemToOrder} and \subject{AddCreditLimit}. Since \subject{AddItemToOrder} requires an additional
+entity \subject{Item} that is not available in the sequence, the algorithm adds
+operation \subject{CreateItem} as well to the newly generated sequence. 
+In the next iteration, for the sequence including \subject{AddCreditLimit},
+our algorithm identifies \subject{AddItemToOrder} as a candidate operation, and 
+finally generates the concrete sequence that covers $r_{4.2}$
+as follows:
+
+\vspace*{-4pt}
+{\scriptsize
+\begin{alltt}
+ Sequence \(S\sb{3}\):
+ State st, BalanceType bt, int price;
+ Customer cust = CreateCustomer(st, bt) [\(r\sb{1.1}\)];
+ Customer cust1 = AddCreditLimit(cust, crLimit) [\(r\sb{6.1}\)];
+ Order ord = CreateOrder(cust1) [\(r\sb{3.1}\)];
+ Item item = CreateItem(price) [\(r\sb{2.1}\)];
+ Order ord1 = AddItemToOrder(ord, item) [\(r\sb{7.1}\)];
+ Invoice inv = GenerateInvoice(ord1) [\(r\sb{4.2}\)];  
+\end{alltt}
+}
+\vspace*{-5pt}
+
+
+\subsection{Optimization}
+\label{sec:optimization}
+
+The preceding algorithm can handle only small models where there exist only
+a few operations that modify entities. Instead, the search space can become
+exponential, if there exist many operations that modify each entity. To
+address this issue, we use an optimization based on unsatisfied core 
+that helps prune the search space, thereby handle large models.
+
+\paragraph*{Extract Unsatisfiable Core} In particular, if the composed formula in
+Line 9 is unsatisfiable, we extract the unsatisfiable core, \subject{ucore},
+of the formula. The unsatisfiable core is a subset of the formula that preserves
+the unsatisfiability but is simplified compared to the original formula.
+\subject{ucore} guides our algorithm towards operations that modify
+attributes of entities that help produce the desired object
+states. (Section~\ref{sec:impl} presents the implementation details of how we
+extract \subject{ucore} from a formula.)
+
+For our example, for sequence $S_2$, we extract \subject{ucore} as \subject{ord.total =
+  0 $\wedge$ ord.total > 0}, composed of constraints from rule parts $r_{3.1}$
+and $r_{4.2}$.
+
 Before searching for other candidate operations, the algorithm discards
 constraints from \subject{ucore} that are contributed by the last analyzed
 operation (as these constraints cause the unsatisfiability of $target$).  We use
@@ -339,60 +398,24 @@ search space of candidate sequences.
 For our illustrative example, our algorithm computes \subject{ucore-} as
 \subject{ord.total > 0}, and identifies the entity as \subject{Order} and the
 desired attribute to be modified as \subject{total}. It analyzes all operations
-that create or modify \subject{Order}, and identifies two candidate operations
-as \subject{CreateOrder} and \subject{AddItemToOrder} and rule parts as
-$r_{3.1}$ and $r_{7.1}$, respectively, in those operations.  It discards
-\subject{CreateOrder} because $q_{3.1} \wedge \subject{ucore-}$ is not
-satisfiable, but selects \subject{AddItemToOrder} because $q_{7.1} \wedge
-\subject{ucore-}$ is satisfiable.
-
-%TODO: write about searching operations that modify parent entites as well.
-
-\vskip -7pt
-\paragraph*{Generate Alternate Sequences (Lines 13--15)} After a candidate
-operation (along with relevant rule parts) is identified, the algorithm checks
-whether any additional input entities that are not yet available in the current
-sequence $cseq$ are required by that operation.  If so, it identifies the
-additional operations that create those entities. Then, using the dependence
-graph, it identifies all positions in $cseq$ where the candidate operation
-(along with the additional operations) can be inserted. Note that there can be
-multiple positions that satisfy dependencies for inserting the candidate
-operation, and the resulting sequences can produce different object states for
-the input entities of ${\cal O}$.  Therefore, the algorithm can generate
-multiple sequences while inserting candidate operation into $cseq$. Finally, the
-algorithm adds all newly generated sequences to the queue to further analyze
-those sequences.
-
-For our running example, because \subject{AddItemToOrder} requires an additional
-entity \subject{Item} that is not available in the sequence, the algorithm adds
-operation \subject{CreateItem} as well to the newly generated sequence. After
-creating the new concrete sequence, it checks satisifiability of the new
-sequence, where it further detects the unsatisfiable core as
-\subject{cust.crLimit = 0 $\wedge$ cust.crLimit > 0}.  It then repeats the loop
-(lines~6--15), and identifies the final concrete sequence that covers $r_{4.2}$
-as follows:
-
-\vspace*{-4pt}
-{\scriptsize
-\begin{alltt}
- CreateCustomer(State st, BalanceType bt, out: Customer cust) [\(r\sb{1.1}\)];
- AddCreditLimit(Customer cust, int crLimit, out: Customer cust1) [\(r\sb{6.1}\)];
- CreateOrder(Customer cust, out: Order ord) [\(r\sb{3.1}\)];
- CreateItem(int price, out: Item item) [\(r\sb{2.1}\)];
- AddItemToOrder(Order ord, Item item, out: Order ord1) [\(r\sb{7.1}\)];
- GenerateInvoice(Order ord1, out: Invoice inv) [\(r\sb{4.2}\)];  
-\end{alltt}
-}
-\vspace*{-5pt}
+that create or modify \subject{Order}, and identifies the candidate operation
+as \subject{AddItemToOrder} and the rule part $r_{7.1}$, since $q_{7.1} \wedge
+\subject{ucore-}$ is satisfiable. Even if there exist
+many operations that modify the \subject{Order} entity, our optimization
+helps discard many of those operations, thereby increases the efficiency
+by aggressively pruning the search space. 
+After creating the new concrete sequence, we checks satisifiability of the new
+sequence, where we further identify the unsatisfiable core as
+\subject{cust.crLimit = 0 $\wedge$ cust.crLimit > 0} and find the
+candidate operation as \subject{AddCreditLimit}.
 
 \vskip -7pt
-\paragraph*{Check Progress (Line 11)} We next explain the significance of the
-conditional check in line~11, which ensures that the algorithm makes progress
-over iterations.  While identifying candidate operations, the algorithm discards
-those operations that do not help cover the target rule part (line~12). However,
-in a few cases, even the selected operations may not help make progress and need
+\paragraph*{Check Progress} While identifying candidate operations, our
+optimization discards
+those operations that do not help cover the target rule part. However,
+in a few cases, even the identified operations may not help make progress and need
 to be discarded to make the exploration efficient. To identify such cases, the
-algorithm checks the following two aspects for each $cseq$.
+algorithm checks the following two aspects for each sequence $cseq$.
 
 First, if the extracted unsatisfiable core \subject{ucore} was already seen in
 previous iterations related to $cseq$, the algorithm discards $cseq$. The reason
@@ -406,14 +429,14 @@ part $r$ or not. The first check is sufficient for boolean variables or
 variables of enumerated types but is insufficient to deal with the integer
 variables.
 
-To illustrate the issue, suppose that our model includes another operation,
+To illustrate the issue, consider that our model includes another operation,
 \subject{RemoveItemFromOrder}, that removes a selected item and decreases the
 value of attribute \subject{total} of \subject{Order}. While exploring candidate
-operations, our algorithm identifies \subject{AddItemToOrder} and
+operations, our optimization identifies \subject{AddItemToOrder} and
 \subject{RemoveItemFromOrder} because both operations modify
 \subject{total}. However, \subject{RemoveItemFromOrder} does not help cover
 $r_{4.2}$ as it actually decreases the value of \subject{total}. To handle such
-cases, the algorithm uses a fitness function, originally proposed in
+cases, our optimization uses a fitness function, originally proposed in
 Fitnex~\cite{xie09:fitness}, to measure whether $cseq$ gets closer to covering
 the target rule part. The idea is to compute a fitness value from
 \subject{ucore} and if this value is better than the fitness value computed

@@ -18,11 +18,11 @@ describing the experimental setup, we present results of the two studies.
 \hline
 \multicolumn{1}{|c|}{Subject} & \multicolumn{1}{|c|}{URL} & \multicolumn{1}{|c|}{Entities} & \multicolumn{1}{|c|}{Operations} & \multicolumn{1}{|c|}{Rules} & \multicolumn{1}{|c|}{Rule parts} \\
 \hline \hline
-Cebu-pacific & www.cebupacificair.com 		& 8  & 10 &  	 & 31 \\
-jBilling 		 & www.jbilling.com 					& 10 & 10 &   	 & 26 \\
-App 				 & \multicolumn{1}{|c|}{---}	& 12 & 13 &     & 20 \\
+Cebu-pacific & www.cebupacificair.com 		& 8  & 10 & 15	 & 31 \\
+jBilling 		 & www.jbilling.com 					& 10 & 10 & 14 	 & 26 \\
+App 				 & \multicolumn{1}{|c|}{---}	& 12 & 13 & 13   & 20 \\
 \hline \hline
-\textbf{Total} & 													& 	 & 33 &     & 77 \\
+\textbf{Total} & 													& 	 & 33 & 42   & 77 \\
 \hline
 \end{tabular}
 }
@@ -61,27 +61,29 @@ to improve further the efficiency of the search.
 
 To compare the effectiveness and efficiency of \tool{} with an unguided search
 over the space of candidate sequences, we implemented another tool, called
-\exhaust{}, that systematically explores sequences without guidance via
-unsatisfied core. Similar to \tool{}, \exhaust{} uses a queue $q$ to store
-candidate sequences. Given an operation ${\cal O}$ and a target rule part $r$,
-\exhaust{} first creates a sequence $seq$ with ${\cal O}\ [r]$ and adds $seq$ to
-$q$. For each $seq$, \exhaust{} associates a list of input entities, referred to
-as \subject{ilist}.  Initially, \subject{ilist} contains the input entities of
-${\cal O}$ only.  Next, \exhaust{} dequeues a sequence $qseq$ from $q$, removes
-an entity from \subject{ilist}, and identifies all operations \{${\cal O}_1,
-{\cal O}_2, \ldots, {\cal O}_n$\} that create or modify that entity. \exhaust{}
-creates new sequences by adding each ${\cal O}_i$ to $qseq$. Also, if an ${\cal
-  O}_i$ requires additional input entities, it adds those entities to the
-\subject{ilist} for the newly created sequence. Next, it adds the new sequences
-to $q$ and repeats the process. When \exhaust{} encounters a concrete sequence,
-\ie{} a sequence whose \subject{ilist} is empty, it uses \choco{} to check
-whether the sequence is satisfiable: if it is, \exhaust{} returns the sequence
-and terminates; otherwise, it continues analyzing other sequences in
-$q$. \exhaust{} repeats this process until it finds a satisfiable sequence or
-reaches the user-defined upper bound on the number of sequences to be
-explored. Being an unguided technique, \exhaust{} lets us evaluate the
+\exhaust{}. \exhaust{} is primarily the same as \tool{} without the optimization
+presented in Section~\ref{sec:optimization}. Being an unguided technique, \exhaust{} lets us evaluate the
 effectiveness of leveraging unsatisfied core to guide the search for covering
 sequences.
+
+%that systematically explores sequences without guidance via
+%unsatisfied core. Similar to \tool{}, \exhaust{} uses a queue $q$ to store
+%candidate sequences. Given an operation ${\cal O}$ and a target rule part $r$,
+%\exhaust{} first creates a sequence $seq$ with ${\cal O}\ [r]$ and adds $seq$ to
+%$q$. For each $seq$, \exhaust{} associates a list of input entities, referred to
+%as \subject{ilist}.  Initially, \subject{ilist} contains the input entities of
+%${\cal O}$ only.  Next, \exhaust{} dequeues a sequence $qseq$ from $q$, removes
+%an entity from \subject{ilist}, and identifies all operations \{${\cal O}_1,
+%{\cal O}_2, \ldots, {\cal O}_n$\} that create or modify that entity. \exhaust{}
+%creates new sequences by adding each ${\cal O}_i$ to $qseq$. Also, if an ${\cal
+%  O}_i$ requires additional input entities, it adds those entities to the
+%\subject{ilist} for the newly created sequence. Next, it adds the new sequences
+%to $q$ and repeats the process. When \exhaust{} encounters a concrete sequence,
+%\ie{} a sequence whose \subject{ilist} is empty, it uses \choco{} to check
+%whether the sequence is satisfiable: if it is, \exhaust{} returns the sequence
+%and terminates; otherwise, it continues analyzing other sequences in
+%$q$. \exhaust{} repeats this process until it finds a satisfiable sequence or
+%reaches the user-defined upper bound on the number of sequences to be explored. 
 
 \subsubsection{Subjects and Rules}
 
@@ -100,7 +102,8 @@ particular, we used the \textit{ticket cancellation} and \textit{generate
 respectively. In total, we modeled $33$ operations with $XX$ rules and $77$ rule
 parts.\footnote{\small The complete dataset including the models and the
   generated test sequences is available at \url{http://tinyurl.com/k4b4j8x}
-  (also available on request from the authors).}
+  (also available on request from the authors).} For each subject, we spent
+approximately~10 hours to model the operations and rules.
 
 \subsubsection{Method}
 
@@ -177,15 +180,15 @@ a covering sequence.
 {\scriptsize
 \begin{alltt}
  int fund = 200, passenger = 1;
- CreateFund(fund, passenger, out: Fund fund);
- CreateTicket(passenger, out: Ticket ticket);
+ Fund fund = CreateFund(fund, passenger);
+ Ticket ticket = CreateTicket(passenger);
  int flight = 901, price = 100, departure = 10; 
- MakeSector(flight, price, out: Sector sector);
+ Sector sector = MakeSector(flight, price);
  AddSector(ticket, sector, fund,  
                 out: Ticket ticket1, out: Fund fund1);
  int delay = 3, sectorid = 1; 
- DelayFlight(ticket1, sectorid, delay, out: Ticket ticket2);
- PartialCancellation(ticket2, sectorid, out: Ticket ticket3);
+ Ticket ticket2 = DelayFlight(ticket1, sectorid, delay);
+ Ticket ticket3 = PartialCancellation(ticket2, sectorid);
  Refund(ticket3, sectorid, fund1, 
                 out: Ticket ticket4, out: Fund fund2);
 \end{alltt}

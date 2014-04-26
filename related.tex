@@ -102,12 +102,10 @@ We believe that Seeker can greatly benefit with
 our new algorithm of leveraging unsatisfied core as a guidance for suggesting
 candidate operations.
 
-Finally, our previous work \wateg{}~\cite{Thummalapenta:2013} also accepts business rules 
-and generates tests by crawling an application's GUI. The rules handled in our previous
+Finally, our previous work \wateg{}~\cite{Thummalapenta:2013} also accepts rules 
+and generates tests by crawling an application's GUI. However, the rules handled in our previous
 work are primarily related to application behaviors such as access control
 or navigational properties. Thus, those rules are expressed 
-using GUI elements such as links, text boxes, or buttons. In our future work, we plan
-to combine \tool{} with \wateg{}, where \tool{} generates sequences (with
-necessary test data) and then \wateg{} accepts sequences and flow-specifications 
-for each operation in those sequences as inputs, and automatically
-generates executable test cases by crawling the application's GUI.
+using GUI elements such as links, text boxes, or buttons. In contrast,
+in our current work, our rules express business logic and the goal is to
+generate sufficient test data to exercise those rules. 
