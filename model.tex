@@ -85,10 +85,10 @@ atomic nature of the coarse-grained operation is preserved in the finer-grained
 sequence: while chaining operations, the algorithm avoids interleaving other
 operations in the middle of a finer-grained operation sequence.  Moreover, such
 decomposition is necessary when the rules of an operation have data dependences,
-which define an implicit ordering among the rules. One of the well-formedness
-properties that we impose on rule specifications (discussed in
-Section~\ref{sec:checking}) is data independence among the rules of an
-operation.
+which define an implicit ordering among the rules. %% One of the well-formedness
+%% properties that we impose on rule specifications (discussed in
+%% Section~\ref{sec:checking}) is data independence among the rules of an
+%% operation.
 
 A \textit{rule} $R = \{r_1, r_2, \ldots, r_k\}, k \geq 1,$ consists of a set of
 rule parts. A \textit{rule part} $r$ is a precondition-postcondition pair, $p
@@ -97,14 +97,13 @@ holds in the state before the operation, $q$ is true in the state resulting from
 the execution of the operation. If the precondition of a rule part is true, we
 say that the rule is \textit{applicable}.
 
-Consider the rule illustrated in Figure~\ref{fig:invoice} for the
-\subject{Compute Invoice Total} operation. The rule has three rule parts, each
-of which consists of a precondition and a postcondition. The first rule part
-pertains to the case where the customer's balance type is \subject{None}; the
-second rule part is for the case where the balance type is \subject{Credit} and
-the credit limit exceeds or equals the order total; the third rule part covers
-the case where the balance type is \subject{Credit} and the order total exceeds
-the credit limit.
+The rule shown in Figure~\ref{fig:invoice} has three rule parts, each of which
+consists of a precondition and a postcondition. The first rule part pertains to
+the case where the customer's balance type is \subject{None}; the second rule
+part is for the case where the balance type is \subject{Credit} and the credit
+limit exceeds or equals the order total; the third rule part covers the case
+where the balance type is \subject{Credit} and the order total exceeds the
+credit limit.
 
 Often in enterprise systems, the execution of an operation or a transaction
 automatically triggers other transactions or operations. For example, in
@@ -131,6 +130,7 @@ envision that the rules can be iteratively refined in a rule editor, based on
 automatic semantic checking for property violations (in addition to syntactic
 checking for conformance to the modeling syntax).
 
+\vspace*{-5pt}
 \paragraph*{Property 1: Rule-part Disjointedness}
 In our notation, a rule part is intended to represent disjoint preconditions so
 that when a rule is applicable, the precondition of only one rule part is true;
@@ -149,6 +149,7 @@ rule parts. Then, for each pair of rule parts (with preconditions $p_i$ and
 $p_j$), we determine whether the boolean formula $(p_i \wedge p_j)$ has a
 solution; if it does, we flag a violation of the property.
 
+\vspace*{-5pt}
 \paragraph*{Property 2: Rule-part Completeness}
 This property is intended to ensure that a rule specifies the complete operation
 behavior for the variables mentioned in the rule. Let $R= \{r_1, r_2, \ldots,
@@ -157,12 +158,11 @@ q_i)$. Then, $\neg(p_1 \vee p_2 \vee \ldots \vee p_k)$ must not be
 satisfiable. For example, the rule consisting of two rule parts with
 preconditions $(a < 5)$ and $(a > 10)$, respectively, violates the completeness
 property because the operation behavior for $5 \leq a \leq 10$ is left
-unspecified.
+unspecified.  To verify this property, our technique checks, for each rule that
+has two or more parts, whether the formula $\neg(p_1 \vee p_2 \vee \ldots \vee
+p_k)$ has a solution.
 
-To verify this property, our technique checks, for each rule that has two or
-more parts, whether the formula $\neg(p_1 \vee p_2 \vee \ldots \vee p_k)$ has a
-solution.
-
+\vspace*{-5pt}
 \paragraph*{Property 3: Rule Compatibility}
 The rule compatibility property requires that for any set of applicable rules of
 an operation, the postconditions of their relevant rule parts must not be
@@ -197,6 +197,7 @@ ensures that $R_m$ satisfies the rule-part disjointedness
 property. Alternatively, the negation of the precondition of $r_2$ could be
 added to the precondition of $r_{m_1}$ to satisfy this property.
 
+\vspace*{-5pt}
 \paragraph*{Property 4: Rule Independence}
 Finally, we enforce the restriction that there can be no data dependence between
 the postcondition of one rule and the precondition of another rule of the same
