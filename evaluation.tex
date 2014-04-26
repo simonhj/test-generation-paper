@@ -32,11 +32,9 @@ App 				 & \multicolumn{1}{|c|}{---}	& 12 & 13 & 13   & 20 \\
 
 \subsection{Experimental Setup}
 \label{sec:impl}
-
+\vspace*{-3ex}
 \paragraph*{Implementation} Our implementation \tool{}  uses \choco{} constraint
-solver~\cite{Choco} for checking the satisfiability of sequences.  Currently,
-\tool{} provides limited support for set types, where the number of elements in
-a set is restricted to two. Also, because \choco{} does not provide
+solver~\cite{Choco} for checking the satisfiability of sequences. Since \choco{} does not provide
 functionality for extracting unsatisfied core, we use a heuristic-based
 implementation to extract the core. While checking whether a concrete sequence
 is satisfiable, \tool{} starts with the last operation of the sequence and
