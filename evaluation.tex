@@ -31,11 +31,9 @@ App 				 & \multicolumn{1}{|c|}{---}	& 12 & 13 & 13   & 20 \\
 
 
 \subsection{Experimental Setup}
-
-\subsubsection{Implementation}
 \label{sec:impl}
 
-Our implementation \tool{}  uses \choco{} constraint
+\paragraph*{Implementation} Our implementation \tool{}  uses \choco{} constraint
 solver~\cite{Choco} for checking the satisfiability of sequences.  Currently,
 \tool{} provides limited support for set types, where the number of elements in
 a set is restricted to two. Also, because \choco{} does not provide
@@ -81,9 +79,7 @@ sequences.
 %$q$. \exhaust{} repeats this process until it finds a satisfiable sequence or
 %reaches the user-defined upper bound on the number of sequences to be explored. 
 
-\subsubsection{Subjects and Rules}
-
-We used two open-source applications and a proprietary enterprise application,
+\paragraph*{Subjects and Rules} We used two open-source applications and a proprietary enterprise application,
 listed in Table~\ref{tab:subjects}, as the experimental subjects. Due to
 confidentiality reasons, we refer to the proprietary application as
 \subject{App}. \subject{Cebu-pacific} is an airlines application,
@@ -102,9 +98,7 @@ parts.\footnote{\small The complete dataset including original English descripti
 approximately~10 hours to model the operations and rules. We also found that
 our rule editor and property checking helped create correct rule set.
 
-\subsubsection{Method}
-
-We applied \tool{} and \exhaust{} on the models created for each subject and
+\paragraph*{Method} We applied \tool{} and \exhaust{} on the models created for each subject and
 generated test sequences. For each rule part, we let each tool explore up to a
 maximum of $100$ concrete sequences. Next, we inspected the generated sequences
 to ensure that they cover the targeted rule parts. To evaluate the efficiency of
