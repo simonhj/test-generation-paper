@@ -35,9 +35,7 @@ App 				 & \multicolumn{1}{|c|}{---}	& 12 & 13 & 13   & 20 \\
 \subsubsection{Implementation}
 \label{sec:impl}
 
-We implemented \tool{} as an Eclipse plugin, where users can model business
-rules in a syntax-directed editor with various features such as auto completion
-and on-the-fly detection of syntax errors. \tool{} uses \choco{} constraint
+Our implementation \tool{}  uses \choco{} constraint
 solver~\cite{Choco} for checking the satisfiability of sequences.  Currently,
 \tool{} provides limited support for set types, where the number of elements in
 a set is restricted to two. Also, because \choco{} does not provide
@@ -46,9 +44,7 @@ implementation to extract the core. While checking whether a concrete sequence
 is satisfiable, \tool{} starts with the last operation of the sequence and
 performs backward analysis by handling each operation and their rule
 parts. Therefore, when a composed formula is unsatisfiable, it can be caused
-only by a constraint in the most recently analyzed rule part. If the rule part
-includes multiple constraints, \tool{} further analyzes each individual
-constraint to identify the exact constraint that caused unsatisfiability. Next,
+only by a constraint in the most recently analyzed rule part. Next,
 it uses the variables involved in that constraint to extract the complete
 unsatisfied core. Note that \tool{} may not extract the minimal unsatisfied
 core; however, the extracted core is sufficient to suggest candidate
@@ -100,10 +96,11 @@ data required for coverage, and modeled those modules using our tool. In
 particular, we used the \textit{ticket cancellation} and \textit{generate
   invoice} modules for \subject{Cebu-pacific} and \subject{jBilling},
 respectively. In total, we modeled $33$ operations with $42$ rules and $77$ rule
-parts.\footnote{\small The complete dataset including the models and the
+parts.\footnote{\small The complete dataset including original English descriptions, models and the
   generated test sequences is available at \url{http://tinyurl.com/k4b4j8x}
   (also available on request from the authors).} For each subject, we spent
-approximately~10 hours to model the operations and rules.
+approximately~10 hours to model the operations and rules. We also found that
+our rule editor and property checking helped create correct rule set.
 
 \subsubsection{Method}
 
@@ -120,7 +117,7 @@ of the studies.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.75\columnwidth, clip, trim = 18mm 120mm 140mm
+\includegraphics[width=0.65\columnwidth, clip, trim = 18mm 120mm 140mm
   18mm]{figs/Study-1.pdf}
 \vspace*{-10pt}
 \caption{Effectiveness of the two techniques in covering business rules.}
@@ -184,13 +181,11 @@ a covering sequence.
  Ticket ticket = CreateTicket(passenger);
  int flight = 901, price = 100, departure = 10; 
  Sector sector = MakeSector(flight, price, departure);
- AddSector(ticket, sector, fund,  
-                out: Ticket ticket1, out: Fund fund1);
+ AddSector(ticket, sector, fund, out Ticket ticket1, out Fund f1);
  int delay = 3, sectorid = 1; 
  Ticket ticket2 = DelayFlight(ticket1, sectorid, delay);
  Ticket ticket3 = PartialCancellation(ticket2, sectorid);
- Refund(ticket3, sectorid, fund1, 
-                out: Ticket ticket4, out: Fund fund2);
+ Refund(ticket3, sectorid, f1, out Ticket ticket4, out Fund f2);
 \end{alltt}
 }
 
