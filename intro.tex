@@ -183,12 +183,15 @@ is:
 {\scriptsize
 \begin{alltt}
  bt = Credit, crLimit = 100, price = 20;
- CreateCustomer(\emph{State} st, \emph{BalanceType} bt, out: \emph{Customer} cust);
- AddCreditLimit(\emph{Customer} cust, int crLimit, out: \emph{Customer} cust1);
- CreateOrder(\emph{Customer} cust, out: \emph{Order} ord);
- CreateItem(\emph{int} price, out: \emph{Item} item);
- AddItemToOrder(\emph{Order} ord, \emph{Item} item, out: \emph{Order} ord1);
- GenerateInvoice(\emph{Order} ord1, out: \emph{Invoice} inv);  
+ State st, BalanceType bt, Customer cust, Customer cust1; 
+ Order ord, Order ord1, Invoice inv;
+
+ CreateCustomer(st, bt, out: cust);
+ AddCreditLimit(cust, int crLimit, out: cust1);
+ CreateOrder(cust, out: ord);
+ CreateItem(int price, out: item);
+ AddItemToOrder(ord, item, out: ord1);
+ GenerateInvoice(ord1, out: inv);  
 \end{alltt}}%
 \vspace*{-5pt}
 
