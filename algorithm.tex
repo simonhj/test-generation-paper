@@ -359,13 +359,13 @@ as follows:
 \label{sec:optimization}
 
 The preceding algorithm can handle only small models where there exist only
-a few operations that modify entities. Instead, the search space can become
-exponential, if there exist many operations that modify each entity. To
+a few operations that modify entities. Instead, if there exist many operations 
+that modify each entity, the search space can easily become exponential. To
 address this issue, we use an optimization based on unsatisfied core 
-that helps prune the search space, thereby handle large models.
+that helps prune the search space.
 
 \paragraph*{Extract Unsatisfiable Core} In particular, if the composed formula in
-Line 9 is unsatisfiable, we extract the unsatisfiable core, \subject{ucore},
+Line~8 is unsatisfiable, we extract the unsatisfiable core, \subject{ucore},
 of the formula. The unsatisfiable core is a subset of the formula that preserves
 the unsatisfiability but is simplified compared to the original formula.
 \subject{ucore} guides our algorithm towards operations that modify
@@ -377,16 +377,16 @@ For our example, for sequence $S_2$, we extract \subject{ucore} as \subject{ord.
   0 $\wedge$ ord.total > 0}, composed of constraints from rule parts $r_{3.1}$
 and $r_{4.2}$.
 
-Before searching for other candidate operations, the algorithm discards
+Before searching for other candidate operations, we discard
 constraints from \subject{ucore} that are contributed by the last analyzed
 operation (as these constraints cause the unsatisfiability of $target$).  We use
 the notation \subject{ucore-} to represent the remaining constraints in the
 extracted unsatisfied core. The intuition behind computing \subject{ucore-} is
 to identify candidate operations that are compatible with \subject{ucore-} so
-that the composed formula can be satisfiable.  The algorithm first extracts
-entities and their attributes involved in \subject{ucore-}. Next, it identifies
+that the composed formula can be satisfiable. We first extract
+entities and their attributes involved in \subject{ucore-}. Next, we identify
 candidate operations that modify those entities.  For each such candidate
-operation, it identifies rule parts that modify the desired attributes and also
+operation, we identify rule parts that modify the desired attributes and also
 whose postconditions are compatible with \subject{ucore-}, \ie{} $q \wedge b
 \wedge \subject{ucore-}$ is satisfiable, where $q$ is the postcondition of the
 selected rule part in the candidate operation and $b$ represents binding
@@ -395,16 +395,16 @@ operations that do modify the desired attributes but still cannot help in
 identifying a covering sequence for $r$; this can significantly reduce the
 search space of candidate sequences.
 
-For our illustrative example, our algorithm computes \subject{ucore-} as
-\subject{ord.total > 0}, and identifies the entity as \subject{Order} and the
-desired attribute to be modified as \subject{total}. It analyzes all operations
-that create or modify \subject{Order}, and identifies the candidate operation
+For our illustrative example, we compute \subject{ucore-} as
+\subject{ord.total > 0}, and identify the entity as \subject{Order} and the
+desired attribute to be modified as \subject{total}. We then analyze all operations
+that create or modify \subject{Order}, and identify the candidate operation
 as \subject{AddItemToOrder} and the rule part $r_{7.1}$, since $q_{7.1} \wedge
 \subject{ucore-}$ is satisfiable. Even if there exist
 many operations that modify the \subject{Order} entity, our optimization
 helps discard many of those operations, thereby increases the efficiency
 by aggressively pruning the search space. 
-After creating the new concrete sequence, we checks satisifiability of the new
+After creating the new concrete sequence, we check satisfiability of the new
 sequence, where we further identify the unsatisfiable core as
 \subject{cust.crLimit = 0 $\wedge$ cust.crLimit > 0} and find the
 candidate operation as \subject{AddCreditLimit}.
@@ -414,16 +414,16 @@ candidate operation as \subject{AddCreditLimit}.
 optimization discards
 those operations that do not help cover the target rule part. However,
 in a few cases, even the identified operations may not help make progress and need
-to be discarded to make the exploration efficient. To identify such cases, the
-algorithm checks the following two aspects for each sequence $cseq$.
+to be discarded to make the exploration efficient. To identify such cases, we
+check the following two aspects for each sequence $cseq$.
 
 First, if the extracted unsatisfiable core \subject{ucore} was already seen in
-previous iterations related to $cseq$, the algorithm discards $cseq$. The reason
+previous iterations related to $cseq$, we discard $cseq$. The reason
 is that the candidate operation that was added to $cseq$ in the previous
 iteration did not help satisfy the previous \subject{ucore}, resulting in the
 same \subject{ucore} in the next iteration as well.
 
-Second, when \subject{ucore} includes integer variables, our algorithm uses a
+Second, when \subject{ucore} includes integer variables, we use a
 fitness function to measure whether $cseq$ helps get closer to cover the rule
 part $r$ or not. The first check is sufficient for boolean variables or
 variables of enumerated types but is insufficient to deal with the integer

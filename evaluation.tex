@@ -59,9 +59,9 @@ solvers~\cite{DeMoura:2008}. Another optimization could include caching and
 reusing constraints (\eg as discussed in the Green approach~\cite{VisserGD12})
 to improve further the efficiency of the search.
 
-To compare the effectiveness and efficiency of \tool{} with an unguided search
+To compare the efficiency of \tool{} with an unguided search
 over the space of candidate sequences, we implemented another tool, called
-\exhaust{}. \exhaust{} is primarily the same as \tool{} without the optimization
+\exhaust{}. \exhaust{} is primarily the same as \tool{} without optimizations
 presented in Section~\ref{sec:optimization}. Being an unguided technique, \exhaust{} lets us evaluate the
 effectiveness of leveraging unsatisfied core to guide the search for covering
 sequences.
@@ -99,7 +99,7 @@ to have large number of interesting rules with respect to the sequences and test
 data required for coverage, and modeled those modules using our tool. In
 particular, we used the \textit{ticket cancellation} and \textit{generate
   invoice} modules for \subject{Cebu-pacific} and \subject{jBilling},
-respectively. In total, we modeled $33$ operations with $XX$ rules and $77$ rule
+respectively. In total, we modeled $33$ operations with $42$ rules and $77$ rule
 parts.\footnote{\small The complete dataset including the models and the
   generated test sequences is available at \url{http://tinyurl.com/k4b4j8x}
   (also available on request from the authors).} For each subject, we spent
@@ -183,7 +183,7 @@ a covering sequence.
  Fund fund = CreateFund(fund, passenger);
  Ticket ticket = CreateTicket(passenger);
  int flight = 901, price = 100, departure = 10; 
- Sector sector = MakeSector(flight, price);
+ Sector sector = MakeSector(flight, price, departure);
  AddSector(ticket, sector, fund,  
                 out: Ticket ticket1, out: Fund fund1);
  int delay = 3, sectorid = 1; 
