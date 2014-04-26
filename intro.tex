@@ -182,7 +182,8 @@ is:
 \vspace*{-4pt}%
 {\scriptsize
 \begin{alltt}
- State st, BalanceType bt = Credit,  int crLimit = 100, int price = 20;
+ State st, BalanceType bt = Credit,  
+ int crLimit = 100, int price = 20;
  Customer cust = CreateCustomer(st, bt);
  Customer cust1 = AddCreditLimit(cust, int crLimit);
  Order ord = CreateOrder(cust);
@@ -238,7 +239,7 @@ In summary the contributions of this paper are as follows:
 In Section~\ref{sec:model} we describe our notation for modeling business
 rules and present 4 well-formedness properties of
 models. In Section~\ref{sec:example} we present the running example
-model, JBillings. In Section~\ref{sec:approach} we describe our approach including several
+model, JBilling. In Section~\ref{sec:approach} we describe our approach including several
 optimzations. In Section~\ref{sec:eval} is the experimental evaluation using
 our implementation \tool{} and in Section~\ref{sec:related} we discuss related
 research.   
