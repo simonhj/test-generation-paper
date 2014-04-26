@@ -63,7 +63,7 @@ graph for our example application.
 
 \begin{figure}[t]
 \centering
-\includegraphics[trim=47 390 520 47,clip,width=.4\columnwidth]{figs/cfg-example.pdf}
+\includegraphics[trim=47 390 520 47,clip,width=.45\columnwidth]{figs/cfg-example.pdf}
 \vspace*{-20pt}
 \caption{Operation flow graph for \subject{GenerateInvoice}.}
 \label{fig:cfg}
@@ -109,11 +109,11 @@ sequence for \subject{GenerateInvoice} is:
  Invoice inv = GenerateInvoice(ord1);  
 \end{alltt}
 }
-\vspace*{-5pt}
+\vspace*{-4pt}
 
-As shown, all variables are instances of entities are initialized within the sequence.
-In case an operation creates or modifies multiple entities,
-we represent those entities as arguments prefixed with the keyword \subject{out}. 
+All instances of entities are initialized within the sequence.  In
+case an operation creates or modifies multiple entities, we represent
+those entities as arguments prefixed with the keyword \subject{out}.
 
 \vskip -7pt
 \paragraph*{Concrete Sequence} A \textit{concrete sequence} constrains an
@@ -273,7 +273,9 @@ primitive type, the only binding constraint needed is $w = v$. However, if
 $\tau$ is an object type, we must bind all attributes as well, yielding the
 following constraint:
 
+\vskip 2pt
 $b_n$: $w = v \wedge w.f_1 = v.f_1 \wedge \ldots \wedge w.f_n = v.f_n$ 
+\vskip 2pt
 
 Here, $f_1, \ldots , f_n$ are attributes of $\tau$. To generate the final
 binding constraint, this process is applied recursively on each attribute of
@@ -287,11 +289,11 @@ processed all operations in the sequence and the formula is satisfiable, it
 extracts values for variables of primitive and enumerated types from the
 constraint solution to generate test data.
 
-For our running example, the solver returns that the composed formula as
-unsatisfiable. The reason is that $r_{3.1}$ of \subject{CreateOrder} assigns
-zero to attribute \subject{total} of \subject{Order}, whereas the precondition
-in rule part $r_{4.2}$ of \subject{GenerateInvoice} requires the value of
-\subject{total} to be greater than zero.
+For our running example, the solver finds the composed formula
+unsatisfiable. The reason is that rule part $r_{3.1}$ of \subject{CreateOrder}
+assigns zero to attribute \subject{total} of \subject{Order}, whereas the
+precondition of $r_{4.2}$ of \subject{GenerateInvoice} requires \subject{total}
+to be greater than zero.
 
 
 %If the unsatisfiable core is already seen for this sequence, our algorithm

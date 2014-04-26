@@ -1,26 +1,27 @@
 \section{Conclusion}
 
 In this paper, we presented a new domain-specific language for modeling business
-rules that can capture functional specifications of enterprise
-systems. We also defined well-formedness properties on the model that can be verified
+rules that can capture functional specifications of enterprise systems. We also
+defined well-formedness properties on the model that can be verified
 mechanically. We implemented our tool as an Eclipse plug-in, where
-non-programmers also can create and refine models in a guided fashion
-We also presented a novel technique, based on unsatisfied cores, that generates test sequences
-by translating rules in to logical expressions.
-
+non-programmers also can create and refine models in a guided fashion We also
+presented a novel technique, based on unsatisfied cores, that generates test
+sequences by translating rules in to logical expressions.
 %We presented an algorithm that mechanically generates test sequences to
 %exercise rules in the model. The algorithm translates the rules in the
 %model into logical expressions and uses a constraint solver to infer
 %the needed input values. For optimization, the algorithm uses a novel
 %approach to prune the search space based on unsatisfiable cores. 
+Our technique was evaluated using three models that were derived from business
+rules written in English. The results show that our technique is able to cover
+99\% of all business rules.
 
-Our technique was evaluated using three models that were derived from business rules written
-in English. The results show that our technique
-is able to cover 99\% of all business rules. Toward our longer-term
-vision of bringing end-to-end automation to testing of enterprise
-applications, we will investigate the integration between \tool{} and
-\wateg{} (our previous work) to generate executable test cases for validating an
-application's conformance to business rules.
+In future work, experimentation with more subjects would help confirm the
+generality of our results.  Toward our longer-term vision of bringing end-to-end
+automation to the testing of enterprise applications, we will investigate the
+integration of \tool{} and \wateg{} (our previous
+work~\cite{Thummalapenta:2013}) to generate executable test cases for validating
+an application's conformance to business rules.
 
 %% This work is part of our longer-term vision of generating executable
 %% GUI scripts, where, for each operation, we plan to extend support for
