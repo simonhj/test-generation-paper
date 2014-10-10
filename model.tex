@@ -11,40 +11,40 @@ rules.
 
 \begin{figure}[t]
 \centering
-{\small
+{\footnotesize
 \tabcolsep=3pt
 \begin{tabular}{lll}
 \term{RuleSpec} & ::= & \term{Entities} \term{Operations} \term{Triggers} \\
 \\
-\term{Entities} & ::= & \term{Entity} \term{Entities} | $\epsilon$ \\
-\term{Entity} & ::= & \term{Enum} | \term{Object} \\
+\term{Entities} & ::= & \term{Entity} \term{Entities} $|$ $\epsilon$ \\
+\term{Entity} & ::= & \term{Enum} $|$ \term{Object} \\
 \term{Enum} & ::= & \lit{enum} \term{ID} \{ \term{EnumVals} \} \\
-\term{EnumVals} & ::= & \term{ID} \term{EnumVals} | $\epsilon$ \\
+\term{EnumVals} & ::= & \term{ID} \term{EnumVals} $|$ $\epsilon$ \\
 \term{Object} & ::= & \lit{object} \term{ID} \{ \term{VarDecl} \} \\
 \\
-\term{Operations} & ::= & \term{Operation} \term{Operations} | $\epsilon$ \\
+\term{Operations} & ::= & \term{Operation} \term{Operations} $|$ $\epsilon$ \\
 \term{Operation} & ::= & \lit{operation} \term{ID} \{ \term{Input}
 \term{Creates} \term{Modifies} \term{Rules} \term{Next} \} \\
 \term{Input} & ::= & \lit{input} : \term{VarDecl} \\
 \term{Creates} & ::= & \lit{creates} : \term{VarDecl} \\
 \term{Modifies} & ::= & \lit{modifies} : \term{VarDecl} \\
-\term{Rules} & ::= & \term{Rule} \term{Rules} | $\epsilon$ \\
+\term{Rules} & ::= & \term{Rule} \term{Rules} $|$ $\epsilon$ \\
 \term{Rule} & ::= & \lit{group} \term{ID} \{ \term{RuleParts} \} \\
-\term{RuleParts} & ::= & \term{RulePart} \term{RuleParts} | $\epsilon$ \\
+\term{RuleParts} & ::= & \term{RulePart} \term{RuleParts} $|$ $\epsilon$ \\
 \term{RulePart} & ::= & \lit{rule} \term{ID} \{ \lit{pre} : \term{Expr} ;
 \lit{post} : \term{Expr} \} \\
-\term{Next} & ::= & \lit{next} : \term{ID} | $\epsilon$ \\
+\term{Next} & ::= & \lit{next} : \term{ID} $|$ $\epsilon$ \\
 \\
 \term{Triggers} & ::= & \term{ID} $\rightarrow$ \term{ID} \term{Triggers} | $\epsilon$ \\
 \\
 \term{VarDecl} & ::= & \term{TypeName} : \term{ID} \term{VarDecl} | $\epsilon$
 \\
-\term{TypeName} & ::= & \lit{bool} | \lit{int} | \lit{float} | \lit{string} |
-\lit{set<\term{\textrm{TypeName}}>} | \term{ID} \\
+\term{TypeName} & ::= & \lit{bool} $|$ \lit{int} $|$ \lit{float} $|$ \lit{string} $|$
+\lit{set<\term{\textrm{TypeName}}>} $|$ \term{ID} \\
 \term{Expr} & ::= & $\ldots$ \\
 \end{tabular}
 }
-\vspace*{-7pt}
+\vspace*{-3pt}
 \caption{Partial rule-modeling syntax.}
 \vspace*{0pt}
 \label{fig:model-syntax}
@@ -77,15 +77,15 @@ that describe the behavior of ${\cal O}$, and $o_n$ is a succeeding operation
 that, if specified, is the only operation that can execute after ${\cal O}$.
 
 The notion of \textit{succeeding operation} can simplify the modeling of
-``coarse grained'' operations that have many rules associated with them. Such an
+coarse-grained operations that have many rules associated with them. Such an
 operation can be broken down into a sequence of finer-grained operations---with
 the sequence specified via the \subject{next} clause---that have simpler
-rules. The specification lets the test-generation algorithm ensure that the
-atomic nature of the coarse-grained operation is preserved in the finer-grained
-sequence: while chaining operations, the algorithm avoids interleaving other
-operations in the middle of a finer-grained operation sequence.  Moreover, such
-decomposition is necessary when the rules of an operation have data dependences,
-which define an implicit ordering among the rules. %% One of the well-formedness
+rules. This lets the test-generation algorithm ensure that the atomic nature of
+the coarse-grained operation is preserved in the finer-grained sequence: while
+chaining operations, the algorithm avoids interleaving other operations in the
+middle of a finer-grained operation sequence.  Moreover, such decomposition is
+necessary when the rules of an operation have data dependences, which define an
+implicit ordering among the rules. %% One of the well-formedness
 %% properties that we impose on rule specifications (discussed in
 %% Section~\ref{sec:checking}) is data independence among the rules of an
 %% operation.
@@ -114,11 +114,10 @@ a threshold amount. Our rule-modeling syntax accommodates this via the
 operations---where the first operation automatically triggers the second
 operation---can be specified.
 
-The primitive types include boolean, integer, float, and string types. The model
-also accommodates sets of these types.\footnote{\small In the currently
-  implemented system, set types are handled in a restricted manner: by limiting
-  the set size to two and specifying the predicates over a set in terms of its
-  (two) elements.}
+The primitive types include boolean, integer, float, and string. The model also
+accommodates sets of these types.\footnote{In the currently implemented system,
+  set types are handled in a restricted manner: by limiting the set size to two
+  and specifying the predicates over a set in terms of its (two) elements.}
 
 \subsection{Rule Checking}
 \label{sec:checking}
@@ -130,7 +129,6 @@ envision that the rules can be iteratively refined in a rule editor, based on
 automatic semantic checking for property violations (in addition to syntactic
 checking for conformance to the modeling syntax).
 
-\vspace*{-5pt}
 \paragraph*{Property 1: Rule-part Disjointedness}
 In our notation, a rule part is intended to represent disjoint preconditions so
 that when a rule is applicable, the precondition of only one rule part is true;
@@ -149,7 +147,6 @@ rule parts. Then, for each pair of rule parts (with preconditions $p_i$ and
 $p_j$), we determine whether the boolean formula $(p_i \wedge p_j)$ has a
 solution; if it does, we flag a violation of the property.
 
-\vspace*{-5pt}
 \paragraph*{Property 2: Rule-part Completeness}
 This property is intended to ensure that a rule specifies the complete operation
 behavior for the variables mentioned in the rule. Let $R= \{r_1, r_2, \ldots,
@@ -162,7 +159,6 @@ unspecified.  To verify this property, our technique checks, for each rule that
 has two or more parts, whether the formula $\neg(p_1 \vee p_2 \vee \ldots \vee
 p_k)$ has a solution.
 
-\vspace*{-5pt}
 \paragraph*{Property 3: Rule Compatibility}
 The rule compatibility property requires that for any set of applicable rules of
 an operation, the postconditions of their relevant rule parts must not be
@@ -197,7 +193,6 @@ ensures that $R_m$ satisfies the rule-part disjointedness
 property. Alternatively, the negation of the precondition of $r_2$ could be
 added to the precondition of $r_{m_1}$ to satisfy this property.
 
-\vspace*{-5pt}
 \paragraph*{Property 4: Rule Independence}
 Finally, we enforce the restriction that there can be no data dependence between
 the postcondition of one rule and the precondition of another rule of the same
@@ -233,12 +228,12 @@ The modeling process must be realistic in that users should be able to create
 and refine models in a tool-assisted manner, with immediate checking of, and
 feedback on, errors in the models.  We have implemented such a rule editor as an
 Eclipse plugin; Figure~\ref{fig:rule-editor} shows a screenshot of the
-editor. The editor is built using Eclipse Xtext,\footnote{\scriptsize
-  \url{https://www.eclipse.org/Xtext/}} which is a general framework for
-developing domain-specific and programming languages. Much like any modern
-syntax-directed editor for a programming language, the rule editor provides
-syntax highlighting, navigation features, auto completion, and on-the-fly
-detection of syntax errors.  The user can also run a semantic checker to detect
-violations of the well-formedness properties discussed previously. Thus, the
-editor provides a convenient environment for writing rules, in which the user is
-guided by automated checking and feedback.
+editor. The editor is built using Eclipse
+Xtext,\footnote{\url{https://www.eclipse.org/Xtext/}} which is a general
+framework for developing domain-specific and programming languages. Much like
+any modern syntax-directed editor for a programming language, the rule editor
+provides syntax highlighting, navigation features, auto completion, and
+on-the-fly detection of syntax errors.  The user can also run a semantic checker
+to detect violations of the well-formedness properties discussed
+previously. Thus, the editor provides a convenient environment for writing
+rules, in which the user is guided by automated checking and feedback.

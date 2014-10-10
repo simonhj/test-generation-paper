@@ -47,7 +47,7 @@ operation flow graph) and define abstract and concrete operation sequences.
 
 \subsubsection{Graphs}
 
-\vskip -10pt
+%\vskip -10pt
 \paragraph*{Dependence Graph} A \textit{dependence graph} is a directed graph
 that captures interactions of operations with entities: nodes in the graph
 represent operations and entities, whereas edge represent creates, reads, and
@@ -69,7 +69,7 @@ graph for our example application.
 \label{fig:cfg}
 \end{figure}
 
-\vskip -7pt
+%\vskip -7pt
 \paragraph*{Operation Flow Graph} To identify combinations of rule parts (within
 an operation) that create different object states of entities, we model an
 operation as a flow graph. The \textit{operation flow graph} for an operation is
@@ -91,7 +91,7 @@ orderings are equivalent).
 
 \subsubsection{Operation Sequences}
 
-\vskip -10pt
+%\vskip -10pt
 \paragraph*{Abstract Sequence} An \textit{abstract sequence} is a sequence of
 operations describing flow of objects among the operations such that all
 variables that represent instances of entities are defined and other variables
@@ -188,7 +188,7 @@ unsatisfied cores for efficiently exploring the search space.
   generating a concrete sequence that covers a given rule part.}
 \end{algorithm}
 
-\vskip -7pt
+%\vskip -7pt
 \paragraph*{Generate Initialization Sequences (Lines 2--5)} The algorithm first
 generates, using the dependence graph, all possible initialization sequences
 that produce input entities of ${\cal O}$. An initialization sequence is an
@@ -245,14 +245,14 @@ in the initialization sequence has only one rule part:
 }
 \vspace*{-5pt}
 
-\vskip -7pt
+%\vskip -7pt
 \paragraph*{Check Satisfiability (Line 8)} Next, the algorithm checks whe\-ther 
 the concrete sequences in the queue are satisfiable. A concrete sequence is
 satisfiable if it generates desired object states for all input entities of
 ${\cal O}$ that cover the precondition of the target rule part. To achieve this,
 the algorithm constructs a logical formula composed of constraints in
 preconditions and postconditions in each rule part of the sequence and leverages
-a constraint solver to check whether the composed formula is satisfiable.
+a constraint solver to check whether the formula is satisfiable.
 
 For illustration, consider the sequence of operations with selected rule parts
 as $({\cal O}_1 [r_{1.1}], {\cal O}_2 [r_{2.1}], \ldots, {\cal O}_n [r_{n.1}],
@@ -282,12 +282,12 @@ binding constraint, this process is applied recursively on each attribute of
 object type. Using binding constraints, the algorithm generates the formula as
 $p_{n.1} \wedge q_{n.1} \wedge b_n \wedge p$, where $p_{n.1}$ and $q_{n.1}$ are
 the precondition and postcondition of $r_{n.1}$. The algorithm checks whether
-the composed formula is satisfiable.  If it is, this formula becomes the next
-$target$ and ${\cal O}_{n-1}$ the predecessor operation, and the algorithm
-repeats the same process with other operations in the sequence.  Once it has
-processed all operations in the sequence and the formula is satisfiable, it
-extracts values for variables of primitive and enumerated types from the
-constraint solution to generate test data.
+the formula is satisfiable.  If it is, this formula becomes the next $target$
+and ${\cal O}_{n-1}$ the predecessor operation, and the algorithm repeats the
+same process with other operations in the sequence.  Once it has processed all
+operations in the sequence and the formula is satisfiable, it extracts values
+for variables of primitive and enumerated types from the constraint solution to
+generate test data.
 
 For our running example, the solver finds the composed formula
 unsatisfiable. The reason is that rule part $r_{3.1}$ of \subject{CreateOrder}
@@ -301,7 +301,7 @@ to be greater than zero.
 %earlier did not help make any additional progress by resulting in the same unsatisfiable core.
 %TODO: Refer to Tao's DSN paper for fitness functions.
 
-\vskip -7pt
+%\vskip -7pt
 \paragraph*{Identify Candidate Operations (Line 10)}
 %% Since our algorithm checks satisfiability for each operation in the sequence
 %% beginning from the last operation, when we extract unsatisfiable core, it
@@ -316,7 +316,7 @@ for input entities of ${\cal O}$ to cover the rule part $r$.
 For instance, in our running example, the customer whose balance type
 is \subject{Credit} should have sufficient credit limit to cover rule target $r_{4.2}$.
 
-\vskip -7pt
+%\vskip -7pt
 \paragraph*{Generate Alternate Sequences (Lines 11--13)} After a candidate
 operation $op$ (along with relevant rule parts) is identified, the algorithm checks
 whether any additional input entities that are not yet available in the current
@@ -332,14 +332,14 @@ algorithm adds all newly generated sequences to the queue to further analyze
 those sequences. Our algorithm also prunes duplicate sequences that were already
 explored in the previous iterations.
 
-For our running example, it identifies candidate operations as 
-\subject{AddItemToOrder} and \subject{AddCreditLimit}. Since \subject{AddItemToOrder} requires an additional
-entity \subject{Item} that is not available in the sequence, the algorithm adds
-operation \subject{CreateItem} as well to the newly generated sequence. 
-In the next iteration, for the sequence including \subject{AddCreditLimit},
-our algorithm identifies \subject{AddItemToOrder} as a candidate operation, and 
-finally generates the concrete sequence that covers $r_{4.2}$
-as follows:
+For our running example, it identifies candidate operations as
+\subject{AddItemToOrder} and \subject{AddCreditLimit}. Since
+\subject{AddItemToOrder} requires an additional entity \subject{Item} that is
+not available in the sequence, the algorithm adds operation \subject{CreateItem}
+as well to the new sequence.  In the next iteration, for the sequence including
+\subject{AddCreditLimit}, our algorithm identifies \subject{AddItemToOrder} as a
+candidate operation, and finally generates the concrete sequence that covers
+$r_{4.2}$ as follows:
 
 \vspace*{-4pt}
 {\scriptsize
@@ -411,13 +411,12 @@ sequence, where we further identify \subject{ucore} as
 \subject{cust.crLimit = 0 $\wedge$ cust.crLimit > 0} and find \subject{AddCreditLimit}
 as a candidate operation.
 
-\vskip -7pt
+%\vskip -7pt
 \paragraph*{Check Progress} While identifying candidate operations, our
-optimization discards
-those operations that do not help cover the target rule part. However,
-in a few cases, even the identified operations may not help make progress and need
-to be discarded to make the exploration efficient. To identify such cases, we
-check the following two aspects for each sequence $cseq$.
+optimization discards the operations that do not help cover the target rule
+part. However, in a few cases, even the identified operations may not help make
+progress and need to be discarded to make the exploration efficient. To identify
+such cases, we check two conditions for each sequence $cseq$.
 
 First, if the extracted unsatisfiable core \subject{ucore} was already seen in
 previous iterations related to $cseq$, we discard $cseq$. The reason

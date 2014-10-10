@@ -1,5 +1,5 @@
-\documentclass{sig-alternate}
-
+%% \documentclass{sig-alternate}
+\documentclass[conference]{IEEEtran}
 
 \usepackage{amssymb}
 \usepackage{verbatim}
@@ -43,22 +43,37 @@
 \newcommand{\wateg}{\textsc{wateg}}
 
 \title{Test Generation from Business Rules}
-\numberofauthors{4}
+
 \author{
-\alignauthor Simon Holm Jensen \\
-\affaddr{Samsung Research America}\\
-\email{s.jensen@samsung.com} 
-\alignauthor Suresh Thummalapenta \\
-\affaddr{Microsoft Corporation} \\
-\email{suthumma@microsoft.com}
-\alignauthor Saurabh Sinha \\
-\affaddr{IBM Research India} \\
-\email{saurabhsinha@in.ibm.com}
-\and 
-\alignauthor Satish Chandra \\
-\affaddr{Samsung Research America} \\
-\email{schandra@samsung.com}
+\IEEEauthorblockN{Simon Holm Jensen}
+\IEEEauthorblockA{Affiliation \\ Email}
+\and
+\IEEEauthorblockN{Suresh Thummalapenta}
+\IEEEauthorblockA{Microsoft Corporation \\ suthumma@microsoft.com}
+\and
+\IEEEauthorblockN{Saurabh Sinha}
+\IEEEauthorblockA{IBM Research \\ saurabhsinha@in.ibm.com}
+\and
+\IEEEauthorblockN{Satish Chandra}
+\IEEEauthorblockA{Samsung Research America \\ schandra@samsung.com}
 }
+
+%% \numberofauthors{4}
+%% \author{
+%% \alignauthor Simon Holm Jensen \\
+%% \affaddr{Samsung Research America}\\
+%% \email{s.jensen@samsung.com} 
+%% \alignauthor Suresh Thummalapenta \\
+%% \affaddr{Microsoft Corporation} \\
+%% \email{suthumma@microsoft.com}
+%% \alignauthor Saurabh Sinha \\
+%% \affaddr{IBM Research India} \\
+%% \email{saurabhsinha@in.ibm.com}
+%% \and 
+%% \alignauthor Satish Chandra \\
+%% \affaddr{Samsung Research America} \\
+%% \email{schandra@samsung.com}
+%% }
 
 \maketitle
 
@@ -90,6 +105,9 @@ of our approach.
 \input{evaluation}
 \input{related}
 \input{conclusion}
-\bibliographystyle{abbrv}
+
+\bibliographystyle{IEEEtran}
+{\small
 \bibliography{paper}
+}
 \end{document}
