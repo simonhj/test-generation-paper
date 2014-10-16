@@ -7,7 +7,9 @@
 
 In this section, we discuss the notation for modeling business rules and the
 static checking for completeness and consistency performed on formally captured
-rules.
+rules. Although there exist business rule management systems such as JBoss~\cite{JBoss}, ILOG~\cite{ILog}, 
+and RuleML~\cite{RuleML}, we found that they are not expressive enough to model
+complex transaction-oriented rules.
 
 \begin{figure}[t]
 \centering
@@ -35,8 +37,8 @@ rules.
 \lit{post} : \term{Expr} \} \\
 \term{Next} & ::= & \lit{next} : \term{ID} $|$ $\epsilon$ \\
 \\
-\term{Triggers} & ::= & \term{ID} $\rightarrow$ \term{ID} \term{Triggers} | $\epsilon$ \\
-\\
+%\term{Triggers} & ::= & \term{ID} $\rightarrow$ \term{ID} \term{Triggers} | $\epsilon$ \\
+%\\
 \term{VarDecl} & ::= & \term{TypeName} : \term{ID} \term{VarDecl} | $\epsilon$
 \\
 \term{TypeName} & ::= & \lit{bool} $|$ \lit{int} $|$ \lit{float} $|$ \lit{string} $|$
@@ -105,14 +107,14 @@ limit exceeds or equals the order total; the third rule part covers the case
 where the balance type is \subject{Credit} and the order total exceeds the
 credit limit.
 
-Often in enterprise systems, the execution of an operation or a transaction
-automatically triggers other transactions or operations. For example, in
-\subject{jBilling}, customers with balance type \subject{Prepaid} have the
-option of getting their prepaid limit automatically recharged if it falls below
-a threshold amount. Our rule-modeling syntax accommodates this via the
-\subject{Triggers} clause, using which the triggers relation between a pair of
-operations---where the first operation automatically triggers the second
-operation---can be specified.
+%Often in enterprise systems, the execution of an operation or a transaction
+%automatically triggers other transactions or operations. For example, in
+%\subject{jBilling}, customers with balance type \subject{Prepaid} have the
+%option of getting their prepaid limit automatically recharged if it falls below
+%a threshold amount. Our rule-modeling syntax accommodates this via the
+%\subject{Triggers} clause, using which the triggers relation between a pair of
+%operations---where the first operation automatically triggers the second
+%operation---can be specified.
 
 The primitive types include boolean, integer, float, and string. The model also
 accommodates sets of these types.\footnote{In the currently implemented system,
@@ -159,41 +161,41 @@ unspecified.  To verify this property, our technique checks, for each rule that
 has two or more parts, whether the formula $\neg(p_1 \vee p_2 \vee \ldots \vee
 p_k)$ has a solution.
 
-\paragraph*{Property 3: Rule Compatibility}
-The rule compatibility property requires that for any set of applicable rules of
-an operation, the postconditions of their relevant rule parts must not be
-conflicting. To illustrate, consider rules $R_1 = \{r_1\}$ and $R_2 = \{r_2\}$
-for an operation, such that $r_1 \coloneqq ((a > 0) \Longrightarrow (total =
-10))$, $r_2 \coloneqq ((b > 0) \Longrightarrow (total = 20))$, and the two
-preconditions are not disjoint (\ie $(a > 0) \wedge (b > 0)$ is
-satisfiable). This pair of rules violates the compatibility property because the
-postconditions are conflicting, whereas the corresponding preconditions can be
-true simultaneously---the first precondition does not constrain the value of
-\subject{b}, and the second precondition does not constrain the value of
-\subject{a}. Thus, when both preconditions are true, it is not clear what value
-\subject{total} would have after the operation.
+%\paragraph*{Property 3: Rule Compatibility}
+%The rule compatibility property requires that for any set of applicable rules of
+%an operation, the postconditions of their relevant rule parts must not be
+%conflicting. To illustrate, consider rules $R_1 = \{r_1\}$ and $R_2 = \{r_2\}$
+%for an operation, such that $r_1 \coloneqq ((a > 0) \Longrightarrow (total =
+%10))$, $r_2 \coloneqq ((b > 0) \Longrightarrow (total = 20))$, and the two
+%preconditions are not disjoint (\ie $(a > 0) \wedge (b > 0)$ is
+%satisfiable). This pair of rules violates the compatibility property because the
+%postconditions are conflicting, whereas the corresponding preconditions can be
+%true simultaneously---the first precondition does not constrain the value of
+%\subject{b}, and the second precondition does not constrain the value of
+%\subject{a}. Thus, when both preconditions are true, it is not clear what value
+%\subject{total} would have after the operation.
+%
+%To state this property formally, let $r_1 \coloneqq (p_1 \Longrightarrow q_1)$
+%and $r_2 \coloneqq (p_2 \Longrightarrow q_2)$ be the relevant rule parts of two
+%applicable rules of an operation. Then, if $(p_1 \wedge p_2)$ is satisfiable,
+%$(q_1 \wedge q_2)$ must be satisfiable. To verify this, our technique enumerates
+%all pairs of rules for an operation. Then, for each pair $R_1$ and $R_2$, the
+%techniques lists each combination $(p_1, p_2)$ of the preconditions of $R_1$ and
+%$R_2$, and checks the satisfiability of $(p_1 \wedge p_2)$ and the conjunction
+%of the corresponding postconditions.
+%
+%If two rules violate the compatibility property, it might in fact indicate that
+%their rule parts can be merged into one rule. In the preceding example, $R_1$
+%and $R_2$ could be merged into one rule with two rule parts $R_m = \{r_{m_1},
+%r_{m_2}\}$, where $r_{m_1} \coloneqq (a > 0) \Longrightarrow (total = 10)$ and
+%$r_{m_2} \coloneqq (a \leq 0 \wedge b > 0) \Longrightarrow (total = 20)$. Note
+%adding the conjunct $a \leq 0$ (the negation of the precondition of $r_1$) to
+%the precondition of $r_{m_2}$ makes the two preconditions disjoint, which
+%ensures that $R_m$ satisfies the rule-part disjointedness
+%property. Alternatively, the negation of the precondition of $r_2$ could be
+%added to the precondition of $r_{m_1}$ to satisfy this property.
 
-To state this property formally, let $r_1 \coloneqq (p_1 \Longrightarrow q_1)$
-and $r_2 \coloneqq (p_2 \Longrightarrow q_2)$ be the relevant rule parts of two
-applicable rules of an operation. Then, if $(p_1 \wedge p_2)$ is satisfiable,
-$(q_1 \wedge q_2)$ must be satisfiable. To verify this, our technique enumerates
-all pairs of rules for an operation. Then, for each pair $R_1$ and $R_2$, the
-techniques lists each combination $(p_1, p_2)$ of the preconditions of $R_1$ and
-$R_2$, and checks the satisfiability of $(p_1 \wedge p_2)$ and the conjunction
-of the corresponding postconditions.
-
-If two rules violate the compatibility property, it might in fact indicate that
-their rule parts can be merged into one rule. In the preceding example, $R_1$
-and $R_2$ could be merged into one rule with two rule parts $R_m = \{r_{m_1},
-r_{m_2}\}$, where $r_{m_1} \coloneqq (a > 0) \Longrightarrow (total = 10)$ and
-$r_{m_2} \coloneqq (a \leq 0 \wedge b > 0) \Longrightarrow (total = 20)$. Note
-adding the conjunct $a \leq 0$ (the negation of the precondition of $r_1$) to
-the precondition of $r_{m_2}$ makes the two preconditions disjoint, which
-ensures that $R_m$ satisfies the rule-part disjointedness
-property. Alternatively, the negation of the precondition of $r_2$ could be
-added to the precondition of $r_{m_1}$ to satisfy this property.
-
-\paragraph*{Property 4: Rule Independence}
+\paragraph*{Property 3: Rule Independence}
 Finally, we enforce the restriction that there can be no data dependence between
 the postcondition of one rule and the precondition of another rule of the same
 operation. This property ensures that there is no implicit ordering among the

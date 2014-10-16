@@ -50,12 +50,13 @@ operation flow graph) and define abstract and concrete operation sequences.
 %\vskip -10pt
 \paragraph*{Dependence Graph} A \textit{dependence graph} is a directed graph
 that captures interactions of operations with entities: nodes in the graph
-represent operations and entities, whereas edge represent creates, reads, and
-modifies relations.  A \textit{creates edge} or a \textit{modifies edge} from an
-operation to an entity indicates that the operation creates or modifies that
-entity; a \textit{reads edge} from an entity to an operation indicates that the
-operation reads the entity.  Figure~\ref{fig:sample-app} shows the dependence
-graph for our example application.
+represent operations and entities, whereas edges represent creates, reads, and
+modifies relations.  
+%A \textit{creates edge} or a \textit{modifies edge} from an
+%operation to an entity indicates that the operation creates or modifies that
+%entity; a \textit{reads edge} from an entity to an operation indicates that the
+%operation reads the entity.  
+Figure~\ref{fig:sample-app} shows the dependence graph for our example application.
 
 %% While composing sequences, our technique uses this graph to ensure that the
 %% dependencies among operations are satisfied.  Figure~\ref{fig:sample-app}
@@ -85,7 +86,7 @@ Because preconditions of all rule parts in a rule are disjoint (Property~1,
 Section~\ref{sec:model}), control flow through a rule covers exactly one rule
 part.  The rule subgraph captures this aspect by representing each rule as a
 choice among its rule parts. Moreover, because there are no data dependences
-between rules of an operation (Property~4, Section~\ref{sec:model}), the rule
+between rules of an operation (Property~3, Section~\ref{sec:model}), the rule
 subgraphs can be composed in any order in the operation flow graph (\ie all
 orderings are equivalent).
 
@@ -200,13 +201,16 @@ operations $OP_k = \{{\cal O}^k_1, {\cal O}^k_2, \ldots, {\cal O}^k_n\}$ that
 create $i_k$ through \textit{creates} edges in the graph.
 %% (Multiple operations can create an entity.)
 Then, it computes combinations of all operations across each set corresponding
-to $i_k$ to generate initialization sequences. Therefore, for $m$ input entities
-and $n$ operations that create each entity, the algorithm generates $n^m$
-initialization sequences. Note that the order of operations among the sequences
-does not matter because the operations create different entities.  In theory,
-the number of initialization sequences could be high; however, in our empirical
-evaluation, we found that the number of operations that create entities is often
-quite low, resulting in a few initialization sequences only.
+to $i_k$ to generate initialization sequences. 
+%Therefore, for $m$ input entities
+%and $n$ operations that create each entity, the algorithm generates $n^m$
+%initialization sequences. 
+Note that the order of operations among the sequences
+does not matter because the operations create different entities.  
+%In theory,
+%the number of initialization sequences could be high; however, in our empirical
+%evaluation, we found that the number of operations that create entities is often
+%quite low, resulting in a few initialization sequences only.
 
 The algorithm checks whether any operation in $OP_i$ further requires additional
 entities, and repeats this process until no new input entities are required in
@@ -281,7 +285,7 @@ Here, $f_1, \ldots , f_n$ are attributes of $\tau$. To generate the final
 binding constraint, this process is applied recursively on each attribute of
 object type. Using binding constraints, the algorithm generates the formula as
 $p_{n.1} \wedge q_{n.1} \wedge b_n \wedge p$, where $p_{n.1}$ and $q_{n.1}$ are
-the precondition and postcondition of $r_{n.1}$. The algorithm checks whether
+the precondition and postcondition of $r_{n.1}$, respectively. The algorithm checks whether
 the formula is satisfiable.  If it is, this formula becomes the next $target$
 and ${\cal O}_{n-1}$ the predecessor operation, and the algorithm repeats the
 same process with other operations in the sequence.  Once it has processed all

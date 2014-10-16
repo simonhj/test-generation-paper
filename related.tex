@@ -77,24 +77,25 @@ mention the size of the models the technique was evaluated on nor the
 size of the generated test sequences.
 
 \paragraph*{Testing Object-Oriented Programs} Our work is also related to existing techniques that focus on test 
-generation for object-oriented programs~\cite{pacheco2007,tillmann2008,thummalapenta2011, xie:symstra,
-csallner:jcrasher, phil:evo, tonella:etoc}. At a high level,
-these techniques also focus on inferring operation sequences 
-with a goal of generating different object states for receiver
-or arguments of method under test so as to achieve high code coverage.
-Among these techniques, Symstra~\cite{xie:symstra} uses
-bounded-exhaustive technique, Randoop~\cite{pacheco2007} and JCrasher~\cite{csallner:jcrasher} 
-select methods randomly to compose sequences, and Tonella~\cite{tonella:etoc} and McMinn et al.~\cite{phil:evo}
-use evolutionary approaches. Among all
-these techniques, our work is closely related to Seeker~\cite{thummalapenta2011}
+generation for object-oriented programs~\cite{pacheco2007,tillmann2008,thummalapenta2011, tonella:etoc}. 
+%At a high level,
+%these techniques also focus on inferring operation sequences 
+%with a goal of generating different object states for receiver
+%or arguments of method under test so as to achieve high code coverage.
+%The main novelty of our current technique 
+%Among these techniques, Symstra~\cite{xie:symstra} uses
+%bounded-exhaustive technique, Randoop~\cite{pacheco2007} and JCrasher~\cite{csallner:jcrasher} 
+%select methods randomly to compose sequences, and Tonella~\cite{tonella:etoc} and McMinn et al.~\cite{phil:evo}
+%use evolutionary approaches. 
+Among all these techniques, our work is closely related to Seeker~\cite{thummalapenta2011}
 that also attempts to compose sequences incrementally based on branches that
 are not yet covered. The major contribution of Seeker is to infer
 candidate operations especially when those branches include private fields,
 since private fields cannot be modified directly. In our current work,
 we do not face that issue, since our model does not have the notion of public
-and private attributes. Our current work extends Seeker by extracting
-unsatisfied core and using to guide the search process. 
-We believe that Seeker can greatly benefit with
+and private attributes. We could not compare \tool{} with Seeker, since
+both tools require different inputs, \tool{} requires business rules modeled in
+our language, whereas Seeker requires C\# programs. However, we believe that Seeker can greatly benefit with
 our new algorithm of leveraging unsatisfied core as a guidance for suggesting
 candidate operations.
 

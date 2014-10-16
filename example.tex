@@ -112,10 +112,11 @@ version inspired by the actual application.\footnote{\scriptsize
 larger part of the application.) The model for \subject{jBilling} includes four
 entities: \subject{Customer}, \subject{Item}, \subject{Order}, and
 \subject{Invoice}.  Figure~\ref{fig:sample-app} shows the flow among some of the
-operations, which create, read, or modify these entities. For example, operation
-\subject{CreateCustomer} creates an instance of \subject{Customer}, whereas the
-operation \subject{AddItemToOrder} modifies an \subject{Order} instance by
-adding a new item to the order.
+operations, which create, read, or modify these entities. 
+%For example, operation
+%\subject{CreateCustomer} creates an instance of \subject{Customer}, whereas the
+%operation \subject{AddItemToOrder} modifies an \subject{Order} instance by
+%adding a new item to the order.
 
 Table~\ref{tab:bookstore-rules-spec} presents the formal specification of the
 \subject{jBilling} operations and rules. Columns~2--4 list, respectively, the
@@ -144,20 +145,19 @@ entities by names: \eg the rule part for \subject{CreateOrder} refers to the
 input \subject{Customer} instance as \subject{cust} and the created
 \subject{Order} instance as \subject{ord}. The expressions also refer to
 attributes of the entities. For example, some of the relevant attributes of
-\subject{Customer} are:
-
-\vspace*{-3pt}
-{\scriptsize
-\begin{verbatim}
-  Customer {
-      State: state
-      BalanceType: balType
-      int: crLimit
-  }
-\end{verbatim}
-}
-\vspace*{-7pt}
-
+\subject{Customer} are: \subject{State: state}, \subject{BalanceType: balType},
+and \subject{int: crLimit}, 
+%\vspace*{-3pt}
+%{\scriptsize
+%\begin{verbatim}
+  %Customer {
+      %State: state
+      %BalanceType: balType
+      %int: crLimit
+  %}
+%\end{verbatim}
+%}
+%\vspace*{-7pt}
 where \subject{State} and \subject{BalanceType} are
 enumerated types (\eg attribute \subject{BalanceType} can take two values---\subject{None}
 or \subject{Credit}) and the attribute \subject{crLimit} is an integer.

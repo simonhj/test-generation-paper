@@ -30,25 +30,27 @@ A test that exercises this scenario would set up a customer with the balance
 type as \textit{credit} as well as a certain credit limit, say, \textit{100},
 create an order and add items to the order to bring a total to, say,
 \textit{120}, to exceed the credit limit for that customer, and then finally
-create an invoice for that order,and verify the invoiced amount.
-Figure~\ref{fig:jbilling-flow} illustrates this flow.  Although the values
+create an invoice for that order, and verify the invoiced amount.
+%Figure~\ref{fig:jbilling-flow} illustrates this flow.  
+Although the values
 \textit{credit}, \textit{100}, and \textit{120} can be identified just from this
 rule (by constraint solving), identifying a test sequence is also important to
 apply those values at the right fields on the appropriate
-screens.\footnote{Not all fields on the screens in
-  Figure~\ref{fig:jbilling-flow} are constrained from the point of view of
-  exercising a particular scenario, but the application might still demand
-  sensible values for them. The tester is expected to make these up.}
+screens in the actual application.
+%\footnote{Not all fields on the screens in
+%  Figure~\ref{fig:jbilling-flow} are constrained from the point of view of
+%  exercising a particular scenario, but the application might still demand
+%  sensible values for them. The tester is expected to make these up.}
 
-\begin{figure*}
-\centering
-\includegraphics[trim=47 210 35 50,clip,width=\textwidth]{figs/jbilling-flow}
-\vspace*{-10pt}
-\caption{Test sequence for exercising a business rule from the
-  \subject{jBilling} application.}
-\vspace*{-7pt}
-\label{fig:jbilling-flow}
-\end{figure*}
+%\begin{figure*}
+%\centering
+%\includegraphics[trim=47 210 35 50,clip,width=\textwidth]{figs/jbilling-flow}
+%\vspace*{-10pt}
+%\caption{Test sequence for exercising a business rule from the
+%  \subject{jBilling} application.}
+%\vspace*{-7pt}
+%\label{fig:jbilling-flow}
+%\end{figure*}
 
 It requires a carefully thought-out test scenario, \ie a sequence of test steps
 as well as associated test data, \ie values to be entered in the relevant test
@@ -72,7 +74,7 @@ bugs still escape into the field.
 
 Our vision is to make testing of enterprise software more tool-based, by
 adapting technology developed for automated and systematic test generation for
-programs.  In this vision, business rules would be written in a structured
+programs. In this vision, business rules would be written in a structured
 notation that allows mechanized analysis.  Special editors could be created
 to enable non-programm\-ers to capture business rules in a structured notation;
 this is an independent challenge in \textit{end-user} programming.  A tool would
@@ -136,9 +138,11 @@ the business rule of Figure~\ref{fig:invoice}, it is necessary to create
 postcondition holds after the operation has completed.  This brings us to the
 main difficulty in creating tests: appropriate database state, such as a
 customer with a certain balance type and an order with a certain amount, needs
-to be established before any of these scenarios can be exercised.  We showed in
-Figure~\ref{fig:jbilling-flow} the steps that would be required to create these
-preconditions.  How can we identify these steps, and the data to be entered in
+to be established before any of these scenarios can be exercised.  
+%We showed in
+%Figure~\ref{fig:jbilling-flow} the steps that would be required to create these
+%preconditions.  
+How can we identify these steps, and the data to be entered in
 each of these steps automatically to cover a rule part of a business rule?
 
 Our observation is that the steps that are required to drive the database state
@@ -163,7 +167,7 @@ them.
 At a high level, the idea is to use backward analysis to piece together a
 sequence of operations to arrive at a desired state.  We look for an operation
 whose business rule has a rule part whose postcondition would imply the desired
-precondition.  Such an operation, if executed in a way that that specific rule
+precondition.  Such an operation, if executed in a way that specific rule
 part applies, would establish the desired state.  The operation may require some
 user-provided values, but may partially rely on prior database state. The
 process is repeated until no prior database state is assumed---that is, all the
@@ -220,8 +224,7 @@ solver). By comparison, a technique that performs exhaustive (unguided) search
 could cover 74\% of the rule parts, although it explored substantially more
 candidate sequences than our technique.
 
-\paragraph*{Contributions}
-
+%\paragraph*{Contributions}
 The contributions of this paper are as follows:
 \begin{itemize}[noitemsep]
 \item We describe a notation for describing business rules formally, and articulate
@@ -237,10 +240,10 @@ The contributions of this paper are as follows:
   of the rule parts.
 \end{itemize}
 
-In Section~\ref{sec:model}, we describe our notation for modeling business
-rules and present four well-formedness properties of
-models. In Section~\ref{sec:example}, we present the running example
-model, JBilling. In Section~\ref{sec:approach} we describe our approach including several
-optimizations. In Section~\ref{sec:eval} is the experimental evaluation using
-our implementation \tool{} and in Section~\ref{sec:related} we discuss related
-research.   
+%In Section~\ref{sec:model}, we describe our notation for modeling business
+%rules and present four well-formedness properties of
+%models. In Section~\ref{sec:example}, we present the running example
+%model, JBilling. In Section~\ref{sec:approach} we describe our approach including several
+%optimizations. In Section~\ref{sec:eval} is the experimental evaluation using
+%our implementation \tool{} and in Section~\ref{sec:related} we discuss related
+%research.   
