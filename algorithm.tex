@@ -420,9 +420,14 @@ previous iterations related to $cseq$, we discard $cseq$. The reason is that the
 candidate operation that was added to $cseq$ in the previous iteration did not
 help satisfy the previous \subject{ucore}, resulting in the same \subject{ucore}
 in the next iteration as well.  Second, when \subject{ucore} includes integer
-variables, we use a fitness function to measure whether $cseq$ helps get closer
-to covering the rule part. The first check is sufficient for boolean variables
-or variables of enumerated types but is insufficient for integer variables.
+variables, we use a fitness function, originally proposed in
+Fitnex~\cite{xie09:fitness}, to measure whether $cseq$ helps get closer to
+covering the rule part.
+%% The first check is sufficient for boolean variables or
+%% variables of enumerated types but is insufficient for integer variables.
+The idea is to compute a fitness value from \subject{ucore} and if this value is
+better than the fitness value computed in the previous iteration, $cseq$ is
+processed further; otherwise, it is discarded.
 
 To illustrate, suppose that our model includes another operation,
 \subject{RemoveItemFromOrder}, that removes an item and decreases the value of
@@ -430,9 +435,8 @@ To illustrate, suppose that our model includes another operation,
 identifies \subject{AddItemToOrder} and \subject{RemoveItemFromOrder} because
 both operations modify \subject{total}. However, \subject{RemoveItemFromOrder}
 does not help cover $r_{4.2}$ as it actually decreases the value of
-\subject{total}. To handle such cases, our optimization uses a fitness function,
-originally proposed in Fitnex~\cite{xie09:fitness}, to measure whether $cseq$
-gets closer to covering the target rule part. The idea is to compute a fitness
-value from \subject{ucore} and if this value is better than the fitness value
-computed during the previous iteration, $cseq$ is processed further; otherwise,
-it is discarded.
+\subject{total}, which is discovered using a fitness function.
+
+%% To handle such cases, our optimization uses a fitness function, originally
+%% proposed in Fitnex~\cite{xie09:fitness}, to measure whether $cseq$ gets closer
+%% to covering the target rule part.
