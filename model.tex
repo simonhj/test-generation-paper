@@ -63,12 +63,12 @@ Figure~\ref{fig:invoice} shows the operation for computing invoice totals in the
 govern how the invoice total and the customer's credit limit are updated, are
 modeled with the operation in the form of precondition-postcondition pairs.
 
-Figure~\ref{fig:model-syntax} presents the formal syntax of the rule-modeling
-language (for clarity, we omit some of the details and present only the
-important parts of the language). A \textit{rule specification} consists of
-entities and operations. An \textit{entity} can be an object in the system (\eg
-invoice, order, customer) or an enumerated type (\eg a customer's balance type
-can be \subject{None}, \subject{Credit}, or \subject{Prepaid}).
+Figure~\ref{fig:model-syntax} presents the syntax of the rule-modeling language
+(for clarity, we omit some of the details and present only the important parts
+of the language). A \textit{rule specification} consists of entities and
+operations. An \textit{entity} can be an object (\eg invoice, order, customer)
+or an enumerated type (\eg a customer's balance type can be \subject{None},
+\subject{Credit}, or \subject{Prepaid}).
 
 The key part of the syntax, which models rules, is based on
 operations. Formally, an \textit{operation} ${\cal O}$ is the tuple $(I, C, M,
@@ -144,10 +144,10 @@ and $p_j = (a < 10)$; this specification represents ambiguous behavior when, for
 example, $a = 5$.  The rule parts illustrated in Figure~\ref{fig:invoice} have
 disjoint preconditions.
 
-To check that a rule satisfies this property, first, we enumerate all pairs of
-rule parts. Then, for each pair of rule parts (with preconditions $p_i$ and
-$p_j$), we determine whether the boolean formula $(p_i \wedge p_j)$ has a
-solution; if it does, we flag a violation of the property.
+To check that a rule satisfies this property, we enumerate all pairs of rule
+parts and, for each pair (with preconditions $p_i$ and $p_j$), determine whether
+the boolean formula $(p_i \wedge p_j)$ has a solution; if it does, we flag a
+violation of the property.
 
 \paragraph*{Property 2: Rule-part Completeness}
 This property is intended to ensure that a rule specifies the complete operation

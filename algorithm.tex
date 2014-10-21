@@ -1,4 +1,4 @@
-\section{Test generation}
+\section{Test Generation}
 \label{sec:approach}
 
 Given an operation ${\cal O}$ and a target rule part $r$ in ${\cal O}$, our
@@ -73,14 +73,14 @@ Figure~\ref{fig:sample-app} shows the dependence graph for our example applicati
 %\vskip -7pt
 \paragraph*{Operation Flow Graph} To identify combinations of rule parts (within
 an operation) that create different object states of entities, we model an
-operation as a flow graph. The \textit{operation flow graph} for an operation is
-a directed graph consisting of rule subgraphs---one per rule of the
-operation---and edges representing flow among the rule subgraphs. A \textit{rule
-  subgraph} consists of a unique entry point, a unique exit point, and nodes
-that represent rule parts; the subgraph contains an edge from the entry point to
-each node and an edge from each node to the exit point.  Figure~\ref{fig:cfg}
-illustrates the operation flow graph for \subject{GenerateInvoice} with two
-rules, $R_4$ and $R_5$, which have three and two rule parts, respectively.
+operation as a flow graph. The \textit{operation flow graph} is a directed graph
+consisting of rule subgraphs---one per rule of the operation---and edges
+representing flow among the subgraphs. A \textit{rule subgraph} consists of a
+unique entry point, a unique exit point, and nodes that represent rule parts;
+the subgraph contains an edge from the entry point to each node and an edge from
+each node to the exit point.  Figure~\ref{fig:cfg} illustrates the operation
+flow graph for \subject{GenerateInvoice} with two rules, $R_4$ and $R_5$, which
+have three and two rule parts, respectively.
 
 Because preconditions of all rule parts in a rule are disjoint (Property~1,
 Section~\ref{sec:model}), control flow through a rule covers exactly one rule
@@ -95,9 +95,9 @@ orderings are equivalent).
 %\vskip -10pt
 \paragraph*{Abstract Sequence} An \textit{abstract sequence} is a sequence of
 operations describing flow of objects among the operations such that all
-variables that represent instances of entities are defined and other variables
-(of enumerated and primitive types) need not be defined. An example abstract
-sequence for \subject{GenerateInvoice} is:
+variables that represent instances of entities are defined and the remaining
+variables (of enumerated and primitive types) need not be defined. An example
+abstract sequence for \subject{GenerateInvoice} is:
 
 \vspace*{-4pt}
 {\scriptsize
@@ -112,19 +112,19 @@ sequence for \subject{GenerateInvoice} is:
 }
 \vspace*{-4pt}
 
-All instances of entities are initialized within the sequence.  In
-case an operation creates or modifies multiple entities, we represent
-those entities as arguments prefixed with the keyword \subject{out}.
+All entity instances are initialized within the sequence.  If an operation
+creates or modifies multiple entities, we represent those entities as arguments
+prefixed with the keyword \subject{out}.
 
 \vskip -7pt
 \paragraph*{Concrete Sequence} A \textit{concrete sequence} constrains an
 abstract sequence with selected rule parts for each operation. For an operation,
-there can be multiple rule parts selected from different rules of the
-operation. Our technique uses concrete sequences to generate test data by
-leveraging a constraint solver: it builds a logical formula from concrete
-sequences using preconditions and postconditions of all rule parts, and uses
-constraint solver to check whether the formula is satisfiable. An example
-concrete sequence for the preceding abstract sequence is:
+multiple rule parts can be selected from different rules of the operation. Our
+technique uses concrete sequences to generate test data by leveraging 
+constraint solving: it builds a logical formula from concrete sequences using
+preconditions and postconditions of all rule parts, and uses a solver to check
+whether the formula is satisfiable. An example concrete sequence for the
+preceding abstract sequence is:
 
 \vspace*{-4pt}
 {\scriptsize
@@ -144,15 +144,15 @@ concrete sequence for the preceding abstract sequence is:
 
 The test-generation algorithm (shown as Algorithm~\ref{alg:guidedsearch}) takes
 as inputs an operation ${\cal O}$ and a rule part $r$, and generates a concrete
-sequence $seq$ that cover $r$. To illustrate the algorithm, we consider the
-operation \subject{GenerateInvoice} and rule part $r_{4.2}$. For brevity, we
-omit details such as exiting the main loop (lines~6--13) when the user-defined
-threshold of maximum number of sequences to be explored is reached. We first
-explain the core algorithm and then present our optimization based on using
-unsatisfied cores for efficiently exploring the search space.
+sequence $seq$ that cover $r$. To illustrate the algorithm, we consider rule
+part $r_{4.2}$ of \subject{GenerateInvoice}. For brevity, we omit details such
+as exiting the main loop (lines~6--13) when the user-defined threshold of
+maximum number of sequences to be explored is reached. We first explain the core
+algorithm and then present the optimization that uses unsatisfied cores to
+exploring the search space efficiently.
 
 \begin{algorithm}[t]
-\small
+\footnotesize
 \SetAlgoVlined
 \KwIn{Operation ${\cal O}$, Rule part $r$}
 \KwOut{Concrete sequence $seq$ or $null$}
@@ -185,7 +185,7 @@ unsatisfied cores for efficiently exploring the search space.
 
 \Return $null$\;
 		
-\caption{\label{alg:guidedsearch} The algorithm for
+\caption{\label{alg:guidedsearch} \small The algorithm for
   generating a concrete sequence that covers a given rule part.}
 \end{algorithm}
 
@@ -205,14 +205,14 @@ to $i_k$ to generate initialization sequences.
 %Therefore, for $m$ input entities
 %and $n$ operations that create each entity, the algorithm generates $n^m$
 %initialization sequences. 
-Note that the order of operations among the sequences
+Note that the order of operations in the sequences
 does not matter because the operations create different entities.  
 %In theory,
 %the number of initialization sequences could be high; however, in our empirical
 %evaluation, we found that the number of operations that create entities is often
 %quite low, resulting in a few initialization sequences only.
 
-The algorithm checks whether any operation in $OP_i$ further requires additional
+The algorithm checks whether any operation in $OP_k$ further requires additional
 entities, and repeats this process until no new input entities are required in
 all initialization sequences.  For our illustrative example, the initialization
 sequence for the operation \subject{GenerateInvoice} is:
@@ -230,12 +230,12 @@ sequence for the operation \subject{GenerateInvoice} is:
 \vspace*{-5pt}
 
 Next, for each initialization sequence, the algorithm generates concrete
-sequences by computing all possible combinations of rule parts among operations
-in the sequence. To do this, it joins the operation flow graphs for the
-operations and enumerates all paths in the composed flow graph. The concrete
-sequences generate different object states for input entities of~${\cal O}$. For
-our running example, there is only one concrete sequence because each operation
-in the initialization sequence has only one rule part:
+sequences by computing all possible combinations of rule parts for the
+operations in the sequence. To do this, it joins the operation flow graphs for
+the operations and enumerates all paths in the composed flow graph. The concrete
+sequences generate different object states for the input entities of~${\cal
+  O}$. For our running example, there is only one concrete sequence because each
+operation in the initialization sequence has only one rule part:
 
 \vspace*{-4pt}
 {\scriptsize
@@ -252,30 +252,30 @@ in the initialization sequence has only one rule part:
 %\vskip -7pt
 \paragraph*{Check Satisfiability (Line 8)} Next, the algorithm checks whe\-ther 
 the concrete sequences in the queue are satisfiable. A concrete sequence is
-satisfiable if it generates desired object states for all input entities of
-${\cal O}$ that cover the precondition of the target rule part. To achieve this,
-the algorithm constructs a logical formula composed of constraints in
-preconditions and postconditions in each rule part of the sequence and leverages
-a constraint solver to check whether the formula is satisfiable.
+satisfiable if it generates the object states for all input entities of ${\cal
+  O}$ that cover the precondition of the target rule part. To achieve this, the
+algorithm constructs a logical formula composed of constraints in preconditions
+and postconditions in each rule part of the sequence and leverages a constraint
+solver to check whether the formula is satisfiable.
 
 For illustration, consider the sequence of operations with selected rule parts
 as $({\cal O}_1 [r_{1.1}], {\cal O}_2 [r_{2.1}], \ldots, {\cal O}_n [r_{n.1}],
-{\cal O} [r])$.  The algorithm starts with the precondition of $r$ (referred to
-as $target$) in operation ${\cal O}$.  It generates binding constraints that
+{\cal O} [r])$.  The algorithm starts with the precondition of $r$ (the
+$target$) in operation ${\cal O}$.  It generates binding constraints that
 substitute the entities consumed by ${\cal O}$ with the entities created or
 modified by the predecessor operation ${\cal O}_n$. The binding constraints bind
 the identifiers in the postcondition of $r_{n.1}$ to the identifiers of the same
 type in the precondition of $r$. Because the solver has no notion of objects,
 the binding constraints ensure that referenced object attributes are
-appropriately bound as well.
+appropriately bound.
 
 The binding constraints are generated as follows. Let $v$ be an identifier of
-type $\tau$ occurring in the creates or modifies clause of a predecessor (\eg
-${\cal O}_n$) and let $w$ be an identifier of the same type occurring in the
-input clause of the successor (\eg ${\cal O}$). If $\tau$ is an enumerated or
-primitive type, the only binding constraint needed is $w = v$. However, if
-$\tau$ is an object type, we must bind all attributes as well, yielding the
-following constraint:
+type $\tau$ occurring in the \subject{creates} or \subject{modifies} clause of a
+predecessor (\eg ${\cal O}_n$) and let $w$ be an identifier of the same type in
+the input clause of the successor (\eg ${\cal O}$). If $\tau$ is an enumerated
+or a primitive type, the only binding constraint needed is $w = v$. However, if
+$\tau$ is an object type, all attributes must be bound as well, yielding the
+constraint:
 
 \vskip 2pt
 $b_n$: $w = v \wedge w.f_1 = v.f_1 \wedge \ldots \wedge w.f_n = v.f_n$ 
@@ -285,19 +285,17 @@ Here, $f_1, \ldots , f_n$ are attributes of $\tau$. To generate the final
 binding constraint, this process is applied recursively on each attribute of
 object type. Using binding constraints, the algorithm generates the formula as
 $p_{n.1} \wedge q_{n.1} \wedge b_n \wedge p$, where $p_{n.1}$ and $q_{n.1}$ are
-the precondition and postcondition of $r_{n.1}$, respectively. The algorithm checks whether
-the formula is satisfiable.  If it is, this formula becomes the next $target$
-and ${\cal O}_{n-1}$ the predecessor operation, and the algorithm repeats the
-same process with other operations in the sequence.  Once it has processed all
-operations in the sequence and the formula is satisfiable, it extracts values
-for variables of primitive and enumerated types from the constraint solution to
-generate test data.
+the precondition and postcondition of $r_{n.1}$, respectively.  If the formula
+is satisfiable, it becomes the next $target$ and ${\cal O}_{n-1}$ the
+predecessor operation, and the algorithm repeats the same process.  After it has
+processed all operations in the sequence and the formula is satisfiable, it
+extracts values for variables of primitive and enumerated types from the
+constraint solution to generate test data.
 
-For our running example, the solver finds the composed formula
-unsatisfiable. The reason is that rule part $r_{3.1}$ of \subject{CreateOrder}
-assigns zero to attribute \subject{total} of \subject{Order}, whereas the
-precondition of $r_{4.2}$ of \subject{GenerateInvoice} requires \subject{total}
-to be greater than zero.
+For our example, the solver finds the composed formula unsatisfiable. The reason
+is that rule part $r_{3.1}$ of \subject{CreateOrder} assigns zero to
+\subject{Order.total}, whereas the precondition of $r_{4.2}$ of
+\subject{GenerateInvoice} requires \subject{total} to be greater than zero.
 
 
 %If the unsatisfiable core is already seen for this sequence, our algorithm
@@ -364,56 +362,51 @@ $r_{4.2}$ as follows:
 \subsection{Optimizations}
 \label{sec:optimization}
 
-The preceding algorithm can handle only small models where there exist only
-a few operations that modify entities. Instead, if there exist many operations 
-that modify each entity, the search space can easily become exponential. To
-address this issue, we use the following optimizations based on unsatisfied core 
-that helps prune the search space. These optimizations replace Line~10
-of Algorithm~\ref{alg:guidedsearch} for identifying candidate operations.
+The preceding algorithm can handle small models containing only a few operations
+that modify entities. However, if there are many operations that modify each
+entity, the search space can become exponential. To address this, we use the
+following optimizations based on unsatisfied core that helps prune the search
+space. These optimizations replace Line~10 of Algorithm~\ref{alg:guidedsearch}.
 
-\paragraph*{Extract Unsatisfiable Core} In particular, if the composed formula in
-Line~8 is unsatisfiable, we extract the unsatisfiable core, \subject{ucore},
-of the formula. The unsatisfiable core is a subset of the formula that preserves
+\paragraph*{Extract Unsatisfiable Core} If the composed formula in
+Line~8 is unsatisfiable, we extract the unsatisfiable core, \subject{ucore}, of
+the formula. The unsatisfiable core is a subset of the formula that preserves
 the unsatisfiability but is simplified compared to the original formula.
-\subject{ucore} guides our algorithm towards operations that modify
-attributes of entities that help produce the desired object
-states. (Section~\ref{sec:impl} presents the implementation details of how we
-extract \subject{ucore} from a formula.) In our example, for sequence $S_2$, 
-we extract \subject{ucore} as \subject{ord.total =
+\subject{ucore} guides our algorithm to operations that modify attributes of
+entities that help produce the desired object states. (Section~\ref{sec:impl}
+presents the implementation details of how \subject{ucore} is extracted.) In our
+example, for sequence $S_2$, we extract \subject{ucore} as \subject{ord.total =
   0 $\wedge$ ord.total > 0}, composed of constraints from rule parts $r_{3.1}$
 and $r_{4.2}$.
 
-Before searching for other candidate operations, we discard
-constraints from \subject{ucore} that are contributed by the last analyzed
-operation (as these constraints cause the unsatisfiability of $target$).  We use
-the notation \subject{ucore-} to represent the remaining constraints in the
-extracted unsatisfied core. The intuition behind computing \subject{ucore-} is
-to identify candidate operations that are compatible with \subject{ucore-} so
-that the composed formula can be satisfiable. We first extract
-entities and their attributes involved in \subject{ucore-}. Next, we identify
-candidate operations that modify those entities.  For each such candidate
-operation, we identify rule parts that modify the desired attributes and also
-whose postconditions are compatible with \subject{ucore-}, \ie{} $q \wedge b
-\wedge \subject{ucore-}$ is satisfiable, where $q$ is the postcondition of the
-selected rule part in the candidate operation and $b$ represents binding
-constraints.  This additional satisfiability check helps discard candidate
-operations that do modify the desired attributes but still cannot help in
-identifying a covering sequence for $r$; this can significantly reduce the
-search space of candidate sequences.
+Before searching for other candidate operations, we discard constraints from
+\subject{ucore} that are contributed by the last analyzed operation (as these
+constraints cause the unsatisfiability of $target$).  We use the notation
+\subject{ucore-} to represent the remaining constraints in the extracted
+unsatisfied core. The intuition behind computing \subject{ucore-} is to identify
+candidate operations that are compatible with \subject{ucore-} so that the
+composed formula can be satisfiable. We first extract entities and their
+attributes involved in \subject{ucore-}. Next, we identify candidate operations
+that modify those entities.  For each such operation, we identify rule parts
+that modify the desired attributes and whose postconditions are compatible with
+\subject{ucore-}, \ie{} $q \wedge b \wedge \subject{ucore-}$ is satisfiable,
+where $q$ is the postcondition of the selected rule part in the candidate
+operation and $b$ is the binding constraint.  This additional satisfiability
+check helps discard candidate operations that do modify the desired attributes
+but still cannot help in finding a covering sequence for $r$; this can
+significantly reduce the search space of candidate sequences.
 
-For our illustrative example, we compute \subject{ucore-} as
-\subject{ord.total > 0}, and identify the entity as \subject{Order} and the
-desired attribute to be modified as \subject{total}. We then analyze all operations
-that create or modify \subject{Order}, and identify the candidate operation
-as \subject{AddItemToOrder} and the rule part $r_{7.1}$, since $q_{7.1} \wedge
-\subject{ucore-}$ is satisfiable. Even if there exist
-many operations that modify the \subject{Order} entity, our optimization
-helps discard many of those operations, thereby increases the efficiency
-by aggressively pruning the search space. 
-After creating the new concrete sequence, we check satisfiability of the new
-sequence, where we further identify \subject{ucore} as
-\subject{cust.crLimit = 0 $\wedge$ cust.crLimit > 0} and find \subject{AddCreditLimit}
-as a candidate operation.
+For our illustrative example, we compute \subject{ucore-} as \subject{ord.total
+  > 0}, and identify the entity as \subject{Order} and the attribute to be
+modified as \subject{total}. We then analyze all operations that create or
+modify \subject{Order}, and identify the candidate operation as
+\subject{AddItemToOrder} and the rule part $r_{7.1}$ because $q_{7.1} \wedge
+\subject{ucore-}$ is satisfiable. Even if there are multiple operations that
+modify \subject{Order}, our optimization helps discard many of those operations
+and increases the efficiency by aggressively pruning the search space.  After
+creating the new concrete sequence, we check satisfiability of the new sequence,
+where we further identify \subject{ucore} as \subject{cust.crLimit = 0 $\wedge$
+  cust.crLimit > 0} and find \subject{AddCreditLimit} as a candidate operation.
 
 %\vskip -7pt
 \paragraph*{Check Progress} While identifying candidate operations, our
@@ -423,27 +416,23 @@ progress and need to be discarded to make the exploration efficient. To identify
 such cases, we check two conditions for each sequence $cseq$.
 
 First, if the extracted unsatisfiable core \subject{ucore} was already seen in
-previous iterations related to $cseq$, we discard $cseq$. The reason
-is that the candidate operation that was added to $cseq$ in the previous
-iteration did not help satisfy the previous \subject{ucore}, resulting in the
-same \subject{ucore} in the next iteration as well.
+previous iterations related to $cseq$, we discard $cseq$. The reason is that the
+candidate operation that was added to $cseq$ in the previous iteration did not
+help satisfy the previous \subject{ucore}, resulting in the same \subject{ucore}
+in the next iteration as well.  Second, when \subject{ucore} includes integer
+variables, we use a fitness function to measure whether $cseq$ helps get closer
+to covering the rule part. The first check is sufficient for boolean variables
+or variables of enumerated types but is insufficient for integer variables.
 
-Second, when \subject{ucore} includes integer variables, we use a
-fitness function to measure whether $cseq$ helps get closer to cover the rule
-part $r$ or not. The first check is sufficient for boolean variables or
-variables of enumerated types but is insufficient to deal with the integer
-variables.
-
-To illustrate the issue, consider that our model includes another operation,
-\subject{RemoveItemFromOrder}, that removes a selected item and decreases the
-value of attribute \subject{total} of \subject{Order}. While exploring candidate
-operations, our optimization identifies \subject{AddItemToOrder} and
-\subject{RemoveItemFromOrder} because both operations modify
-\subject{total}. However, \subject{RemoveItemFromOrder} does not help cover
-$r_{4.2}$ as it actually decreases the value of \subject{total}. To handle such
-cases, our optimization uses a fitness function, originally proposed in
-Fitnex~\cite{xie09:fitness}, to measure whether $cseq$ gets closer to covering
-the target rule part. The idea is to compute a fitness value from
-\subject{ucore} and if this value is better than the fitness value computed
-during the previous iteration, $cseq$ is processed further; otherwise, it is
-discarded.
+To illustrate, suppose that our model includes another operation,
+\subject{RemoveItemFromOrder}, that removes an item and decreases the value of
+\subject{Order.total}. While exploring candidate operations, our optimization
+identifies \subject{AddItemToOrder} and \subject{RemoveItemFromOrder} because
+both operations modify \subject{total}. However, \subject{RemoveItemFromOrder}
+does not help cover $r_{4.2}$ as it actually decreases the value of
+\subject{total}. To handle such cases, our optimization uses a fitness function,
+originally proposed in Fitnex~\cite{xie09:fitness}, to measure whether $cseq$
+gets closer to covering the target rule part. The idea is to compute a fitness
+value from \subject{ucore} and if this value is better than the fitness value
+computed during the previous iteration, $cseq$ is processed further; otherwise,
+it is discarded.

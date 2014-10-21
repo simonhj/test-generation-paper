@@ -128,7 +128,7 @@ for \subject{GenerateInvoice} has three rule parts, which determine how the
 invoice total and the customer's credit limit are updated by the operation,
 based on the customer's balance type.  The second rule for
 \subject{GenerateInvoice} has two rule parts---which also determine the
-computation of invoice total, this time based on the customer's state of
+computation of invoice total, in this case, based on the customer's state of
 residence.
 
 \begin{figure}[t]
@@ -140,11 +140,12 @@ residence.
 \label{fig:sample-app}
 \end{figure}
 %\vspace*{-2pt}
+
 The boolean expressions in the rule parts refer to the input/crea\-ted/modified
 entities by names: \eg the rule part for \subject{CreateOrder} refers to the
 input \subject{Customer} instance as \subject{cust} and the created
 \subject{Order} instance as \subject{ord}. The expressions also refer to
-attributes of the entities. For example, some of the relevant attributes of
+attributes of the entities. For instance, some of the relevant attributes of
 \subject{Customer} are: \subject{State: state}, \subject{BalanceType: balType},
 and \subject{int: crLimit}, 
 %\vspace*{-3pt}
@@ -159,11 +160,11 @@ and \subject{int: crLimit},
 %}
 %\vspace*{-7pt}
 where \subject{State} and \subject{BalanceType} are
-enumerated types (\eg attribute \subject{BalanceType} can take two values---\subject{None}
-or \subject{Credit}) and the attribute \subject{crLimit} is an integer.
+enumerated types (\eg \subject{BalanceType} can take two values---\subject{None}
+or \subject{Credit}) and \subject{crLimit} is an integer.
 
-If an expression needs to refer to the old and new values of an attribute (\ie
-the values prior and subsequent to an operation invocation), the old value is
+If an expression needs to refer to the old and new values of an attribute (the
+values prior and subsequent to an operation invocation), the old value is
 distinguished by appending `@' to the attribute name. For instance, consider the
 postcondition in the rule for \subject{AddCreditLimit}: {\small ${\tt
     cust.crLimit} = {\tt cust.crLimit@} + {\tt amount}$}; this states that the
