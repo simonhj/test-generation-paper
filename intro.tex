@@ -3,7 +3,7 @@
 A business rule articulates some aspect of the expected functional behavior (or
 a \textit{requirement}) of an enterprise application. Here is a simple business
 rule that determines how an invoice total is determined in a billing
-application:
+application (specifically, \texttt{jbilling}~\cite{jbilling}):
 %
 \begin{quote}
 {\small
@@ -143,7 +143,9 @@ three preconditions and, in each case, verify that the postcondition holds after
 the operation has completed.  This brings us to the main difficulty in creating
 tests: appropriate database state, such as a customer with a certain balance
 type and an order with a certain amount, needs to be established before any of
-these scenarios can be exercised.
+these scenarios can be exercised.  In the \texttt{jbilling} application's web interface,
+it requires entering appropriate data step-wise in six distinct web pages to be able to
+bring the state of the application at which these rule parts can be exercised.
 %We showed in
 %Figure~\ref{fig:jbilling-flow} the steps that would be required to create these
 %preconditions.  
@@ -152,7 +154,9 @@ each of the steps, automatically to cover a rule part?
 
 Our observation is that the steps that are required to drive the database state
 to a desired precondition are carried out by operations, and those operations
-too would have rules that specify their functionality.  We could then use
+too would have rules that specify their functionality.  (In \texttt{jbilling}, each
+operation is triggered by entering appropriate data and clicking on ``submit'' on
+a web page specific to that operation.) We could then use
 business rules as ``state transformers'' and piece together a sequence of
 operations to arrive at a desired state.  The advantage of looking at business
 rules as state transformers is that we can adapt the technology developed for
@@ -213,10 +217,23 @@ whose postconditions are compatible with the unsatisfied core. In this way---and
 using additional optimizations---the technique can prune out large parts of the
 search space and efficiently narrow down to the covering sequences.
 
-We also present a notation for capturing business rules formally, which enables
+The sequencing of operations done by our algorithm is also reminiscent of the AI planning 
+problem [18] where actions with pre- and postconditions are sequenced by a planner 
+algorithm using either forward or backward chaining. We discuss the connection
+in the related work section; in brief, the algorithms for planning would have to
+be fortified with the same kinds of optimizations as mentioned above to be practical
+for our use.
+
+An important ingredient of our approach is a notation for capturing business rules 
+formally, which enables
 mechanized analysis for test generation. Moreover, prior to test generation,
 formally specified rules can be checked for consistency and completeness
-properties.
+properties.  The notation is designed to be natural for use by architects, 
+and while there is concern of a learning curve whenever a notation has to be adopted,
+the industry as a whole has been moving towards structured rule description
+languages (e.g. JBoss~\cite{JBoss}, ILOG~\cite{ILog}, 
+and RuleML~\cite{RuleML}; see Section~\ref{sec:model}).  We believe the payoff by way 
+of consistency checks and automatic test coverage would further spur adoption of structured rule languages.
 
 We have implemented a prototype system, which includes a business rule editor
 (an Eclipse plug-in) and automated analyses for rule checking and test
