@@ -107,12 +107,11 @@ Before presenting our technique, we elaborate upon the billing application
 example (\subject{jBilling}) mentioned in the previous sections: we explain
 various operations and rules for the application, which we use subsequently to
 illustrate our technique. To facilitate the illustration, we use a simplified
-version inspired by the actual application.\footnote{\scriptsize
-  \url{http://www.jbilling.com/}} (In the empirical evaluation, we modeled a
-larger part of the application.) The model for \subject{jBilling} includes four
-entities: \subject{Customer}, \subject{Item}, \subject{Order}, and
-\subject{Invoice}.  Figure~\ref{fig:sample-app} shows the flow among some of the
-operations, which create, read, or modify these entities. 
+version inspired by the actual application~\cite{jbilling}. (In the empirical
+evaluation, we modeled a larger part of the application.) The model for
+\subject{jBilling} includes four entities: \subject{Customer}, \subject{Item},
+\subject{Order}, and \subject{Invoice}.  Figure~\ref{fig:sample-app} shows the
+flow among some of the operations, which create, read, or modify these entities.
 %For example, operation
 %\subject{CreateCustomer} creates an instance of \subject{Customer}, whereas the
 %operation \subject{AddItemToOrder} modifies an \subject{Order} instance by
@@ -133,9 +132,9 @@ residence.
 
 \begin{figure}[t]
 \centering
-\includegraphics[trim=47 350 380 42,clip,width=.8\columnwidth]{figs/appModel.pdf}
+\includegraphics[trim=47 420 380 42,clip,width=.8\columnwidth]{figs/appModel.pdf}
 \vspace*{-12pt}
-\caption{Sample operations and their interactions in \subject{jBilling}.}
+\caption{Sample operations and their interactions in \textit{jBilling}.}
 \vspace*{-0pt}
 \label{fig:sample-app}
 \end{figure}

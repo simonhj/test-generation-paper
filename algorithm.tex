@@ -87,8 +87,8 @@ Section~\ref{sec:model}), control flow through a rule covers exactly one rule
 part.  The rule subgraph captures this aspect by representing each rule as a
 choice among its rule parts. Moreover, because there are no data dependences
 between rules of an operation (Property~3, Section~\ref{sec:model}), the rule
-subgraphs can be composed in any order in the operation flow graph (\ie all
-orderings are equivalent).
+subgraphs can be composed in any order in the operation flow graph.
+%% (\ie all orderings are equivalent).
 
 \subsubsection{Operation Sequences}
 
@@ -145,11 +145,12 @@ preceding abstract sequence is:
 The test-generation algorithm (shown as Algorithm~\ref{alg:guidedsearch}) takes
 as inputs an operation ${\cal O}$ and a rule part $r$, and generates a concrete
 sequence $seq$ that cover $r$. To illustrate the algorithm, we consider rule
-part $r_{4.2}$ of \subject{GenerateInvoice}. For brevity, we omit details such
-as exiting the main loop (lines~6--13) when the user-defined threshold of
-maximum number of sequences to be explored is reached. We first explain the core
-algorithm and then present the optimization that uses unsatisfied cores to
-exploring the search space efficiently.
+part $r_{4.2}$ of \subject{GenerateInvoice}.
+%% For brevity, we omit details such as exiting the main loop (lines~6--13) when
+%% the user-defined threshold of maximum number of sequences to be explored is
+%% reached.
+We first explain the core algorithm and then present the optimization that uses
+unsatisfied cores to exploring the search space efficiently.
 
 \begin{algorithm}[t]
 \footnotesize
@@ -396,10 +397,10 @@ check helps discard candidate operations that do modify the desired attributes
 but still cannot help in finding a covering sequence for $r$; this can
 significantly reduce the search space of candidate sequences.
 
-For our illustrative example, we compute \subject{ucore-} as \subject{ord.total
-  > 0}, and identify the entity as \subject{Order} and the attribute to be
-modified as \subject{total}. We then analyze all operations that create or
-modify \subject{Order}, and identify the candidate operation as
+For our running example, \subject{ucore-} is \subject{ord.total > 0}, and we
+identify the entity as \subject{Order} and the attribute to be modified as
+\subject{total}. We then analyze all operations that create or modify
+\subject{Order}, and identify the candidate operation as
 \subject{AddItemToOrder} and the rule part $r_{7.1}$ because $q_{7.1} \wedge
 \subject{ucore-}$ is satisfiable. Even if there are multiple operations that
 modify \subject{Order}, our optimization helps discard many of those operations

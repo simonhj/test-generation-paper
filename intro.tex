@@ -3,7 +3,7 @@
 A business rule articulates some aspect of the expected functional behavior (or
 a \textit{requirement}) of an enterprise application. Here is a simple business
 rule that determines how an invoice total is determined in a billing
-application (specifically, \texttt{jbilling}~\cite{jbilling}):
+application~\cite{jbilling}:
 %
 \begin{quote}
 {\small
@@ -27,18 +27,18 @@ requirements of an enterprise system are typically captured by a large number
 (often, hundreds) of business rules such as the one above.
 
 It is reasonable to expect functional testing of an enterprise system to
-\textit{cover} its business rules, which is to say, testing would exercise all
+\textit{cover} its business rules, which is to say testing would exercise all
 distinct scenarios described in each business rule.  For example, in the
-preceding rule, one of the scenario to be exercised is that a customer's balance
-type is credit, and that the order amount exceeds the customer's credit limit.
-A test that exercises this scenario would set up a customer with the balance
-type as \textit{credit} as well as a certain credit limit (say, \textit{100}),
-create an order and add items to the order to bring the total to an amount (say,
-\textit{120}) that exceeds the credit limit for that customer, and finally
-create an invoice for that order and verify the invoiced amount.
+preceding rule, one of the scenarios to be covered is that a customer's balance
+type is credit and the order amount exceeds the customer's credit limit.  A test
+that covers this scenario would set up a customer with the~balance type as
+\textit{credit} and a certain credit limit (say, \textit{100}), create an order
+and add items to the order to bring the total to an amount (say, \textit{120})
+that exceeds the credit limit for that customer, and finally create an invoice
+for the order and verify the invoiced amount.
 %Figure~\ref{fig:jbilling-flow} illustrates this flow.  
 Although the values
-\textit{credit}, \textit{100}, and \textit{120} can be identified just from this
+\textit{credit}, \textit{100}, and \textit{120} can be identified from this
 rule (by constraint solving), identifying a test sequence is also important to
 apply those values at the right fields on the appropriate
 screens in the application.
@@ -140,36 +140,35 @@ Covering a business rule means to exercise each of its constituent scenarios,
 referred henceforth as \textit{rule parts}.  To cover the three rule parts shown
 in Figure~\ref{fig:invoice}, it is necessary to create (separately) each of the
 three preconditions and, in each case, verify that the postcondition holds after
-the operation has completed.  This brings us to the main difficulty in creating
-tests: appropriate database state, such as a customer with a certain balance
-type and an order with a certain amount, needs to be established before any of
-these scenarios can be exercised.  In the \texttt{jbilling} application's web interface,
-it requires entering appropriate data step-wise in six distinct web pages to be able to
-bring the state of the application at which these rule parts can be exercised.
+the operation.  This brings us to the main difficulty in creating tests:
+appropriate database state, such as a customer with a certain balance type and
+an order with a certain amount, needs to be established before any of these
+scenarios can be exercised.  In the \subject{jBilling} application's web
+interface, it requires entering appropriate data step-wise in six distinct pages
+to bring the application to a state at which these rule parts can be exercised.
 %We showed in
 %Figure~\ref{fig:jbilling-flow} the steps that would be required to create these
 %preconditions.  
 How can we identify these steps, and the data to~be entered in
 each of the steps, automatically to cover a rule part?
 
-Our observation is that the steps that are required to drive the database state
-to a desired precondition are carried out by operations, and those operations
-too would have rules that specify their functionality.  (In \texttt{jbilling}, each
-operation is triggered by entering appropriate data and clicking on ``submit'' on
-a web page specific to that operation.) We could then use
-business rules as ``state transformers'' and piece together a sequence of
-operations to arrive at a desired state.  The advantage of looking at business
-rules as state transformers is that we can adapt the technology developed for
-test generation on \textit{programs} for the problem at hand.\footnote{We
-  clarify, though, that business rules are themselves not executable programs;
-  rather they only are an abstract description of the functionality of a
-  program.}  The disadvantage of relying on business rules to act as state
-transformers is that they need to be specified to a certain level of detail for
-them to work out as state transformers; this is generally not a big
-problem---practioners tend to write business rules with an intention to be
-complete---but their intended use as input to test generation process does
-increase expectations from the rules and, therefore, from the analysts who write
-them.
+Our observation is that the steps required to drive the database state to a
+desired precondition are carried out by operations, and those operations too
+would have rules that specify their functionality.  (In \subject{jbilling}, each
+operation is triggered by entering appropriate data and clicking on ``submit''
+on a web page specific to that operation.) We could then use business rules as
+``state transformers'' and piece together a sequence of operations to arrive at
+a desired state.  The advantage of looking at business rules as state
+transformers is that we can adapt the technology developed for test generation
+on \textit{programs} for the problem at hand.\footnote{We clarify, though, that
+  business rules are themselves not executable programs; rather they only are an
+  abstract description of the functionality of a program.}  The disadvantage of
+relying on business rules to act as state transformers is that they need to be
+specified to a certain level of detail for them to work out as state
+transformers; this is generally not a big problem---practioners tend to write
+business rules with an intention to be complete---but their intended use as
+input to test generation process does increase expectations from the rules and,
+therefore, from the analysts who write them.
 
 \subsection{Our Approach and Results}
 
@@ -217,23 +216,23 @@ whose postconditions are compatible with the unsatisfied core. In this way---and
 using additional optimizations---the technique can prune out large parts of the
 search space and efficiently narrow down to the covering sequences.
 
-The sequencing of operations done by our algorithm is also reminiscent of the AI planning 
-problem [18] where actions with pre- and postconditions are sequenced by a planner 
-algorithm using either forward or backward chaining. We discuss the connection
-in the related work section; in brief, the algorithms for planning would have to
-be fortified with the same kinds of optimizations as mentioned above to be practical
-for our use.
+The sequencing of operations done by our algorithm is also reminiscent of AI
+planning~\cite{Weld94} where actions with pre- and postconditions are sequenced
+by a planner algorithm using forward or backward chaining. We discuss the
+connection in the related work section; in brief, the algorithms for planning
+would have to be fortified with the same kinds of optimizations as mentioned
+above to be practical for our use.
 
-An important ingredient of our approach is a notation for capturing business rules 
-formally, which enables
-mechanized analysis for test generation. Moreover, prior to test generation,
-formally specified rules can be checked for consistency and completeness
-properties.  The notation is designed to be natural for use by architects, 
-and while there is concern of a learning curve whenever a notation has to be adopted,
-the industry as a whole has been moving towards structured rule description
-languages (e.g. JBoss~\cite{JBoss}, ILOG~\cite{ILog}, 
-and RuleML~\cite{RuleML}; see Section~\ref{sec:model}).  We believe the payoff by way 
-of consistency checks and automatic test coverage would further spur adoption of structured rule languages.
+An important ingredient of our approach is a notation for capturing business
+rules formally, which enables mechanized analysis for test generation. Moreover,
+prior to test generation, formally specified rules can be checked for
+consistency and completeness properties.  The notation is designed to be natural
+for use by architects, and while there is concern of a learning curve whenever a
+notation has to be adopted, the industry has been moving toward
+structured rule description languages (e.g. JBoss~\cite{JBoss},
+ILOG~\cite{ILog}, and RuleML~\cite{RuleML}).  We believe the payoff by way of
+consistency checks and automatic test coverage would further spur adoption of
+structured rule languages.
 
 We have implemented a prototype system, which includes a business rule editor
 (an Eclipse plug-in) and automated analyses for rule checking and test
@@ -252,7 +251,7 @@ The contributions of this paper are as follows:
   a set of well-formedness properties that can be checked mechanically. We have 
   also developed an Eclipse plugin for our rule language.
 \item We describe an algorithm that can mechanically construct test sequences
-  that exercise the business rules of a model. The algorithm uses a
+  that cover the business rules of a model. The algorithm uses a
   novel optimization to prune the search space. We have implemented
   the algorithm in a tool called \tool{}.
 \item To evaluate our approach, we have formalized the business rules

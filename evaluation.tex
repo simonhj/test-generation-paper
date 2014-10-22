@@ -6,11 +6,32 @@ TEsting Rules), and conducted two empirical studies using two open-source
 applications and one proprietary enterprise application. In the first study, we
 compared the effectiveness of \tool{} in covering business rules with a related
 technique that systematically explores the search space without any guidance. In
-the second study, we investigated the efficiency of both the techniques. After
-describing the experimental setup, we present results of the two studies.
+the second study, we investigated the efficiency of both the techniques. %% After
+%% describing the experimental setup, we present results of the two studies.
+
+\subsection{Experimental Setup}
+\label{sec:impl}
+\vspace*{-3pt}
+\paragraph*{Implementation} Our implementation \tool{}  uses \choco{} constraint
+solver~\cite{Choco} for checking the satisfiability of sequences. Since \choco{}
+does not provide functionality for extracting unsatisfied core, we use a
+heuristic-based implementation to extract the core. While checking whether a
+concrete sequence is satisfiable, \tool{} starts with the last operation of the
+sequence and performs backward analysis by handling each operation and their
+rule parts. Therefore, when a composed formula is unsatisfiable, it can be
+caused only by a constraint in the most recently analyzed rule part. Next, it
+uses the variables involved in that constraint to extract the complete
+unsatisfied core. Note that \tool{} may not extract the minimal unsatisfied
+core; however, the extracted core is sufficient to suggest candidate
+operations. We leave improvements in the implementation to future work, for
+example, by exploring advanced algorithms for extracting unsatisfied
+core~\cite{Liffiton:2008:ACM} and also leverage other constraint
+solvers~\cite{DeMoura:2008}. Another optimization could include caching and
+reusing constraints (\eg as discussed in the Green approach~\cite{VisserGD12}).
 
 \begin{table}[t]
 \caption{Subjects used in our empirical studies.}
+\vskip -5pt
 \centering
 {\scriptsize
 \tabcolsep=3pt
@@ -30,33 +51,12 @@ App 				 & \multicolumn{1}{|c|}{---}	& 12 & 13 & 13   & 20 \\
 \end{table}
 
 
-\subsection{Experimental Setup}
-\label{sec:impl}
-\vspace*{-3pt}
-\paragraph*{Implementation} Our implementation \tool{}  uses \choco{} constraint
-solver~\cite{Choco} for checking the satisfiability of sequences. Since \choco{} does not provide
-functionality for extracting unsatisfied core, we use a heuristic-based
-implementation to extract the core. While checking whether a concrete sequence
-is satisfiable, \tool{} starts with the last operation of the sequence and
-performs backward analysis by handling each operation and their rule
-parts. Therefore, when a composed formula is unsatisfiable, it can be caused
-only by a constraint in the most recently analyzed rule part. Next,
-it uses the variables involved in that constraint to extract the complete
-unsatisfied core. Note that \tool{} may not extract the minimal unsatisfied
-core; however, the extracted core is sufficient to suggest candidate
-operations. We leave improvements in the implementation to future work, for
-example, by exploring advanced algorithms for extracting unsatisfied
-core~\cite{Liffiton:2008:ACM} and also leverage other constraint
-solvers~\cite{DeMoura:2008}. Another optimization could include caching and
-reusing constraints (\eg as discussed in the Green approach~\cite{VisserGD12})
-to improve further the efficiency of the search.
-
-To compare the efficiency of \tool{} with an unguided search
-over the space of candidate sequences, we implemented another tool, called
-\exhaust{}. \exhaust{} is primarily the same as \tool{} without optimizations
-presented in Section~\ref{sec:optimization}. Being an unguided technique, \exhaust{} lets us evaluate the
-effectiveness of leveraging unsatisfied core to guide the search for covering
-sequences.
+To compare \tool{} with an unguided search over the space of candidate
+sequences, we implemented another tool, called \exhaust{}, which is similar to
+\tool{}, but without the optimizations presented in
+Section~\ref{sec:optimization}. As an unguided technique, \exhaust{} lets us
+evaluate the effectiveness of leveraging unsatisfied core to guide the search
+for covering sequences.
 
 %that systematically explores sequences without guidance via
 %unsatisfied core. Similar to \tool{}, \exhaust{} uses a queue $q$ to store
@@ -90,7 +90,7 @@ data required for coverage, and modeled those modules using our tool. In
 particular, we used the \textit{ticket cancellation} and \textit{generate
   invoice} modules for \subject{Cebu-pacific} and \subject{jBilling},
 respectively. In total, we modeled $33$ operations with $42$ rules and $77$ rule
-parts.\footnote{\small The complete dataset including models and the
+parts.\footnote{The complete dataset including models and the
   generated test sequences is available at \url{http://tinyurl.com/k4b4j8x}
   (also available on request from the authors).} For each subject, we spent
 approximately~10 hours to model the operations and rules. We also found that
@@ -190,11 +190,13 @@ generating complex sequences for covering business rules.
 \tabcolsep=3pt
 \begin{tabular}{|l|r|r|r|r|r|r|r|r|r|r|}
 \hline
-& \multicolumn{4}{|c|}{Sequence Length} & \multicolumn{4}{|c|}{\# of Sequences Explored} & \multicolumn{2}{|c|}{Time} \\
+& \multicolumn{4}{|c|}{Sequence Length} & \multicolumn{4}{|c|}{\# of Sequences Explored} & \multicolumn{2}{|c|}{Time (sec)} \\
 \cline{2-11}
-& \multicolumn{2}{|c|}{\tool{}} & \multicolumn{2}{|c|}{\exhaust{}} & \multicolumn{2}{|c|}{\tool{}} & \multicolumn{2}{|c|}{\exhaust{}} & \multicolumn{1}{|c|}{\tool{}} & \multicolumn{1}{|c|}{\exhaust{}} \\
+& \multicolumn{2}{|c|}{\tool{}} & \multicolumn{2}{|c|}{\exhaust{}} &
+\multicolumn{2}{|c|}{\tool{}} & \multicolumn{2}{|c|}{\exhaust{}} &
+\multicolumn{1}{|c|}{\tool{}} & \multicolumn{1}{|c|}{\exhaust{}} \\
 \cline{2-9}
-\multicolumn{1}{|c|}{Subject} & \multicolumn{1}{|c|}{Max} & \multicolumn{1}{|c|}{Avg} & \multicolumn{1}{|c|}{Max} & \multicolumn{1}{|c|}{Avg} & \multicolumn{1}{|c|}{Max} & \multicolumn{1}{|c|}{Avg} & \multicolumn{1}{|c|}{Max} & \multicolumn{1}{|c|}{Avg} &  & \\
+\multicolumn{1}{|c|}{Subject} & \multicolumn{1}{|c|}{Max} & \multicolumn{1}{|c|}{Avg} & \multicolumn{1}{|c|}{Max} & \multicolumn{1}{|c|}{Avg} & \multicolumn{1}{|c|}{Max} & \multicolumn{1}{|c|}{Avg} & \multicolumn{1}{|c|}{Max} & \multicolumn{1}{|c|}{Avg} & &  \\
 \hline \hline
 Cebu-pacific 	 &  7		& 5 &  9 &  5	 &  27 &  4	&  100 & 73 & 31 & 64 \\
 jBilling		 	 &  6		& 3 &  6 &  3	 &  48 &  2	&  39  &  2 & 20 & 17 \\
@@ -211,7 +213,7 @@ Table~\ref{tab:stats} presents data about the lengths of sequences and the
 number of sequences generated by \tool{} and \exhaust{}. Columns~2--5 show the
 maximum and average lengths of sequences generated for all rule parts, whereas
 Columns~6--9 show the number of sequences explored by each tool for all rule
-parts. Finally, Columns~10--11 show the time taken (in secs) by each tool.
+parts. Finally, Columns~10--11 show the time taken (in seconds) by each tool.
 
 The results show that, in some cases, \tool{} generated relatively shorter
 sequences compared to \exhaust{}. More significantly, \tool{} explored much

@@ -6,8 +6,8 @@
 \label{sec:model}
 
 In this section, we discuss the notation for modeling business rules and the
-static checking for completeness and consistency performed on formally captured
-rules. Although there exist business rule management systems such as JBoss~\cite{JBoss}, ILOG~\cite{ILog}, 
+static checking performed on formally captured rules. Although there exist
+business-rule management systems, such as JBoss~\cite{JBoss}, ILOG~\cite{ILog},
 and RuleML~\cite{RuleML}, we found that they are not expressive enough to model
 complex transaction-oriented rules.
 
@@ -54,14 +54,14 @@ complex transaction-oriented rules.
 
 \subsection{Rule-Modeling Language}
 
-Overall, our approach models rules in the context of operations in the system
-under test.  An operation is described by a set of input entities, a set of
-created entities, a set of modified entities, and a set of rules, where each
-rule consists of a set of precondition-postcondition pairs. For example,
-Figure~\ref{fig:invoice} shows the operation for computing invoice totals in the
-\subject{jBilling} application. The rules associated with this operation, which
-govern how the invoice total and the customer's credit limit are updated, are
-modeled with the operation in the form of precondition-postcondition pairs.
+We model rules in the context of operations in the system under test.  An
+operation is described by a set of input entities, a set of created entities, a
+set of modified entities, and a set of rules, where each rule consists of a set
+of precondition-postcondition pairs. For example, Figure~\ref{fig:invoice} shows
+the operation for computing invoice totals in \subject{jBilling}. The rules
+associated with this operation, which govern how the invoice total and the
+customer's credit limit are updated, are modeled with the operation in the form
+of precondition-postcondition pairs.
 
 Figure~\ref{fig:model-syntax} presents the syntax of the rule-modeling language
 (for clarity, we omit some of the details and present only the important parts
@@ -69,14 +69,14 @@ of the language). A \textit{rule specification} consists of entities and
 operations. An \textit{entity} can be an object (\eg invoice, order, customer)
 or an enumerated type (\eg a customer's balance type can be \subject{None},
 \subject{Credit}, or \subject{Prepaid}).
-
-The key part of the syntax, which models rules, is based on
-operations. Formally, an \textit{operation} ${\cal O}$ is the tuple $(I, C, M,
-R, o_n)$, where $I$ is the set of input entities read during the execution of
-${\cal O}$, $C$ is the set of entities created by ${\cal O}$, $M$ is the set of
-entities whose attributes are modified by ${\cal O}$, $R$ is the set of rules
-that describe the behavior of ${\cal O}$, and $o_n$ is a succeeding operation
-that, if specified, is the only operation that can execute after ${\cal O}$.
+%% The key part of the syntax, which models rules, is based on
+%% operations.
+Formally, an \textit{operation} ${\cal O}$ is the tuple $(I, C, M, R, o_n)$,
+where $I$ is the set of input entities read during the execution of ${\cal O}$,
+$C$ is the set of entities created by ${\cal O}$, $M$ is the set of entities
+whose attributes are modified by ${\cal O}$, $R$ is the set of rules that
+describe the behavior of ${\cal O}$, and $o_n$ is a succeeding operation that,
+if specified, is the only operation that can execute after ${\cal O}$.
 
 The notion of \textit{succeeding operation} can simplify the modeling of
 coarse-grained operations that have many rules associated with them. Such an
@@ -97,15 +97,15 @@ rule parts. A \textit{rule part} $r$ is a precondition-postcondition pair, $p
 \Longrightarrow q$, where $p$ and $q$ are boolean formulas such that if $p$
 holds in the state before the operation, $q$ is true in the state resulting from
 the execution of the operation. If the precondition of a rule part is true, we
-say that the rule is \textit{applicable}.
+say that the rule is \textit{applicable}.  The rule shown in
+Figure~\ref{fig:invoice} has three rule parts, each of which consists of a
+precondition and a postcondition.
 
-The rule shown in Figure~\ref{fig:invoice} has three rule parts, each of which
-consists of a precondition and a postcondition. The first rule part pertains to
-the case where the customer's balance type is \subject{None}; the second rule
-part is for the case where the balance type is \subject{Credit} and the credit
-limit exceeds or equals the order total; the third rule part covers the case
-where the balance type is \subject{Credit} and the order total exceeds the
-credit limit.
+%% The first rule part pertains to the case where the customer's balance type is
+%% \subject{None}; the second rule part is for the case where the balance type is
+%% \subject{Credit} and the credit limit exceeds or equals the order total; the
+%% third rule part covers the case where the balance type is \subject{Credit} and
+%% the order total exceeds the credit limit.
 
 %Often in enterprise systems, the execution of an operation or a transaction
 %automatically triggers other transactions or operations. For example, in
@@ -116,10 +116,10 @@ credit limit.
 %operations---where the first operation automatically triggers the second
 %operation---can be specified.
 
-The primitive types include boolean, integer, float, and string. The model also
-accommodates sets of these types.\footnote{In the currently implemented system,
-  set types are handled in a restricted manner: by limiting the set size to two
-  and specifying the predicates over a set in terms of its (two) elements.}
+%% The primitive types include boolean, integer, float, and string. The model also
+%% accommodates sets of these types.\footnote{In the currently implemented system,
+%%   set types are handled in a restricted manner: by limiting the set size to two
+%%   and specifying the predicates over a set in terms of its (two) elements.}
 
 \subsection{Rule Checking}
 \label{sec:checking}
@@ -128,8 +128,8 @@ We define a few well-formedness properties on rule specifications to ensure
 consistency and completeness, and that also facilitate operation chaining for
 test generation. These properties are amenable to mechanical checking. Thus, we
 envision that the rules can be iteratively refined in a rule editor, based on
-automatic semantic checking for property violations (in addition to syntactic
-checking for conformance to the modeling syntax).
+automatic semantic checking for property violations. %%  (in addition to syntactic
+%% checking for conformance to the modeling syntax).
 
 \paragraph*{Property 1: Rule-part Disjointedness}
 In our notation, a rule part is intended to represent disjoint preconditions so
@@ -200,8 +200,7 @@ Finally, we enforce the restriction that there can be no data dependence between
 the postcondition of one rule and the precondition of another rule of the same
 operation. This property ensures that there is no implicit ordering among the
 rules of an operation. When such an ordering exists between two rules of an
-operation, the operation should be split into two operations in a sequence
-specified using the \subject{next} clause.
+operation, the operation should be split using the \subject{next} clause.
 
 We formalize this property as follows. Let ${\cal R} = \{R_1, R_2, \ldots,
 R_n\}$ be the rules associated with an operation. For any $R_i, R_j \in {\cal
@@ -230,8 +229,7 @@ The modeling process must be realistic in that users should be able to create
 and refine models in a tool-assisted manner, with immediate checking of, and
 feedback on, errors in the models.  We have implemented such a rule editor as an
 Eclipse plugin; Figure~\ref{fig:rule-editor} shows a screenshot of the
-editor. The editor is built using Eclipse
-Xtext,\footnote{\url{https://www.eclipse.org/Xtext/}} which is a general
+editor. The editor is built using Eclipse Xtext~\cite{xtext}, which is a general
 framework for developing domain-specific and programming languages. Much like
 any modern syntax-directed editor for a programming language, the rule editor
 provides syntax highlighting, navigation features, auto completion, and
