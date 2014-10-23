@@ -9,7 +9,9 @@ In this section, we discuss the notation for modeling business rules and the
 static checking performed on formally captured rules. Although there exist
 business-rule management systems, such as JBoss~\cite{JBoss}, ILOG~\cite{ILog},
 and RuleML~\cite{RuleML}, we found that they are not expressive enough to model
-complex transaction-oriented rules.
+complex transaction-oriented rules. For example, in the ILOG and JBoss Drools
+rule language, a rule is essentially an if-then condition, where various
+conditions that control actions can be expressed.
 
 \begin{figure}[t]
 \centering
@@ -96,10 +98,11 @@ A \textit{rule} $R = \{r_1, r_2, \ldots, r_k\}, k \geq 1,$ consists of a set of
 rule parts. A \textit{rule part} $r$ is a precondition-postcondition pair, $p
 \Longrightarrow q$, where $p$ and $q$ are boolean formulas such that if $p$
 holds in the state before the operation, $q$ is true in the state resulting from
-the execution of the operation. If the precondition of a rule part is true, we
-say that the rule is \textit{applicable}.  The rule shown in
-Figure~\ref{fig:invoice} has three rule parts, each of which consists of a
-precondition and a postcondition.
+the execution of the operation.
+%% If the precondition of a rule part is true, we say that the rule is
+%% \textit{applicable}.
+The rule shown in Figure~\ref{fig:invoice} has three rule parts, each of which
+consists of a precondition and a postcondition.
 
 %% The first rule part pertains to the case where the customer's balance type is
 %% \subject{None}; the second rule part is for the case where the balance type is
