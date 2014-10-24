@@ -98,7 +98,7 @@ our rule editor and property checking helped create correct rule set.
 
 \paragraph*{Method} We applied \tool{} and \exhaust{} on the models created for each subject and
 generated test sequences. For each rule part, we let each tool explore up to a
-maximum of $100$ concrete sequences. Next, we inspected the generated sequences
+maximum of $1000$ concrete sequences. Next, we inspected the generated sequences
 to ensure that they cover the targeted rule parts. To evaluate the efficiency of
 the tools, we measured the number of sequences explored and the lengths of
 sequences produced by each tool.  All experiments were conducted on an Intel
@@ -109,8 +109,8 @@ of the studies.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.65\columnwidth, clip, trim = 18mm 120mm 140mm
-  18mm]{figs/Study-1.pdf}
+\includegraphics[width=0.7\columnwidth, clip, trim = 19mm 127mm 145mm
+  21mm]{figs/Study-1.pdf}
 \vspace*{-10pt}
 \caption{Effectiveness of the two techniques in covering business rules.}
 \label{fig:effectiveness}
@@ -198,9 +198,9 @@ generating complex sequences for covering business rules.
 \cline{2-9}
 \multicolumn{1}{|c|}{Subject} & \multicolumn{1}{|c|}{Max} & \multicolumn{1}{|c|}{Avg} & \multicolumn{1}{|c|}{Max} & \multicolumn{1}{|c|}{Avg} & \multicolumn{1}{|c|}{Max} & \multicolumn{1}{|c|}{Avg} & \multicolumn{1}{|c|}{Max} & \multicolumn{1}{|c|}{Avg} & &  \\
 \hline \hline
-Cebu-pacific 	 &  7		& 5 &  9 &  5	 &  27 &  4	&  100 & 73 & 31 & 64 \\
-jBilling		 	 &  6		& 3 &  6 &  3	 &  48 &  2	&  39  &  2 & 20 & 17 \\
-App					 	 &  9		& 6 & 10 &  6	 &  51 &  5	& 100  & 46 &  4 & 12 \\
+Cebu-pacific & 7 & 5 & 9 & 6 & 27 & 4 & 1000 & 480 & 31 & 351 \\
+jBilling & 6 & 3 &  6 &  3 & 48 & 2 & 39 & 2 & 20 & 17 \\
+App & 9	& 6 & 10 & 6 & 51 & 5 & 887 & 87 & 4 & 25 \\
 \hline
 \end{tabular}
 }
@@ -219,12 +219,12 @@ The results show that, in some cases, \tool{} generated relatively shorter
 sequences compared to \exhaust{}. More significantly, \tool{} explored much
 fewer sequences than \exhaust{}. For example, for \subject{Cebu-pacific},
 \tool{} explored on average only $4$ sequences (maximum of $27$), whereas
-\exhaust{} explored on average $73$ sequences for each rule part (and also hit
-the upper bound of $100$ sequences). In none of the cases, \tool{} terminated by
-reaching the upper bound. Overall, these results indicate that guided search via
-unsatisfied core can make \tool{} highly efficient compared to \exhaust{}. 
-The results show that the time taken by each tool correlates with the
-number of sequences explored.
+\exhaust{} explored on average $480$ sequences for each rule part (and also hit
+the upper bound of $1000$ sequences) while taking almost 12x more time than
+\tool{}. In none of the cases, \tool{} terminated by reaching the upper
+bound. Overall, these results indicate that guided search via unsatisfied core
+can make \tool{} highly efficient compared to \exhaust{}.  The results show that
+the time taken by each tool correlates with the number of sequences explored.
 
 %\subsection{Discussion}
 %
