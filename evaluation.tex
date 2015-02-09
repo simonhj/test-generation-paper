@@ -25,8 +25,10 @@ unsatisfied core. Note that \tool{} may not extract the minimal unsatisfied
 core; however, the extracted core is sufficient to suggest candidate
 operations. We leave improvements in the implementation to future work, for
 example, by exploring advanced algorithms for extracting unsatisfied
-core~\cite{Liffiton:2008:ACM} and also leverage other constraint
-solvers~\cite{DeMoura:2008}. Another optimization could include caching and
+core~\cite{Liffiton:2008:ACM}, leveraging other constraint
+solvers~\cite{DeMoura:2008,Delahaye:2010}, and addressing issues with
+floating-point computations~\cite{bagnara:hal-00807884, GLM10}.
+Another optimization could include caching and
 reusing constraints (\eg as discussed in the Green approach~\cite{VisserGD12}).
 
 \begin{table}[t]

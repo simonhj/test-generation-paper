@@ -4,7 +4,7 @@ In this paper, we presented a new domain-specific language for modeling business
 rules that can capture functional specifications of enterprise systems. We also
 defined well-formedness properties on the model that can be verified
 mechanically. We implemented our tool as an Eclipse plug-in, where
-non-programmers also can create and refine models in a guided fashion We also
+non-programmers also can create and refine models in a guided fashion. We also
 presented a novel technique, based on unsatisfied cores, that generates test
 sequences by translating rules in to logical expressions.
 %We presented an algorithm that mechanically generates test sequences to
@@ -17,7 +17,9 @@ rules written in English. The results show that our technique is able to cover
 99\% of all business rules.
 
 In future work, experimentation with more varied subjects and business rules
-would help confirm the generality of our results. Toward our longer-term vision
+would help confirm the generality of our results. We also plan to explore
+stronger coverage criteria such as interactions of rules rather than generating
+only one test per rule. Towards our longer-term vision
 of bringing end-to-end automation to the testing of enterprise applications, we
 will investigate the integration of \tool{} and \wateg{} (our previous
 work~\cite{Thummalapenta:2013}) to generate executable test cases for validating

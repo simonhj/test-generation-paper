@@ -286,7 +286,8 @@ Here, $f_1, \ldots , f_n$ are attributes of $\tau$. To generate the final
 binding constraint, this process is applied recursively on each attribute of
 object type. Using binding constraints, the algorithm generates the formula as
 $p_{n.1} \wedge q_{n.1} \wedge b_n \wedge p$, where $p_{n.1}$ and $q_{n.1}$ are
-the precondition and postcondition of $r_{n.1}$, respectively.  If the formula
+the precondition and postcondition of $r_{n.1}$, respectively, and $p$ is the
+precondition of $r$. If the formula
 is satisfiable, it becomes the next $target$ and ${\cal O}_{n-1}$ the
 predecessor operation, and the algorithm repeats the same process.  After it has
 processed all operations in the sequence and the formula is satisfiable, it
@@ -388,7 +389,7 @@ unsatisfied core. The intuition behind computing \subject{ucore-} is to identify
 candidate operations that are compatible with \subject{ucore-} so that the
 composed formula can be satisfiable. We first extract entities and their
 attributes involved in \subject{ucore-}. Next, we identify candidate operations
-that modify those entities.  For each such operation, we identify rule parts
+that modify those entities. For each such operation, we identify rule parts
 that modify the desired attributes and whose postconditions are compatible with
 \subject{ucore-}, \ie{} $q \wedge b \wedge \subject{ucore-}$ is satisfiable,
 where $q$ is the postcondition of the selected rule part in the candidate
@@ -399,7 +400,7 @@ significantly reduce the search space of candidate sequences.
 
 For our running example, \subject{ucore-} is \subject{ord.total > 0}, and we
 identify the entity as \subject{Order} and the attribute to be modified as
-\subject{total}. We then analyze all operations that create or modify
+\subject{total}. We then analyze all operations that modify
 \subject{Order}, and identify the candidate operation as
 \subject{AddItemToOrder} and the rule part $r_{7.1}$ because $q_{7.1} \wedge
 \subject{ucore-}$ is satisfiable. Even if there are multiple operations that
