@@ -8,10 +8,24 @@
 In this section, we discuss the notation for modeling business rules and the
 static checking performed on formally captured rules. Although there exist
 business-rule management systems, such as JBoss~\cite{JBoss}, ILOG~\cite{ILog},
-and RuleML~\cite{RuleML}, we found that they are not expressive enough to model
-complex transaction-oriented rules. For example, in the ILOG and JBoss Drools
-rule language, a rule is essentially an if-then condition, where various
-conditions that control actions can be expressed.
+and RuleML~\cite{RuleML}, we found that they do not easily support automated
+test generation for exercising transaction-oriented rules. As illustrated in the
+Introduction, covering such rules can involve chaining a sequence of operations
+to bring the system to a state in which a rule is applicable. For example,
+coverage of the invoice computation rules (Figure~\ref{fig:invoice}) requires a
+customer with a particular balance type and order amount; establishing this
+state involves putting together an operation sequence along with suitable test
+data. This suggests an ``operation centric''~modeling of rules. In the existing
+rule-modeling notations, such as the ILOG and JBoss Drools rule languages, a
+rule is essentially an if-then construct, where various conditions that control
+actions can be expressed. Our notation models rules in the \textit{context of
+  operations} and, thus, more naturally supports operation chaining for
+automated test generation.
+
+%% are not expressive enough to model complex transaction-oriented rules.
+%% For example, in the ILOG and JBoss Drools rule language, a rule is essentially
+%% an if-then condition, where various conditions that control actions can be
+%% expressed.
 
 \begin{figure}[t]
 \centering
@@ -56,12 +70,12 @@ conditions that control actions can be expressed.
 
 \subsection{Rule-Modeling Language}
 
-We model rules in the context of operations in the system under test.  An
-operation is described by a set of input entities, a set of created entities, a
-set of modified entities, and a set of rules, where each rule consists of a set
-of precondition-postcondition pairs. For example, Figure~\ref{fig:invoice} shows
-the operation for computing invoice totals in \subject{jBilling}. The rules
-associated with this operation, which govern how the invoice total and the
+%% We model rules in the context of operations in the system under test.
+An operation is described by a set of input entities, a set of created entities,
+a set of modified entities, and a set of rules, where each rule consists of a
+set of precondition-postcondition pairs. For example, Figure~\ref{fig:invoice}
+shows the operation for computing invoice totals in \subject{jBilling}. The
+rules associated with this operation, which govern how the invoice total and the
 customer's credit limit are updated, are modeled with the operation in the form
 of precondition-postcondition pairs.
 
