@@ -49,9 +49,9 @@ Invoice & & & & how the invoice total is computed &
 & & & & (see complete rule in the Introduction) &
 $r_{4.2}$: $({\tt ord.total} > 0 \wedge {\tt ord.cust.balType} = {\tt Credit} \; \wedge$ \\
 & & & & &
-\hspace*{10pt}${\tt ord.cust.crLimit} \geq {\tt ord.total}) \Longrightarrow$ \\
-& & & & &
-\hspace*{10pt}$({\tt inv.total} = 0 \; \wedge$ \\
+\hspace*{10pt}${\tt ord.cust.crLimit} \geq {\tt ord.total}) \Longrightarrow$ $({\tt inv.total} = 0 \; \wedge$\\
+%& & & & &
+%\hspace*{10pt}$({\tt inv.total} = 0 \; \wedge$ \\
 & & & & &
 \hspace*{10pt}${\tt ord.cust.crLimit} = {\tt ord.cust.crLimit@} - {\tt ord.total})$ \\
 & & & & &
@@ -104,9 +104,10 @@ to Order & & & & the order's total by the item's price & \\
 \label{sec:example}
 
 Before presenting our technique, we elaborate upon the billing application
-example (\subject{jBilling}) mentioned in the previous sections: we explain
-various operations and rules for the application, which we use subsequently to
-illustrate our technique. To facilitate the illustration, we use a simplified
+example (\subject{jBilling}) mentioned in the previous sections.
+%we explain various operations and rules for the application, which we use subsequently to
+%illustrate our technique. 
+To facilitate the illustration, we use a simplified
 version inspired by the actual application~\cite{jbilling}. (In the empirical
 evaluation, we modeled a larger part of the application.) The model for
 \subject{jBilling} includes four entities: \subject{Customer}, \subject{Item},
@@ -121,12 +122,11 @@ Table~\ref{tab:bookstore-rules-spec} presents the formal specification of the
 \subject{jBilling} operations and rules. Columns~2--4 list, respectively, the
 entities read, created, and modified by an operation. Columns~5 and 6 provide
 informal descriptions and formal representations of the rules associated with an
-operation.  \subject{GenerateInvoice} has two rules associated with it, whereas
-all the other operations have only one rule associated with them. The first rule
+operation. All operations have one associated rule except \subject{GenerateInvoice},
+which has two rules. The first rule
 for \subject{GenerateInvoice} has three rule parts, which determine how the
 invoice total and the customer's credit limit are updated by the operation,
-based on the customer's balance type.  The second rule for
-\subject{GenerateInvoice} has two rule parts---which also determine the
+based on the customer's balance type.  The second rule has two rule parts---which also determine the
 computation of invoice total, in this case, based on the customer's state of
 residence.
 
@@ -166,6 +166,6 @@ If an expression needs to refer to the old and new values of an attribute (the
 values prior and subsequent to an operation invocation), the old value is
 distinguished by appending `@' to the attribute name. For instance, consider the
 postcondition in the rule for \subject{AddCreditLimit}: {\small ${\tt
-    cust.crLimit} = {\tt cust.crLimit@} + {\tt amount}$}; this states that the
-input credit amount is added to the customer's old credit limit to obtain the
+    cust.crLimit} = {\tt cust.crLimit@} + {\tt amount}$}; this states that \subject{amount}
+is added to the customer's old credit limit to obtain the
 new credit limit.

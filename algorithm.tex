@@ -286,10 +286,10 @@ Here, $f_1, \ldots , f_n$ are attributes of $\tau$. To generate the final
 binding constraint, this process is applied recursively on each attribute of
 object type. Using binding constraints, the algorithm generates the formula as
 $p_{n.1} \wedge q_{n.1} \wedge b_n \wedge p$, where $p_{n.1}$ and $q_{n.1}$ are
-the precondition and postcondition of $r_{n.1}$, respectively, and $p$ is the
+precondition and postcondition of $r_{n.1}$, respectively, and $p$ is the
 precondition of $r$. If the formula
 is satisfiable, it becomes the next $target$ and ${\cal O}_{n-1}$ the
-predecessor operation, and the algorithm repeats the same process.  After it has
+predecessor operation, and the algorithm repeats the same process. After it has
 processed all operations in the sequence and the formula is satisfiable, it
 extracts values for variables of primitive and enumerated types from the
 constraint solution to generate test data.

@@ -173,8 +173,8 @@ therefore, from the analysts who write them.
 \subsection{Our Approach and Results}
 
 At a high level, the idea is to use backward analysis to piece together a
-sequence of operations to arrive at a desired state.  We look for an operation
-whose business rule has a rule part whose postcondition would imply the desired
+sequence of operations to arrive at a desired state. We look for an operation
+whose business rule has a rule part with postcondition implying the desired
 precondition.  Such an operation, if executed in a way that the specific rule
 part applies, would establish the desired state.  The operation may require some
 user-provided values, but may partially rely on prior database state. The
@@ -216,12 +216,12 @@ whose postconditions are compatible with the unsatisfied core. In this way---and
 using additional optimizations---the technique can prune out large parts of the
 search space and efficiently narrow down to the covering sequences.
 
-The sequencing of operations done by our algorithm is also reminiscent of AI
-planning~\cite{Weld94} where actions with pre- and postconditions are sequenced
-by a planner algorithm using forward or backward chaining. We discuss the
-connection in the related work section; in brief, the algorithms for planning
-would have to be fortified with the same kinds of optimizations as mentioned
-above to be practical for our use.
+%The sequencing of operations done by our algorithm is also reminiscent of AI
+%planning~\cite{Weld94} where actions with pre- and postcond	itions are sequenced
+%by a planner algorithm using forward or backward chaining. We discuss the
+%connection in the related work section; in brief, the algorithms for planning
+%would have to be fortified with the same kinds of optimizations as mentioned
+%above to be practical for our use.
 
 An important ingredient of our approach is a notation for capturing business
 rules formally, which enables mechanized analysis for test generation. Moreover,
@@ -233,31 +233,29 @@ structured rule description languages (e.g. JBoss~\cite{JBoss},
 ILOG~\cite{ILog}, and RuleML~\cite{RuleML}).  We believe the payoff by way of
 consistency checks and automatic test coverage would further spur adoption of
 structured rule languages.
-
-We have implemented a prototype system, which includes a business rule editor
-(an Eclipse plug-in) and automated analyses for rule checking and test
-generation. Our preliminary results illustrate the promise of the approach: for
-77~rule parts, modeled from three applications, our technique generated covering
-sequences and test data for 99\% of the rule parts and missed only one rule part
-(which could not be covered because of limitations of the underlying constraint
-solver). By comparison, a technique that performs exhaustive (unguided) search
-could cover 79\% of the rule parts, although it explored substantially more
-candidate sequences than our technique.
+ 
+%Our preliminary results illustrate the promise of the approach: for
+%77~rule parts, modeled from three applications, our technique generated covering
+%sequences and test data for 99\% of the rule parts and missed only one rule part
+%(which could not be covered because of limitations of the underlying constraint
+%solver). 
 
 %\paragraph*{Contributions}
 The contributions of this paper are as follows:
 \begin{itemize}[noitemsep]
 \item We describe a notation for describing business rules formally, and articulate
-  a set of well-formedness properties that can be checked mechanically. We have 
-  also developed an Eclipse plugin for our rule language.
+  a set of well-formedness properties that can be checked mechanically. We have implemented a prototype system, 
+	which includes a business rule editor (an Eclipse plug-in) and automated analyses for rule checking and test generation.
 \item We describe an algorithm that can mechanically construct test sequences
   that cover the business rules of a model. The algorithm uses a
   novel optimization to prune the search space. We have implemented
   the algorithm. % in a tool called \tool{}.
 \item To evaluate our approach, we have formalized the business rules
   of three enterprise systems and used \tool{} to generate test
-  sequences. Using our approach we are able to generate tests for 99\%
-  of the rule parts.
+  sequences for 77~rule parts. Using our approach, we are able to generate tests for 99\%
+  of the rule parts. By comparison, a technique that performs exhaustive (unguided) search
+could cover 79\% of the rule parts, although it explored substantially more
+candidate sequences than our technique.
 \end{itemize}
 
 %In Section~\ref{sec:model}, we describe our notation for modeling business

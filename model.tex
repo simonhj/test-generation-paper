@@ -242,16 +242,13 @@ as safety and confluence properties~\cite{DBLP:conf/icst/BerstelL10}.
 \label{fig:rule-editor}
 \end{figure}
 
-%% Our end goal of test generation requires accurate rule models. Moreover, we want
 The modeling process must be realistic in that users should be able to create
-and refine models in a tool-assisted manner, with immediate checking of, and
-feedback on, errors in the models.  We have implemented such a rule editor as an
-Eclipse plugin; Figure~\ref{fig:rule-editor} shows a screenshot of the
-editor. The editor is built using Eclipse Xtext~\cite{xtext}, which is a general
+and refine models in a tool-assisted manner. Figure~\ref{fig:rule-editor} shows a screenshot of the
+editor implemented as an Eclipse plugin. The editor is built using Eclipse Xtext~\cite{xtext}, which is a general
 framework for developing domain-specific and programming languages. Much like
 any modern syntax-directed editor for a programming language, the rule editor
 provides syntax highlighting, navigation features, auto completion, and
-on-the-fly detection of syntax errors.  The user can also run a semantic checker
+on-the-fly detection of syntax errors. The user can also run a semantic checker
 to detect violations of the well-formedness properties discussed
 previously. Thus, the editor provides a convenient environment for writing
 rules, in which the user is guided by automated checking and feedback.

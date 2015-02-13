@@ -28,8 +28,8 @@ example, by exploring advanced algorithms for extracting unsatisfied
 core~\cite{Liffiton:2008:ACM}, leveraging other constraint
 solvers~\cite{DeMoura:2008,Delahaye:2010}, and addressing issues with
 floating-point computations~\cite{bagnara:hal-00807884, GLM10}.
-Another optimization could include caching and
-reusing constraints (\eg as discussed in the Green approach~\cite{VisserGD12}).
+%Another optimization could include caching and
+%reusing constraints (\eg as discussed in the Green approach~\cite{VisserGD12}).
 
 \begin{table}[t]
 \caption{Subjects used in our empirical studies.}
@@ -84,7 +84,7 @@ listed in Table~\ref{tab:subjects}, as the experimental subjects. Due to
 confidentiality reasons, we refer to the proprietary application as
 \subject{App}. \subject{Cebu-pacific} is an airlines application,
 \subject{jBilling} is an enterprise billing application, and \subject{App} is a
-telecom application. Column~2 shows the URLs of the first two subjects.
+telecom application. 
 Columns~3--6 show additional details, such as the number of entities,
 operations, and rules. For each subject, we identified a module that is likely
 to have large number of interesting rules with respect to the sequences and test
@@ -220,12 +220,12 @@ parts. Finally, Columns~10--11 show the time taken (in seconds) by each tool.
 The results show that, in some cases, \tool{} generated relatively shorter
 sequences compared to \exhaust{}. More significantly, \tool{} explored much
 fewer sequences than \exhaust{}. For example, for \subject{Cebu-pacific},
-\tool{} explored on average only $4$ sequences (maximum of $27$), whereas
-\exhaust{} explored on average $480$ sequences for each rule part (and also hit
+\tool{} explored on average only $4$ sequences (max $27$), whereas
+\exhaust{} explored on average $480$ sequences (and also hit
 the upper bound of $1000$ sequences) while taking almost 12x more time than
 \tool{}. In none of the cases, \tool{} terminated by reaching the upper
 bound. Overall, these results indicate that guided search via unsatisfied core
-can make \tool{} highly efficient compared to \exhaust{}.  The results show that
+can make \tool{} highly efficient compared to \exhaust{}. The results show that
 the time taken by each tool correlates with the number of sequences explored.
 
 %\subsection{Discussion}
